@@ -32,7 +32,7 @@ flowchart TB
   AN --> SC[Sound, captions, cover, copy<br/>agent: -14 LUFS, SRT, publish.md]
   SC --> G3{{Gate 3: your ear and eye check}}:::gate
   G3 -. notes, new version .-> AN
-  G3 --> P[publish/ ready<br/>MP4, cover, SRT, copy]
+  G3 --> P[publish/ ready<br/>mp4, thumbnail, srt, copy]
   P --> U[You upload to YouTube<br/>rename folder uploaded_..., pin comment]:::human
 ```
 

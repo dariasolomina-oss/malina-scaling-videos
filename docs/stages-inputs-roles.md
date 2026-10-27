@@ -21,7 +21,7 @@ Lane A = animated video with an AI voice. Lane B = talking-head Short recorded b
 | 14 | Thumbnail / cover (both) | The click image | Thumbnail template, hook line, 4K face frame (Lane B), brand lockup | Optional: picks the face frame | Face cutout, renders template, checks at 320 px |
 | 15 | Upload copy (both) | Title, description, tags, pinned comment | Publish template, script, related video link | Nothing | Writes `publish.md` |
 | 16 | Review (both) | Decide if it ships | Numbered version in `versions/` | **Gate: watches, listens, sends notes** (4 to 13 rounds so far) | Logs each version in `NOTES.md`, builds the next |
-| 17 | Publish | Get it on YouTube | Final MP4, cover, SRT, copy, YouTube access | Uploads, renames folder to `uploaded_…`, posts the comment | Nothing |
+| 17 | Publish | Get it on YouTube | Final mp4, thumbnail, srt, copy, YouTube access | Uploads, renames folder to `uploaded_…`, posts the comment | Nothing |
 
 ## Observations
 
