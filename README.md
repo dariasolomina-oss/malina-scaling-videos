@@ -10,6 +10,12 @@ A toolkit for making short-form video production repeatable and fast: one raw ta
 - **Sound** — typing / pen SFX from animation cues, loudness-normalised mix.
 - **Publish** — thumbnail from a 4K frame, Shorts-style title / description / tags / pinned comment.
 
+## Current flow
+
+![LakeSentry video flow](docs/video-flow.png)
+
+Details: [docs/current-flows.md](docs/current-flows.md), [docs/stages-inputs-roles.md](docs/stages-inputs-roles.md), [docs/requirements-index.md](docs/requirements-index.md).
+
 ## Layout
 
 ```
