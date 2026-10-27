@@ -21,7 +21,7 @@ flowchart TB
   S --> G1{{Gate 1: you approve the script}}:::gate
   G1 -. edits .-> S
   G1 --> A[A: ElevenLabs voice<br/>you: paste, export, move to inputs/]:::ai
-  G1 --> B1[B: Tatiana records<br/>days to weeks; files to inputs/]:::hv
+  G1 --> B1[B: a human records, e.g. Tatiana<br/>days to weeks; files to inputs/]:::hv
   B1 --> B2[Take log + voice clean<br/>agent: NOTES.md, 12 dB cap]:::hv
   B2 --> G2{{Gate 2: you pick the lines}}:::gate
   G2 --> B3[Cut on silence<br/>agent: joins tested, ≤ 40 s]:::hv

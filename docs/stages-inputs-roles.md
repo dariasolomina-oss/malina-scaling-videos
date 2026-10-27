@@ -1,6 +1,6 @@
 # Stages, inputs, and who does what (as of 2026-10-27)
 
-Lane A = animated video with an AI voice. Lane B = Tatiana's talking-head Short. "both" = shared.
+Lane A = animated video with an AI voice. Lane B = talking-head Short recorded by a human (e.g. Tatiana). "both" = shared.
 
 | # | Stage | What it is | Inputs needed | Human does | Agent does |
 |---|---|---|---|---|---|
@@ -8,7 +8,7 @@ Lane A = animated video with an AI voice. Lane B = Tatiana's talking-head Short.
 | 2 | Research | Sources for the problem statement | Databricks docs, community threads, lakesentry.io, `_product_core` | Nothing | Writes `RESEARCH.md`, every claim sourced |
 | 3 | Script | Scenes, on-screen text, voiceover lines | Research, brand-voice gates (GTM repo pulled), SCRIPT template, product recording or live numbers (Lane A) | **Gate: approves or sends back** | Writes `SCRIPT.md`, runs voice gates, lists open questions |
 | 4A | Voice (AI) | Generate the voiceover | Approved script, ElevenLabs, voice choice | Pastes lines into ElevenLabs, exports MP3, moves it to `inputs/` | Nothing |
-| 4B | Voice (human) | Tatiana records takes | Script sent to her, phone, time slot | Tatiana records; operator transfers MP4s, re-downloads truncated ones | Nothing |
+| 4B | Voice (human) | A human (e.g. Tatiana) records takes | Script sent to them, phone, time slot | Presenter records; operator transfers MP4s, re-downloads truncated ones | Nothing |
 | 5B | Take log | What is on the recording | Raw 4K MP4s, the script | Nothing | Transcribes, finds restarts and flubs, writes `NOTES.md` |
 | 6B | Cut proposal | Which lines survive | Take log, target length ≤ 40 s, 2-second hook rule | **Gate: picks keep / drop / reorder** | Lists every line with timestamps and a recommended cut |
 | 7B | Voice clean + cut | Make the audio track | Raw take, picked lines | Nothing | Noise reduction (12 dB cap), cuts in silence on the 25 fps grid, tail-tests joins |
