@@ -1,0 +1,24 @@
+# media and renders
+*.mp4
+*.MP4
+*.mov
+*.wav
+*.mp3
+*.m4a
+*.png
+*.jpg
+*.jpeg
+episodes/*/work/
+episodes/*/broll/
+animation/out/
+animation/public/*.mp4
+
+# node / python
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+
+# os / editor
+.DS_Store
+.vscode/
