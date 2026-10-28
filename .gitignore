@@ -23,3 +23,12 @@ __pycache__/
 # os / editor
 .DS_Store
 .vscode/
+
+# brand packs keep their own logos, safe-zone images and sounds
+!brands/*/assets/**/*.png
+!brands/*/assets/**/*.mp3
+# docs images
+!docs/*.png
+
+# login cookies from record_screen.js --login: never commit
+.demo-state.json

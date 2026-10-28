@@ -1,39 +1,63 @@
 # malina · scaling videos
 
-A toolkit for making short-form video production repeatable and fast: one raw take in, a finished Short out, with as few manual steps as possible.
-
-## What it optimises
-
-- **Cut** — transcribe the take, pick the clean lines, snap cuts into silence, render a tight jump cut.
-- **Animate** — programmatic B-roll (Remotion) from a per-episode scene file, so every video uses the same components but looks different.
-- **Caption** — word-level timings, grammar-corrected captions, burned-in plus SRT.
-- **Sound** — typing / pen SFX from animation cues, loudness-normalised mix.
-- **Publish** — thumbnail from a 4K frame, Shorts-style title / description / tags / pinned comment.
+A toolkit for making short-form and product videos repeatable: one brief in, a finished video out, with as few manual steps as possible. Built for LakeSentry first, structured so other products, brands and presenters can plug in.
 
 ## Current flow
 
-![LakeSentry video flow](docs/video-flow.png)
+![Video flow](docs/video-flow.png)
 
-Details: [docs/current-flows.md](docs/current-flows.md), [docs/stages-inputs-roles.md](docs/stages-inputs-roles.md), [docs/requirements-index.md](docs/requirements-index.md).
+Details: [current flows](docs/current-flows.md) · [stages, inputs, human vs agent](docs/stages-inputs-roles.md) · [where the requirements live](docs/requirements-index.md) · [step-by-step agent flow](docs/agent-flow.md)
 
 ## Layout
 
 ```
-malina-scaling-videos/
-  README.md
-  pipeline/        one script per step (transcribe, cut, validate, captions, mix, thumbnail)
-  animation/       Remotion project: brand tokens, reusable components, per-episode scenes
-  episodes/        one folder per video: raw take, work files, final exports (media is git-ignored)
-  docs/            production rules, creative rules, variety system, lessons learned
+engine/                 brand-free code, same for every product
+  render/               HTML page -> frames (Playwright) -> mp4; thumbnails; product screen recordings
+  scripts/              transcribe, voice clean, cut on silence, join checks, captions, srt, sound mix
+brands/<name>/          one folder per brand
+  brand.json            colours, fonts, logo paths, safe zone, transcription vocabulary, spelling fixes
+  style-guide.md        the brand's video rules and rejected ideas
+  assets/               logo, sfx, safe-zone overlay
+  templates/            starting pages (demo, teaser, thumbnails) and publish templates
+templates/brief.md      the intake file every new video starts from
+episodes/               one folder per video (media is git-ignored)
+docs/                   flow maps and process docs
 ```
 
-## Principles
+## Setup (macOS)
 
-- Zero-build where possible: scripts over frameworks, single files over packages.
-- Every step is validated by machine first (joins, captions, loudness), then by eye.
-- Variety by design: neighbouring videos must differ on most of the style axes, while the brand stays constant.
-- Nothing fabricated: numbers, names and claims on screen come from real data.
+```bash
+brew install ffmpeg whisper-cpp node python uv
+mkdir -p ~/.cache/whisper && curl -L -o ~/.cache/whisper/ggml-base.en.bin https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin
+cd engine/render && npm ci && npx playwright install chromium
+```
 
-## Status
+Voice cleanup (DeepFilterNet), mlx-whisper and the face cutout run through `uvx` and download their models on first use.
 
-Scaffold. Scripts and the animation project get ported in next.
+## Using a brand
+
+Scripts that need brand values read them from `BRAND`:
+
+```bash
+BRAND=brands/lakesentry/brand.json python3 engine/scripts/make_srt.py vertical voiceover.mp3 out.en.srt
+```
+
+Today `BRAND` drives the srt spelling fixes (`make_srt.py`), the transcription vocabulary (`transcribe_mlx.sh`) and the demo sign-in page (`record_screen.js`). Colours and fonts in `brand.json` are documented, but the HTML templates still have them inline.
+
+## Adding a new brand
+
+1. Copy `brands/lakesentry/` to `brands/<new>/`.
+2. Replace the `brand.json` values, the logo files, and the safe-zone overlay if it differs.
+3. Rewrite `style-guide.md` for the new brand: keep the structure, drop the LakeSentry decisions.
+4. Re-skin the templates in `templates/`.
+
+## Status and what is not ported yet
+
+- **Ported:** the `_flow` HTML renderer and tools, the `_toolkit` voice and cut scripts, and the LakeSentry logo, sfx, safe zone, templates and style guide.
+- **Not ported on purpose:** the old Remotion renderer (TZ3 to TZ8, 1.3 GB, licence free only for teams of three or fewer) and the two scripts that depend on it (`sfx_mix.sh`, `remap_cues.py`); `music_mix.py`, since music beds are off per the style rules; `scratch_vo.py`, since voiceovers come from ElevenLabs only.
+- **Still LakeSentry-specific:** the HTML templates (colours and fonts inline) and `docs/agent-flow.md`. Existing episode folders reference `../../../_assets/brand/`; new episodes should point at `brands/<name>/assets/` instead.
+- **Licences:** the sounds in `brands/lakesentry/assets/sfx/` come from Pixabay and Freesound. Check attribution terms before the repo goes public.
+
+## Working in this repo
+
+Commit to a branch and open a pull request rather than pushing to `main`.

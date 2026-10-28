@@ -1,0 +1,28 @@
+{
+  "name": "LakeSentry",
+  "site": "https://lakesentry.io",
+  "brandkit": "https://lakesentry.io/brandkit",
+  "colors": {
+    "page": "#FCFCFC", "ink": "#0F1729", "muted": "#566376",
+    "primary": "#0950C3", "primary_gradient": ["#0950C3", "#1588C1"],
+    "caption_yellow": "#FFD60A"
+  },
+  "fonts": { "headline": "Outfit", "ui": "Plus Jakarta Sans", "mono": "JetBrains Mono", "caption": "Montserrat" },
+  "logo": {
+    "light": "assets/logo/lakesentry-lockup-forlight-transparent-2400.png",
+    "dark": "assets/logo/lakesentry-lockup-fordark-transparent-2400.png",
+    "mark": "assets/logo/lakesentry-red-transparent-1024.png"
+  },
+  "safe_zone_shorts": { "image": "assets/safe-zone/shorts-safe-zone-2025.png", "top": 240, "left": 60, "right": 120, "bottom": 380 },
+  "transcription_prompt": "Databricks, DBUs, system tables, SQL warehouses, AWS, Azure, GCP, LakeSentry.",
+  "spelling_fixes": [
+    ["\\blake\\s*century\\b", "LakeSentry"],
+    ["\\blake\\s*sentry\\b", "LakeSentry"],
+    ["\\blakesentry\\b", "LakeSentry"],
+    ["\\bdata\\s*bricks\\b", "Databricks"],
+    ["\\bd\\.?b\\.?u\\.?s\\b", "DBUs"],
+    ["\\bd\\.?b\\.?u\\b", "DBU"]
+  ],
+  "split_word_merges": [ ["lake", "century|sentry", "LakeSentry"] ],
+  "demo_login_url": "https://demo.lakesentry.io/login"
+}
