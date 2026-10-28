@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "connector-voice-response.schema.json",
+  "title": "Offline connector response subset (not a network API contract)",
+  "type": "object",
+  "required": [
+    "audio_base64"
+  ],
+  "properties": {
+    "audio_base64": {
+      "type": "string",
+      "minLength": 1,
+      "contentEncoding": "base64"
+    },
+    "alignment": {
+      "type": "object",
+      "required": [
+        "characters",
+        "character_start_times_seconds",
+        "character_end_times_seconds"
+      ],
+      "properties": {
+        "characters": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1
+          }
+        },
+        "character_start_times_seconds": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "character_end_times_seconds": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "normalized_alignment": {
+      "type": "object",
+      "required": [
+        "characters",
+        "character_start_times_seconds",
+        "character_end_times_seconds"
+      ],
+      "properties": {
+        "characters": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1
+          }
+        },
+        "character_start_times_seconds": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "character_end_times_seconds": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      }
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "alignment"
+      ]
+    },
+    {
+      "required": [
+        "normalized_alignment"
+      ]
+    }
+  ]
+}

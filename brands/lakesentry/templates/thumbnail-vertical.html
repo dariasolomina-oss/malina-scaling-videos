@@ -1,23 +1,23 @@
 <!doctype html><html><head><meta charset="utf-8">
 <!-- Vertical cover · 1080x1920 · all content inside the central 1080x1350 band (y 285–1635): Reels grid crops to 4:5, app UI covers top & bottom -->
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<!-- Local fonts and brand variables injected by prepare_page.py. -->
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{width:1080px;height:1920px;overflow:hidden;position:relative;background:#FCFCFC;font-family:"Plus Jakarta Sans",sans-serif;color:#0F1729}
-.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(15,23,41,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,41,.06) 1px,transparent 1px);background-size:60px 60px}
-.halo{position:absolute;left:540px;top:1250px;width:1400px;height:1000px;margin:-500px 0 0 -700px;background:radial-gradient(ellipse,rgba(9,80,195,.10),rgba(9,167,185,.05) 45%,transparent 70%)}
+body{width:1080px;height:1920px;overflow:hidden;position:relative;background:var(--color-page);font-family:var(--font-ui),sans-serif;color:var(--color-ink)}
+.grid{position:absolute;inset:0;background-image:linear-gradient(var(--color-legacy-rgba_rgba_15_23_41_06) 1px,transparent 1px),linear-gradient(90deg,var(--color-legacy-rgba_rgba_15_23_41_06) 1px,transparent 1px);background-size:60px 60px}
+.halo{position:absolute;left:540px;top:1250px;width:1400px;height:1000px;margin:-500px 0 0 -700px;background:radial-gradient(ellipse,var(--color-legacy-rgba_rgba_9_80_195_10),var(--color-legacy-rgba_rgba_9_167_185_05) 45%,transparent 70%)}
 .lock{position:absolute;left:50%;top:330px;height:62px;transform:translateX(-50%)}
-h1{position:absolute;left:60px;right:60px;top:440px;text-align:center;font-family:Outfit,sans-serif;font-weight:800;font-size:150px;line-height:.98;letter-spacing:-.045em}
-h1 b{color:#0950C3;font-weight:800}
-.card{position:absolute;left:90px;right:90px;top:1110px;background:#fff;border:2px solid #E1E7EF;border-radius:40px;padding:46px 50px 50px;box-shadow:0 36px 80px rgba(15,23,41,.16);text-align:center;transform:rotate(-2deg)}
-.lab{font-size:40px;color:#566376;font-weight:500}
-.val{font-family:Outfit,sans-serif;font-weight:800;font-size:150px;letter-spacing:-.045em;line-height:1.02;margin-top:8px;white-space:nowrap}
-.mo{font-family:Outfit,sans-serif;font-weight:600;font-size:50px;color:#0950C3}
+h1{position:absolute;left:60px;right:60px;top:440px;text-align:center;font-family:var(--font-headline),sans-serif;font-weight:800;font-size:150px;line-height:.98;letter-spacing:-.045em}
+h1 b{color:var(--color-primary);font-weight:800}
+.card{position:absolute;left:90px;right:90px;top:1110px;background:var(--color-on_primary);border:2px solid var(--color-border);border-radius:40px;padding:46px 50px 50px;box-shadow:0 36px 80px var(--color-legacy-rgba_rgba_15_23_41_16);text-align:center;transform:rotate(-2deg)}
+.lab{font-size:40px;color:var(--color-muted);font-weight:500}
+.val{font-family:var(--font-headline),sans-serif;font-weight:800;font-size:150px;letter-spacing:-.045em;line-height:1.02;margin-top:8px;white-space:nowrap}
+.mo{font-family:var(--font-headline),sans-serif;font-weight:600;font-size:50px;color:var(--color-primary)}
 .bar{display:flex;gap:6px;height:22px;border-radius:11px;overflow:hidden;margin-top:34px}
-</style></head><body>
+</style></head><body><div style="position:absolute;top:12px;left:20px;z-index:99999;font:18px var(--font-ui);color:var(--color-muted);background:var(--color-page);padding:6px 10px">DEMO DATA · LEGACY RECONSTRUCTION · NOT VERIFIED PRODUCT UI</div>
 <div class="grid"></div><div class="halo"></div>
-<img class="lock" src="../assets/logo/lakesentry-lockup-forlight-transparent-2400.png">
+<img class="lock" src="assets/logo/lakesentry-lockup-forlight-transparent-2400.png">
 <h1>What will<br><b>Databricks</b><br>cost you<br>in 2027?</h1>
 <div class="card"><div class="lab">Estimated monthly cost</div><div class="val">$48K–$75K</div><div class="mo">per month</div>
-  <div class="bar"><div style="flex:31434;background:#2463EB"></div><div style="flex:14258;background:#10B77F"></div><div style="flex:7156;background:#AF57DB"></div><div style="flex:7650;background:#F59F0A"></div></div></div>
+  <div class="bar"><div style="flex:31434;background:var(--color-chart-jobs)"></div><div style="flex:14258;background:var(--color-chart-sql)"></div><div style="flex:7156;background:var(--color-chart-interactive)"></div><div style="flex:7650;background:var(--color-chart-environment)"></div></div></div>
 </body></html>

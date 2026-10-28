@@ -32,3 +32,14 @@ __pycache__/
 
 # login cookies from record_screen.js --login: never commit
 .demo-state.json
+
+# S2 nested episodes and temporary credentials/cache
+episodes/**/work/
+episodes/**/broll/
+episodes/**/inputs/
+episodes/**/media/
+episodes/**/source/assets/
+*.state.json
+*.partial.mp4
+render.pid
+render.log

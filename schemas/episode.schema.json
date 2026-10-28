@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "episode.schema.json",
+  "title": "Episode state; JSON-compatible YAML",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "id",
+    "title",
+    "language",
+    "status",
+    "revision",
+    "script_path",
+    "script_hash",
+    "video_path",
+    "approvals",
+    "history",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string",
+      "description": "Content language tag, default en; not an editorial approval."
+    },
+    "status": {
+      "enum": [
+        "topic",
+        "script",
+        "script_approved",
+        "voice",
+        "render",
+        "review",
+        "video_approved",
+        "publish_ready",
+        "published"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "script_path": {
+      "const": "script.md"
+    },
+    "video_path": {
+      "const": "media/video.mp4"
+    },
+    "script_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "approvals": {
+      "type": "object",
+      "properties": {
+        "script": {
+          "type": "object",
+          "required": [
+            "human",
+            "confirmed",
+            "at",
+            "script_hash",
+            "revision"
+          ],
+          "properties": {
+            "human": {
+              "type": "string",
+              "minLength": 1
+            },
+            "confirmed": {
+              "const": true
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "script_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "video_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "video": {
+          "type": "object",
+          "required": [
+            "human",
+            "confirmed",
+            "at",
+            "script_hash",
+            "revision",
+            "video_hash"
+          ],
+          "properties": {
+            "human": {
+              "type": "string",
+              "minLength": 1
+            },
+            "confirmed": {
+              "const": true
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "script_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "video_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object"
+    },
+    "branch": {
+      "type": "object"
+    },
+    "pipeline": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

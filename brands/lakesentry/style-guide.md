@@ -1,3 +1,5 @@
+> **Historical guide, not a verified product specification.** The narrative below was inherited from earlier work and has not been revalidated here. For the current offline template contract, demo labels, local font loading and legacy limitations, see [templates/README.md](templates/README.md). Local `brand.json` is the build input; no online brandkit or product page is fetched during preparation. Historical “real numbers”, UI and product-bug claims below are not evidence and must not be republished without fresh source verification.
+
 # LakeSentry video style guide
 
 What we learned making the calculator demo (long form) and its teaser (short), on 2026-10-07.
@@ -14,7 +16,7 @@ Brand source of truth: <https://lakesentry.io/brandkit/> (rules for AI agents: <
 |---|---|
 | Logo | Only the official files in `_assets/brand/`. Use the lockup (`lakesentry-lockup-forlight-transparent-2400.png`) for "logo + name". Use the red mark (`lakesentry-red-transparent-1024.png`) for small icons, such as link previews. **Never retype "LAKESENTRY" in a font.** Never recolor, glow, outline or rotate the logo. |
 | Name in copy | **LakeSentry**: one word, capital L and S. |
-| Fonts | **Outfit** (500–800, tight tracking) for headings, big numbers and titles. **Plus Jakarta Sans** (400/500/600) for body and UI text. Mono only for code/formulas (`ui-monospace, SFMono-Regular, Menlo`). Load both from Google Fonts. |
+| Fonts | **Outfit** (500–800, tight tracking) for headings, big numbers and titles. **Plus Jakarta Sans** (400/500/600) for body and UI text. Mono only for code/formulas (`ui-monospace, SFMono-Regular, Menlo`). The current offline build loads local font files from `assets/fonts/`; see their source and license records. |
 | Colors | Ink `#0F1729` · muted text `#566376` · borders `#E1E7EF` · background `#FCFCFC` · primary `#0950C3` (buttons go to `#1588C1`) · accent teal `#09A7B9`. Charts: `#2463EB` jobs, `#10B77F` SQL, `#AF57DB` interactive, `#E23670` streaming, `#F59F0A` environment/idle. Red for strike-throughs: `#DC2828`. **Never `#F80000`**, which is logo-only. |
 | Look | **Light, calm, technical.** Website background = soft white `#FCFCFC` + faint grid (1px lines at ~4–5% ink, 44–60px cells). |
 | ❌ Rejected | Dark/neon "AI startup" styling, glassmorphism, glows (v1 of the demo). Gradient backgrounds (teaser v1: "I don't like the gradient"). Gradient text. Red alarm / "budget exceeded" panic imagery; use neutral "?" question cards instead. |

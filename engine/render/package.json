@@ -1,1 +1,1 @@
-{ "name": "malina-render", "private": true, "dependencies": { "playwright": "*" } }
+{"name":"malina-render","private":true,"dependencies":{"playwright":"1.48.2"}}

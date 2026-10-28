@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Editorial demo</title>
+<!-- PREPARE_PAGE_HEAD -->
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:1080px;height:1920px;overflow:hidden}
+body{background:var(--color-page);color:var(--color-ink);font-family:var(--font-ui),sans-serif}
+#stage{position:absolute;inset:0;padding:250px 120px 390px 70px;display:flex;flex-direction:column;gap:36px}
+header{display:flex;align-items:center;justify-content:space-between;gap:32px;border-bottom:2px solid var(--color-border);padding-bottom:28px}
+#brand-logo{max-width:300px;max-height:70px;object-fit:contain;object-position:left}
+#brand-name{font:600 30px var(--font-headline),sans-serif;color:var(--color-muted)}
+#disclosure{font-size:22px;color:var(--color-muted);letter-spacing:.04em}
+#copy{margin:auto 0 0}h1{font:700 72px/1.08 var(--font-headline),sans-serif;letter-spacing:-.035em;margin:0;max-width:100%;overflow-wrap:anywhere}
+#subtitle{font-size:30px;line-height:1.4;color:var(--color-muted);margin:28px 0 0;overflow-wrap:anywhere}
+#blocks{display:grid;grid-template-columns:1fr;gap:24px;margin:22px 0 auto}
+article{background:var(--color-surface);border:2px solid var(--color-border);border-top:6px solid var(--color-accent);border-radius:18px;padding:32px;overflow-wrap:anywhere}
+article:nth-child(2){border-top-color:var(--color-chart-sql)}article:nth-child(3){border-top-color:var(--color-chart-interactive)}
+h2{font:600 36px/1.2 var(--font-headline),sans-serif;margin:0 0 16px}article p{font-size:28px;line-height:1.4;color:var(--color-muted);margin:0}
+footer{font-size:24px;color:var(--color-muted);border-top:2px solid var(--color-border);padding-top:22px;overflow-wrap:anywhere}
+</style></head><body><main id="stage">
+<header><img id="brand-logo" alt=""><span id="brand-name"></span></header>
+<div id="disclosure"></div><section id="copy"><h1 id="headline"></h1><p id="subtitle"></p></section>
+<section id="blocks"></section><footer id="footer"></footer></main>
+<script>
+'use strict';
+const data=window.PAGE_DATA,brand=window.PAGE_BRAND;
+const set=(id,value)=>{document.getElementById(id).textContent=value||'';};
+set('brand-name',brand.name);document.title=data.headline;
+const logo=document.getElementById('brand-logo');
+if(brand.logo&&brand.logo.light){logo.src=brand.logo.light;logo.alt=brand.name;}else{logo.remove();}
+set('disclosure',data.demo?'DEMO DATA — NOT PRODUCT UI':'EDITORIAL CONTENT — NOT PRODUCT UI');
+set('headline',data.headline);set('subtitle',data.subtitle);set('footer',data.footer);
+for(const block of data.blocks){const article=document.createElement('article');const h=document.createElement('h2');const p=document.createElement('p');h.textContent=block.title;p.textContent=block.body;article.append(h,p);document.getElementById('blocks').append(article);}
+window.DURATION=data.duration;
+window.render=function(t){if(!Number.isFinite(t))throw new Error('render(t) requires finite seconds');
+const progress=Math.max(0,Math.min(1,t/.65));const eased=1-Math.pow(1-progress,3);
+document.getElementById('copy').style.transform=`translateY(${24*(1-eased)}px)`;
+document.getElementById('copy').style.opacity=String(.25+.75*eased);
+// Absolute-time state only: seeking backwards produces the same DOM frame.
+[...document.querySelectorAll('article')].forEach((el,i)=>{const p=Math.max(0,Math.min(1,(t-.2-i*.12)/.5));el.style.opacity=String(.25+.75*p);el.style.transform=`translateY(${16*(1-p)}px)`;});
+};window.render(0);
+</script></body></html>

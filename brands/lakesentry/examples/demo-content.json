@@ -1,0 +1,12 @@
+{
+  "demo": true,
+  "headline": "A clear message, three simple blocks",
+  "subtitle": "Editorial layout sample. These are placeholders, not a product screen or verified results.",
+  "blocks": [
+    {"title": "Context", "body": "Describe the audience’s question."},
+    {"title": "Approach", "body": "Explain one idea without invented metrics."},
+    {"title": "Next step", "body": "Add an approved editorial conclusion."}
+  ],
+  "footer": "DEMO CONTENT · Replace and review before publishing.",
+  "duration": 8
+}
