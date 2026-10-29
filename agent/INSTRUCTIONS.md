@@ -1,6 +1,6 @@
 # S2 video assistant contract
 
-Version: 0.2.0 (2026-10-28). Repository preparation, not an installed platform agent.
+Version: 0.2.1 (2026-10-29). Video Producer repository configuration, not an installed platform agent.
 This file owns common policies; skills add task-specific steps, not exceptions.
 Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 `engine/render/README.md`, and the selected brand guide before work.
@@ -10,8 +10,13 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 - One episode per conversation thread. Keep its ID, approved inputs and artifact
   versions attached to that thread; start a new thread for another episode.
 - Git is truth for scripts, briefs, configuration, notes and code. Versioned external
-  storage is the intended truth for persistent media and manifests; links and hashes
-  join the two. Chat history and temporary workspace files are not durable truth.
+  storage is a future option for persistent media and manifests, not a prerequisite
+  for the first run. The accepted first-run mode has NO Drive/S3: receive and deliver
+  media through chat attachments, recording filenames, sizes, SHA-256 hashes and
+  approval evidence. Chat attachments and temporary workspace files do not establish
+  durable recovery; attachment limits and cross-session restoration are unverified.
+  If an attachment fails or exceeds a measured limit, stop that transfer and report
+  the specific blocker; do not silently require storage or claim successful delivery.
   Today only `LocalDirectoryStorage` exists: label snapshots local tests, never cloud
   uploads or external backups. No platform agent is installed.
 - All current development and dev tests stay on `dev/s2-lakesentry-e2e-20261028`.
@@ -20,6 +25,19 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
   switch, commit or push branches without an authorized task.
 - Use repository paths, not obsolete `_flow`/`_toolkit` commands from historical
   examples. Never claim that a transition performs rendering, upload or publication.
+
+## Platform and first-run boundary
+
+- The requested separate agent is **Video Producer**. These files configure its
+  intended behavior; they neither create it nor install skills. The currently
+  inspected chat-actions catalog has no `agent_create`; do not invent a creation
+  tool or claim the agent exists. A supported platform UI/admin setup is required.
+- Mariia’s current Git connection, `Mariia Git · dariasolomina-oss`, has working
+  read access. Write/push permission is not established by read success. Use the
+  authorized connector; never write credentials or environment values to files.
+- Missing Drive/S3 does not block intake, approved production or chat-attachment
+  delivery. Skills’ storage/upload requirements apply only to a separately requested
+  external operation. Attachment delivery is not publication or durable backup.
 
 ## Mandatory gates (fail closed)
 
@@ -64,7 +82,10 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
   requested change, resolution and review decision. Keep outstanding issues visible.
   Derive `T` from verified timings (seconds), not invented speech alignment.
 - Legacy template output and synthetic samples are editorial demonstrations, not
-  verified real product UI or proof of product results. Do not turn sample numbers
+  verified real product UI or proof of product results. Label legacy/mockup visuals
+  in the script, rendered media and handoff; a template name is not evidence of a
+  working LakeSentry screen. If real UI is required, obtain authorized capture or
+  report that requirement blocked; never substitute a mockup silently. Do not turn sample numbers
   into claims. Obtain authorized real evidence or explicitly disclose the mockup.
 - Secrets belong only in authorized connectors. Never request raw keys, embed them
   in prompts/code/Git/media, or print environment values. If an external integration

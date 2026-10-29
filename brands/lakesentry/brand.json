@@ -1,7 +1,7 @@
 {
   "name": "LakeSentry",
   "site": "https://lakesentry.io",
-  "brandkit": "https://lakesentry.io/brandkit",
+  "brandkit": "https://lakesentry.io/brandkit/",
   "colors": {
     "page": "#FCFCFC",
     "ink": "#0F1729",
@@ -117,8 +117,8 @@
   "fonts": {
     "headline": "Outfit",
     "ui": "Plus Jakarta Sans",
-    "mono": "JetBrains Mono",
-    "caption": "Montserrat"
+    "mono": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+    "caption": "Plus Jakarta Sans"
   },
   "logo": {
     "light": "assets/logo/lakesentry-lockup-forlight-transparent-2400.png",
@@ -181,24 +181,8 @@
       "src": "assets/fonts/PlusJakartaSans[wght].ttf",
       "weight": "200 800",
       "style": "normal"
-    },
-    {
-      "family": "JetBrains Mono",
-      "src": "assets/fonts/JetBrainsMono[wght].ttf",
-      "weight": "100 800",
-      "style": "normal"
-    },
-    {
-      "family": "Montserrat",
-      "src": "assets/fonts/Montserrat[wght].ttf",
-      "weight": "100 900",
-      "style": "normal"
-    },
-    {
-      "family": "Montserrat",
-      "src": "assets/fonts/Montserrat-Italic[wght].ttf",
-      "weight": "100 900",
-      "style": "italic"
     }
-  ]
+  ],
+  "brand_rules_source": "https://lakesentry.io/brandkit/agents.md",
+  "brand_rules_checked_at": "2026-10-29"
 }

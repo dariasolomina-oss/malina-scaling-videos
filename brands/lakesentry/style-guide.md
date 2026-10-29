@@ -1,3 +1,5 @@
+> **Current brand authority (checked 2026-10-29):** [LakeSentry brandkit](https://lakesentry.io/brandkit/) and [source snapshot](brand-rules-source.md). New output uses Outfit and Plus Jakarta Sans only; code uses the system mono stack. Historical Montserrat / JetBrains Mono treatments below are deprecated and do not override the current brandkit or MVP subtitle policy. Existing legacy examples are not evidence of current product behavior.
+
 > **Historical guide, not a verified product specification.** The narrative below was inherited from earlier work and has not been revalidated here. For the current offline template contract, demo labels, local font loading and legacy limitations, see [templates/README.md](templates/README.md). Local `brand.json` is the build input; no online brandkit or product page is fetched during preparation. Historical “real numbers”, UI and product-bug claims below are not evidence and must not be republished without fresh source verification.
 
 # LakeSentry video style guide

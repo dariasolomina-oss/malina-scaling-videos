@@ -21,30 +21,33 @@ import pipeline
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--run', action='store_true', help='explicitly run real browser fixture')
+    p.add_argument('--duration', type=int, default=1, choices=range(1,31), metavar='1..30')
+    p.add_argument('--format', choices=('horizontal','vertical','both'), default='both')
+    p.add_argument('--draft-only', action='store_true')
     a = p.parse_args()
     if not a.run:
         p.error('--run required: this is an opt-in synthetic fixture, not a production episode')
     base = Path(tempfile.mkdtemp(prefix='malina-browser-smoke-'))
     report = dict(kind='synthetic_browser_smoke_NOT_production_approval', cases=[], directory=str(base))
-    for fmt in ('horizontal', 'vertical'):
+    for fmt in (('horizontal', 'vertical') if a.format=='both' else (a.format,)):
         ep = base/fmt
-        pipeline.init(ep, 'smoke-'+fmt, ROOT/'brands/lakesentry', fmt, 1, 'none', 'AUTOMATED TEST FIXTURE')
-        (ep/'script.md').write_text('# Synthetic smoke fixture\nShow the LakeSentry demo layout for one second. Not a production video.\n')
+        pipeline.init(ep, 'smoke-'+fmt, ROOT/'brands/lakesentry', fmt, a.duration, 'none', 'AUTOMATED TEST FIXTURE')
+        (ep/'script.md').write_text('# Synthetic smoke fixture\nShow the LakeSentry demo layout for the configured test duration. Not a production video.\n')
         content = json.loads((ROOT/'brands/lakesentry/examples/demo-content.json').read_text())
-        content['duration'] = 1
+        content['duration'] = a.duration
         episode.write_json(ep/'content.json', content)
         episode.load(ep)
         episode.approve(ep, 'script', 'AUTOMATED TEST FIXTURE ONLY', True)
         pipeline.build(ep)
-        for fps in (30, 60):
+        for fps in ((30,) if a.draft_only else (30,60)):
             if fps == 60:
                 episode.approve(ep, 'video', 'AUTOMATED TEST FIXTURE ONLY', True)
             start = time.monotonic()
-            pipeline.render(ep, fps=fps, chunk_frames=15, resume=True)
+            pipeline.render(ep, fps=fps, chunk_frames=120, resume=True)
             result = subprocess.run(['ffprobe', '-v', 'error', '-count_frames', '-show_streams', '-show_format', '-of', 'json', str(ep/'media/video.mp4')], check=True, capture_output=True, text=True)
             info = json.loads(result.stdout)
             video = next(s for s in info['streams'] if s['codec_type'] == 'video')
-            assert int(video['nb_read_frames']) == fps, video
+            assert int(video['nb_read_frames']) == fps*a.duration, video
             assert (video['width'], video['height']) == ((1920,1080) if fmt=='horizontal' else (1080,1920))
             state = episode.load(ep)
             assert state['status']=='review' and 'video' not in state['approvals']
