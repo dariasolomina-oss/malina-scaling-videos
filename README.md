@@ -61,3 +61,16 @@ Today `BRAND` drives the srt spelling fixes (`make_srt.py`), the transcription v
 ## Working in this repo
 
 Commit to a branch and open a pull request rather than pushing to `main`.
+
+## S2 development increment (not deployed)
+
+The opt-in SecondStack path is described in [docs/lakesentry-e2e.md](docs/lakesentry-e2e.md).
+Start with the actual [validation status and limitations](docs/technical-validation.md),
+then [platform setup](docs/s2-platform-setup.md). Development does not publish an agent,
+connect storage/TTS, grant approvals or merge into main.
+
+```sh
+cd engine/render && npm ci --ignore-scripts && cd ../..
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+node --test tests/test_render.test.js
+```

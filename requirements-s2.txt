@@ -1,0 +1,2 @@
+# MVP S2 uses Python >=3.10 standard library only; no pip dependencies.
+# episode.yaml is the JSON subset of YAML; arbitrary YAML is not supported.

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "timings.schema.json",
+  "title": "Normalized supplied word timing",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "unit",
+    "source",
+    "accuracy",
+    "words"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "unit": {
+      "const": "seconds"
+    },
+    "source": {
+      "enum": [
+        "words",
+        "whisper",
+        "elevenlabs"
+      ]
+    },
+    "accuracy": {
+      "const": "not_verified"
+    },
+    "words": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "text",
+          "start",
+          "end"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "start": {
+            "type": "number",
+            "minimum": 0
+          },
+          "end": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

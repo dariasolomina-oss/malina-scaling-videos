@@ -1,0 +1,6 @@
+const fs=require('fs');
+const safe=x=>{x=String(x);if(/[{};<>\r\n]/.test(x))throw new Error('Unsafe CSS value');return x;};
+const quote=x=>JSON.stringify(safe(x));
+function brandCSS(brand){let vars=[];function walk(obj,prefix){for(const [k,v]of Object.entries(obj||{})){const key=(prefix?prefix+'-':'')+k.replace(/[^a-zA-Z0-9_-]/g,'-');if(v&&typeof v==='object'&&!Array.isArray(v))walk(v,key);else if(typeof v==='string'||typeof v==='number')vars.push(`  --${key}: ${safe(v)};`);}}walk(brand.colors,'color');walk(brand.typography,'typography');if(!Array.isArray(brand.fonts))walk(brand.fonts,'font');
+ const fonts=(brand.font_faces||(Array.isArray(brand.fonts)?brand.fonts:[])).map(f=>{if(!f.family||!f.src)throw new Error('fonts require family and src');return `@font-face { font-family: ${quote(f.family)}; src: url(${quote(f.src)}); font-weight: ${safe(f.weight||400)}; font-style: ${safe(f.style||'normal')}; font-display: block; }`;});return fonts.join('\n')+'\n:root {\n'+vars.join('\n')+'\n}\n';}
+if(require.main===module){try{const css=brandCSS(JSON.parse(fs.readFileSync(process.argv[2],'utf8')));if(process.argv[3])fs.writeFileSync(process.argv[3],css);else process.stdout.write(css);}catch(e){console.error(e.message);process.exitCode=1;}}module.exports={brandCSS};

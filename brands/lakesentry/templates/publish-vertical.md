@@ -1,25 +1,30 @@
-# Publish: <video name> (vertical · YouTube Shorts / Reels / TikTok)
+# YouTube metadata: approved vertical video
 
-**File:** `<video>.mp4` (1080×1920, 14 s)
-**Cover:** `<video>-cover.jpg` (1080×1920, content inside the central 4:5 band)
-**Subtitles:** `lakesentry-calculator-teaser.en.srt`. No voiceover, so these mirror the on-screen text for accessibility. On TikTok/Reels, prefer the platform's auto-captions off, plus this file where uploads are supported.
-**Link to the long video:** set the full demo as the Short's *Related video* on YouTube.
+This is a STRUCTURE, not approved product copy. Do not reuse historical calculator
+claims, dates, prices or scene descriptions. Follow `skills/seo-publish/SKILL.md`.
 
-## Title (≤ 50 characters)
-What will Databricks cost you in 2027? 🧮
+## Accepted artifact
+- Episode / language / audience: fill from the current episode.
+- Approved video SHA-256 and script SHA-256: actual accepted bytes, not placeholders.
+- Format: vertical. Editorial title target about 50 characters; hard maximum 100.
 
-Alternatives:
-- No DBU math. No spreadsheets. No guesswork.
-- Your 2027 Databricks budget in 30 seconds
+## Recommended title
+Generate one title specific to this video's topic and search intent.
 
-## Description
-```
-No DBU math, no spreadsheets, no guesswork. Get a monthly Databricks cost range before the bill arrives.
-▶ Full 30-second walkthrough: <link to the long video>
-Try it: https://lakesentry.io/databricks-cost-calculator/
-#Databricks #FinOps #Shorts
-```
+## Two alternative titles
+Generate two useful alternatives without introducing new factual claims.
 
-## Notes
-- Keep the description to 3 lines; it collapses after about 100 characters on Shorts and Reels.
-- TikTok/Instagram don't make links clickable in captions: use "Link in bio" and put the calculator URL in the bio.
+## Ready-to-paste description
+First two lines: actual subject and viewer benefit, primary keyword naturally.
+Then: accurate summary, one relevant CTA with verified URL, optional useful hashtags.
+Preserve mockup/example-data disclosures. No fake savings, customer outcomes or UI.
+No invented timestamps; chapters only for suitable long-form videos with real scenes.
+
+## Evidence and editorial review
+Map description/title claims to the approved script and source references. Identify
+remaining human review. Do not claim rankings, CTR or semantic verification by code.
+
+## Save and deliver
+Agent generates copy. Export it through `engine/scripts/youtube_metadata.py` to
+`publish/youtube.json` and `publish/youtube.md`; deliver text + Markdown in chat.
+No YouTube upload, no `published` status, no Drive/S3 requirement.

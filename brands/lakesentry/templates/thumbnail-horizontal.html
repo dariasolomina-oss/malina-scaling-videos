@@ -1,27 +1,27 @@
 <!doctype html><html><head><meta charset="utf-8">
 <!-- YouTube thumbnail · 1280x720 · keep the bottom-right corner clear (duration badge) -->
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600&display=swap" rel="stylesheet">
+<!-- Local fonts and brand variables injected by prepare_page.py. -->
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{width:1280px;height:720px;overflow:hidden;position:relative;background:#FCFCFC;font-family:"Plus Jakarta Sans",sans-serif;color:#0F1729}
-.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(15,23,41,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,41,.06) 1px,transparent 1px);background-size:48px 48px}
-.halo{position:absolute;left:780px;top:330px;width:900px;height:700px;margin:-350px 0 0 -450px;background:radial-gradient(ellipse,rgba(9,80,195,.10),rgba(9,167,185,.05) 45%,transparent 70%)}
+body{width:1280px;height:720px;overflow:hidden;position:relative;background:var(--color-page);font-family:var(--font-ui),sans-serif;color:var(--color-ink)}
+.grid{position:absolute;inset:0;background-image:linear-gradient(var(--color-legacy-rgba_rgba_15_23_41_06) 1px,transparent 1px),linear-gradient(90deg,var(--color-legacy-rgba_rgba_15_23_41_06) 1px,transparent 1px);background-size:48px 48px}
+.halo{position:absolute;left:780px;top:330px;width:900px;height:700px;margin:-350px 0 0 -450px;background:radial-gradient(ellipse,var(--color-legacy-rgba_rgba_9_80_195_10),var(--color-legacy-rgba_rgba_9_167_185_05) 45%,transparent 70%)}
 .lock{position:absolute;left:58px;top:50px;height:42px}
-h1{position:absolute;left:54px;top:132px;font-family:Outfit,sans-serif;font-weight:800;font-size:124px;line-height:.98;letter-spacing:-.045em}
-h1 b{color:#0950C3;font-weight:800}
-.card{position:absolute;left:676px;top:150px;width:560px;background:#fff;border:1.5px solid #E1E7EF;border-radius:30px;padding:34px 38px 36px;box-shadow:0 30px 70px rgba(15,23,41,.16);transform:rotate(-2.5deg)}
-.lab{font-size:27px;color:#566376;font-weight:500}
-.val{font-family:Outfit,sans-serif;font-weight:800;font-size:90px;letter-spacing:-.045em;line-height:1.02;margin-top:6px;white-space:nowrap}
-.mo{font-family:Outfit,sans-serif;font-weight:600;font-size:34px;color:#0950C3;margin-top:2px}
+h1{position:absolute;left:54px;top:132px;font-family:var(--font-headline),sans-serif;font-weight:800;font-size:124px;line-height:.98;letter-spacing:-.045em}
+h1 b{color:var(--color-primary);font-weight:800}
+.card{position:absolute;left:676px;top:150px;width:560px;background:var(--color-on_primary);border:1.5px solid var(--color-border);border-radius:30px;padding:34px 38px 36px;box-shadow:0 30px 70px var(--color-legacy-rgba_rgba_15_23_41_16);transform:rotate(-2.5deg)}
+.lab{font-size:27px;color:var(--color-muted);font-weight:500}
+.val{font-family:var(--font-headline),sans-serif;font-weight:800;font-size:90px;letter-spacing:-.045em;line-height:1.02;margin-top:6px;white-space:nowrap}
+.mo{font-family:var(--font-headline),sans-serif;font-weight:600;font-size:34px;color:var(--color-primary);margin-top:2px}
 .bar{display:flex;gap:5px;height:16px;border-radius:8px;overflow:hidden;margin-top:26px}
-.chip{position:absolute;left:640px;top:520px;display:flex;align-items:center;gap:12px;background:#ECFDF5;border:2px solid #10B77F;color:#065F46;font-family:Outfit,sans-serif;font-weight:700;font-size:34px;padding:12px 26px 12px 16px;border-radius:999px;transform:rotate(-2.5deg)}
+.chip{position:absolute;left:640px;top:520px;display:flex;align-items:center;gap:12px;background:var(--color-legacy-hex_ecfdf5);border:2px solid var(--color-chart-sql);color:var(--color-legacy-hex_065f46);font-family:var(--font-headline),sans-serif;font-weight:700;font-size:34px;padding:12px 26px 12px 16px;border-radius:999px;transform:rotate(-2.5deg)}
 .cur{position:absolute;left:1118px;top:395px;width:74px}
-</style></head><body>
+</style></head><body><div style="position:absolute;top:12px;left:20px;z-index:99999;font:18px var(--font-ui);color:var(--color-muted);background:var(--color-page);padding:6px 10px">DEMO DATA · LEGACY RECONSTRUCTION · NOT VERIFIED PRODUCT UI</div>
 <div class="grid"></div><div class="halo"></div>
-<img class="lock" src="../assets/logo/lakesentry-lockup-forlight-transparent-2400.png">
+<img class="lock" src="assets/logo/lakesentry-lockup-forlight-transparent-2400.png">
 <h1>Databricks<br>cost in<br><b>3 steps</b></h1>
 <div class="card"><div class="lab">Estimated monthly cost</div><div class="val">$48K–$75K</div><div class="mo">per month</div>
-  <div class="bar"><div style="flex:31434;background:#2463EB"></div><div style="flex:14258;background:#10B77F"></div><div style="flex:7156;background:#AF57DB"></div><div style="flex:7650;background:#F59F0A"></div></div></div>
-<div class="chip"><svg width="34" height="34" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="#10B77F"/><path d="M7.5 13.5 11 17l7.5-8" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>No DBU math</div>
-<svg class="cur" viewBox="0 0 30 36"><path d="M3 2 3 28 10 22 15 33 20 31 15 20.5 24 20.5Z" fill="#0F1729" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+  <div class="bar"><div style="flex:31434;background:var(--color-chart-jobs)"></div><div style="flex:14258;background:var(--color-chart-sql)"></div><div style="flex:7156;background:var(--color-chart-interactive)"></div><div style="flex:7650;background:var(--color-chart-environment)"></div></div></div>
+<div class="chip"><svg width="34" height="34" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="var(--color-chart-sql)"/><path d="M7.5 13.5 11 17l7.5-8" stroke="var(--color-on_primary)" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>No DBU math</div>
+<svg class="cur" viewBox="0 0 30 36"><path d="M3 2 3 28 10 22 15 33 20 31 15 20.5 24 20.5Z" fill="var(--color-ink)" stroke="var(--color-on_primary)" stroke-width="2" stroke-linejoin="round"/></svg>
 </body></html>
