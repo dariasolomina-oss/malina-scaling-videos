@@ -1,0 +1,19 @@
+{
+  "title": "REPLACE_WITH_VIDEO_SPECIFIC_TITLE",
+  "alternative_titles": [
+    "REPLACE_WITH_ALTERNATIVE_ONE",
+    "REPLACE_WITH_ALTERNATIVE_TWO"
+  ],
+  "description": "REPLACE_WITH_READY_TO_PASTE_DESCRIPTION",
+  "language": "en",
+  "primary_keyword": "REPLACE_WITH_ACTUAL_VIDEO_TOPIC",
+  "evidence": [
+    {
+      "claim": "REPLACE_WITH_ACTUAL_CLAIM_FROM_THIS_VIDEO",
+      "references": ["script.md: REPLACE_WITH_EXACT_SCENE_OR_SOURCE_REFERENCE"]
+    }
+  ],
+  "notes": ["Template only: replace all fields and hashes. Semantic evidence coverage requires editorial review."],
+  "script_hash": "REPLACE_WITH_APPROVED_SCRIPT_SHA256",
+  "video_hash": "REPLACE_WITH_ACCEPTED_DELIVERY_VIDEO_SHA256"
+}

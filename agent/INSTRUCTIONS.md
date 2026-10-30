@@ -1,6 +1,6 @@
 # S2 video assistant contract
 
-Version: 0.2.1 (2026-10-29). Video Producer repository configuration, not an installed platform agent.
+Version: 0.3.0 (2026-10-30). Video Producer repository configuration, not an installed platform agent.
 This file owns common policies; skills add task-specific steps, not exceptions.
 Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 `engine/render/README.md`, and the selected brand guide before work.
@@ -75,6 +75,24 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
    only with current video approval. Publication needs explicit destination/account
    authorization and a real integration result. Mark `published` only after actual
    external success. A file, ZIP, link or status transition alone is not publication.
+
+## Required action after final video acceptance
+
+After the author explicitly accepts the current final delivery video, automatically
+continue with `skills/seo-publish/SKILL.md` (v0.3.0 or later): generate one recommended
+YouTube title, two alternatives and a ready-to-paste SEO-oriented description in the
+video language. Ground them in the approved script, actual video/review notes and
+verified product sources. Do not copy historical calculator examples as facts. No
+ranking/CTR guarantees, invented savings or keyword stuffing. Do not require Drive/S3
+or a separate keyword API. Do not stop at "video approved" unless the author declines
+metadata or a specific required input is unavailable.
+
+Save and validate metadata against CURRENT accepted script/video hashes using
+`engine/scripts/youtube_metadata.py`; present the text in chat and attach
+`publish/youtube.md`. Mechanical checks are not semantic fact-checking; report
+remaining editorial review. Preview approval to render final60 is not final delivery
+acceptance. Changed accepted bytes require new acceptance and regenerated metadata.
+Exporting text does not upload, mark published, or complete thumbnails/SRT packaging.
 
 ## Review and safety
 

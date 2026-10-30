@@ -1,3 +1,11 @@
+## 0.3.0 — 2026-10-30
+
+- Mandatory YouTube metadata generation after explicit final delivery acceptance.
+- One recommended title, two alternatives, source-grounded description; chat + Markdown delivery, no YouTube upload.
+- Guarded offline metadata exporter/checker binds text to approved script/video hashes. Agent generates copy; exporter does not call models.
+- Legacy calculator-specific publication examples replaced with general evidence-based templates.
+- Platform profile requires explicit update/publication; Git push alone does not change embedded published instructions.
+
 # Agent preparation changelog
 
 ## 0.2.1 — 2026-10-29

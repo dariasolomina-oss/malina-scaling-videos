@@ -1,38 +1,30 @@
-# Publish: <video name> (horizontal · YouTube / LinkedIn)
+# YouTube metadata: approved horizontal video
 
-**File:** `<video>.mp4` (1920×1080, 33 s)
-**Thumbnail:** `<video>-thumbnail.jpg` (1280×720)
-**Subtitles:** `lakesentry-calculator-demo.en.srt` (upload as English captions; don't burn in)
+This is a STRUCTURE, not approved product copy. Do not reuse historical calculator
+claims, dates, prices or scene descriptions. Follow `skills/seo-publish/SKILL.md`.
 
-## Title (≤ 70 characters)
-Estimate your Databricks bill in 3 steps | LakeSentry calculator
+## Accepted artifact
+- Episode / language / audience: fill from the current episode.
+- Approved video SHA-256 and script SHA-256: actual accepted bytes, not placeholders.
+- Format: horizontal. Editorial title target about 70 characters; hard maximum 100.
 
-Alternatives:
-- How to estimate your monthly Databricks cost (no DBU math) | LakeSentry
-- Databricks cost calculator: a monthly budget range in 30 seconds | LakeSentry
+## Recommended title
+Generate one title specific to this video's topic and search intent.
 
-## Description
-```
-Struggling to estimate your Databricks budget? Here's how to get a monthly cost range in three steps, without touching a DBU.
-Try the free calculator: https://lakesentry.io/databricks-cost-calculator/
+## Two alternative titles
+Generate two useful alternatives without introducing new factual claims.
 
-In this video:
-1. Start from the closest scenario, then pick your cloud (AWS, Azure or GCP)
-2. Toggle the workloads you actually run: scheduled jobs, SQL analytics, notebooks, streaming
-3. Size each one: jobs, runs per day, cluster size
-Then read the breakdown and copy or share the estimate with whoever asked.
+## Ready-to-paste description
+First two lines: actual subject and viewer benefit, primary keyword naturally.
+Then: accurate summary, one relevant CTA with verified URL, optional useful hashtags.
+Preserve mockup/example-data disclosures. No fake savings, customer outcomes or UI.
+No invented timestamps; chapters only for suitable long-form videos with real scenes.
 
-What you get:
-• A monthly range at September 2026 list rates
-• Databricks DBUs and cloud VM costs, split per workload
-• The line a price list won't show you: idle clusters, retries and autoscaling overshoot
+## Evidence and editorial review
+Map description/title claims to the approved script and source references. Identify
+remaining human review. Do not claim rankings, CTR or semantic verification by code.
 
-The calculator runs in your browser. No sign-up; your inputs stay on the page.
-LakeSentry is a Databricks cost observability platform. Start free: https://lakesentry.io
-
-#Databricks #FinOps #CloudCost
-```
-
-## Notes
-- No chapters: YouTube needs ≥3 chapters, each ≥10 s, starting at 0:00, and this video is too short.
-- LinkedIn: paste the first two lines plus the link as the post text, upload the SRT as captions, and put the link in the first comment if reach matters.
+## Save and deliver
+Agent generates copy. Export it through `engine/scripts/youtube_metadata.py` to
+`publish/youtube.json` and `publish/youtube.md`; deliver text + Markdown in chat.
+No YouTube upload, no `published` status, no Drive/S3 requirement.
