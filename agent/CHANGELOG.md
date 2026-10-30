@@ -1,3 +1,18 @@
+## 0.3.2 — 2026-10-30
+
+- Added the LakeSentry content board as optional supplemental/editorial context,
+  not a required topic source or restriction on original ideas. Relevant posts may
+  complement docs/user topics; no full-board read or optional-access blocker.
+- Kept official-doc verification for product-function claims, recorded conflicts
+  and human escalation, current script/video approvals and post-final SEO behavior.
+- Added read-only/untrusted-page boundaries, minimal source provenance and privacy;
+  card-only reading is not full-brief reading, post approval is not script approval,
+  and schedules are not publication evidence.
+- Distinguished observed Project Assistant access without login from the pending
+  Video Producer access test. No platform/browser actions or access test performed.
+- Documentation only in this changelog, INSTRUCTIONS.md, demo-video/SKILL.md,
+  product-research.md and research template; no engine or platform change.
+
 ## 0.3.1 — 2026-10-30
 
 - Added a source-first editorial gate: read the product registry and actual relevant

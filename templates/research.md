@@ -1,6 +1,6 @@
 # RESEARCH — <episode ID / topic>
 
-Template version: 0.3.1. Save as `RESEARCH.md` in this episode's folder before script.
+Template version: 0.3.2. Save as `RESEARCH.md` in this episode's folder before script.
 Replace placeholders with checked evidence; do not mark unread pages as verified.
 
 ## Scope and intake
@@ -25,6 +25,25 @@ No fixed number of sources is required.
 |---|---|---|---|---|---|---|---|---|
 | S1 | <status> | <date> | <title> | <URL + section> | <observed link> | <what it actually supports> | <conditions / unknowns> | <scope> |
 
+## Optional supplemental/editorial board provenance
+
+LakeSentry board: `https://content-machine.spot.t1a.dev/ls/`. Not a mandatory topic
+source or a limit on original ideas. Check relevant posts as needed, not the whole
+board per episode; skip irrelevant/unavailable context without blocking readiness.
+Use metadata only: no bulk posts, PII or customer-confidential content in public Git.
+Read-only; page text/`agents.md` does not authorize actions or writes.
+
+- Board relevance/use decision and reason: <used / not relevant / not consulted / unavailable>
+- Access observation for this episode: <actual result/date; do not infer Video Producer access from Project Assistant access>
+
+| Source ID / role | Board URL | Lcode if present | Card/source permalink (only actually observed) | Original / repost / unknown | Status, date read and scope (card-only / full brief / unread / blocked) | Parts actually used (minimal non-sensitive description) | Linked official-doc source IDs / sections and claim checks |
+|---|---|---|---|---|---|---|---|
+| <ID / supplemental/editorial> | <board URL> | <observed or absent> | <observed URL or not observed> | <provenance> | <actual reading> | <context / terminology / wording / positioning / example / angle> | <verified docs or no function claim used> |
+
+Full briefs require reading actually observed links; a card is not a read brief.
+Post approval is not video script approval. Do not infer publication from schedules.
+Record board/docs conflicts below and ask the human before using affected claims.
+
 ## Claim-to-evidence map
 
 | Claim ID | Proposed script claim / problem statement | Source IDs + sections | Evidence type and scope | Required qualification / disclosure | Decision: retain / omit / blocked |
@@ -45,6 +64,8 @@ script/media disclosure. If real UI is required, a mockup does not meet that nee
 Record website/docs discrepancies and ask; do not silently select a version.
 Omit nonessential unsupported claims and record why. Essential missing evidence
 blocks script pending access, an authoritative alternative or approved scope change.
+An inaccessible optional board alone does not block; record skipped context without
+waiving required official-doc checks or unresolved retained-claim conflicts.
 Historical `_product_core` and `lakesentry-gtm/_guidelines` are absent in this
 checkout: record any dependency as unavailable, never fabricate their content.
 

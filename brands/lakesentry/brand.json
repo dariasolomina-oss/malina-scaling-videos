@@ -173,7 +173,10 @@
     "source_registry": "sources.json",
     "documentation_url": "https://docs.lakesentry.io/",
     "website_url": "https://lakesentry.io/",
-    "reviewed_at": "2026-10-30"
+    "reviewed_at": "2026-10-30",
+    "supplemental_context_urls": [
+      "https://content-machine.spot.t1a.dev/ls/"
+    ]
   },
   "voice": null,
   "font_faces": [

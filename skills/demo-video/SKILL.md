@@ -1,7 +1,7 @@
 ---
 name: demo-video
 description: Orchestrate a source-grounded product demo from complete intake through human script review, guarded preview30, final60 and delivery acceptance.
-version: 0.3.1
+version: 0.3.2
 ---
 
 # Demo video
@@ -19,6 +19,13 @@ waive its gates. CLI availability: `../../docs/s2-platform-setup.md`.
    website/docs conflicts with the human; omit unsupported nonessential claims or
    stop and ask when essential evidence is blocked. Do not invent missing content.
    No fixed source quota applies; 5–7 candidate topics are optional, not 5–7 docs.
+   LakeSentry's `https://content-machine.spot.t1a.dev/ls/` is optional supplemental
+   editorial context, never a mandatory topic source or limit on original ideas.
+   Check only relevant posts as needed; combine with docs/user topic or skip them.
+   Follow the research guide's read-only/privacy rules and record actual reading
+   and provenance; optional board unavailability does not block a ready episode.
+   Verify product-function claims against docs and record conflicts for the human.
+   Post approval is not script approval; schedule is not publication evidence.
 2. Only after the intake/research gate is complete, apply `video-format`; fill `../../templates/script.md`. Include full narration,
    ordered scenes, evidence references, sample disclosures and unresolved questions.
    Run `script_check.py` as an editorial aid, not approval.

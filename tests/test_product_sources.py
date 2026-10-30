@@ -37,6 +37,23 @@ class ProductSourcesTests(unittest.TestCase):
                 self.assertTrue(source['sections_read'])
                 self.assertRegex(source['extracted_text_sha256'], r'^[0-9a-f]{64}$')
 
+    def test_content_board_is_supplemental_and_actor_access_is_separate(self):
+        data = json.loads((BRAND/'sources.json').read_text())
+        board = next(source for source in data['sources']
+                     if source['url'] == 'https://content-machine.spot.t1a.dev/ls/')
+        self.assertEqual(board['kind'], 'supplemental_editorial_context')
+        self.assertIs(board['required'], False)
+        self.assertIs(board['topic_origin_required'], False)
+        self.assertIs(board['read_only'], True)
+        actors = {check['actor'] for check in board['access_checks']}
+        self.assertIn('Project Assistant', actors)
+        self.assertIn('Video Producer', actors)
+        self.assertTrue(board['verification_scope'])
+        product = json.loads((BRAND/'brand.json').read_text())['product']
+        self.assertIn(board['url'], product['supplemental_context_urls'])
+        self.assertIn(board['url'], (ROOT/'docs/product-research.md').read_text())
+        self.assertIn('S13', (BRAND/'product.md').read_text())
+
     def test_brief_source_ids_resolve_and_research_gate_exists(self):
         data = json.loads((BRAND/'sources.json').read_text())
         ids = {s['id'] for s in data['sources']}

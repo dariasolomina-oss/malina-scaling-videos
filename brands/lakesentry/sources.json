@@ -209,6 +209,42 @@
       "checked_at": null,
       "discovered_from": "https://lakesentry.io/",
       "verification_scope": "Not entered or recorded during this task. No live UI verification claimed."
+    },
+    {
+      "id": "S13",
+      "title": "LakeSentry LinkedIn content board — Content Machine",
+      "url": "https://content-machine.spot.t1a.dev/ls/",
+      "kind": "supplemental_editorial_context",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "required": false,
+      "topic_origin_required": false,
+      "read_only": true,
+      "allowed_uses": [
+        "relevant_context",
+        "terminology",
+        "messaging",
+        "examples",
+        "framing",
+        "optional_topic_inspiration"
+      ],
+      "verification_scope": "Project Assistant read visible board cards in an existing browser session. Not a public-access claim, not product authority, not proof of post publication or a full brief read. Product facts must be verified with current official documentation.",
+      "access_checks": [
+        {
+          "actor": "Project Assistant",
+          "date": "2026-10-30",
+          "outcome": "Visible board cards read in existing browser session without an additional login prompt; authentication state may already exist."
+        },
+        {
+          "actor": "Video Producer",
+          "date": "2026-10-30",
+          "outcome": "blocked_authentication",
+          "https_result": "401 Unauthorized",
+          "browser_result": "Redirected to ControlTower Sign in; no content or L-codes accessible.",
+          "login_performed": false
+        }
+      ],
+      "privacy": "Do not bulk-copy post bodies, author data, internal briefs or customer details into this public repository. Record minimal provenance in the authorized episode context."
     }
   ]
 }

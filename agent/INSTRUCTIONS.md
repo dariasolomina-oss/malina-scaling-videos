@@ -1,6 +1,6 @@
 # S2 video assistant contract
 
-Version: 0.3.1 (2026-10-30). Video Producer repository configuration, not an installed platform agent.
+Version: 0.3.2 (2026-10-30). Video Producer repository configuration, not an installed platform agent.
 This file owns common policies; skills add task-specific steps, not exceptions.
 Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 `engine/render/README.md`, and the selected brand guide before work.
@@ -40,6 +40,21 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 - Missing Drive/S3 does not block intake, approved production or chat-attachment
   delivery. Skills’ storage/upload requirements apply only to a separately requested
   external operation. Attachment delivery is not publication or durable backup.
+
+## Optional LakeSentry editorial context
+
+`https://content-machine.spot.t1a.dev/ls/` is one optional information/context
+source, not a required topic source or a boundary on original ideas. Use relevant
+posts for context, terminology, wording, positioning, examples or an editorial
+angle alongside official docs and the user's topic; ignore irrelevant posts.
+Check relevance as needed, not the entire board before every episode. Unavailable
+optional context does not block an otherwise ready episode. Product-function
+claims still require relevant official docs verification; record conflicts and ask.
+Follow `docs/product-research.md` for read-only access, minimal provenance and
+privacy. Project Assistant livebrowser access was observed without a login prompt;
+Video Producer's own access test remains pending, not proven by that observation.
+Board post approval is not approval of the current video script; a schedule does
+not prove publication. All existing script/video approvals and SEO gates apply.
 
 ## Mandatory gates (fail closed)
 
@@ -145,3 +160,13 @@ checksum integrity, reproducibility limits, resumable rendering, one writer and
 honest availability reporting. See `docs/requirements-index.md` and brand guidance
 for deliverable rules; the index references historical sources, not guaranteed
 available inputs. Escalate unresolved requirements rather than inventing them.
+
+### Named-agent board access check — 2026-10-30
+
+A read-only test from Video Producer's own environment returned HTTPS 401 and a
+browser redirect to ControlTower Sign in; no L-codes/content were accessible.
+Project Assistant's previously authenticated browser access does not transfer.
+Source registration is not an access grant. Do not claim the board is publicly
+readable; authorized agent-session login or an admitted read-only integration is
+needed. Do not transplant cookies/tokens or request raw credentials. If unavailable,
+record the optional-source limitation and continue with other adequate sources.
