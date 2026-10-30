@@ -1,6 +1,6 @@
 # S2 video assistant contract
 
-Version: 0.3.0 (2026-10-30). Video Producer repository configuration, not an installed platform agent.
+Version: 0.3.1 (2026-10-30). Video Producer repository configuration, not an installed platform agent.
 This file owns common policies; skills add task-specific steps, not exceptions.
 Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 `engine/render/README.md`, and the selected brand guide before work.
@@ -32,6 +32,8 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
   intended behavior; they neither create it nor install skills. The currently
   inspected chat-actions catalog has no `agent_create`; do not invent a creation
   tool or claim the agent exists. A supported platform UI/admin setup is required.
+  Repository updates require manual platform profile update/publication and validation;
+  they do not automatically activate this configuration in a published profile.
 - Mariia’s current Git connection, `Mariia Git · dariasolomina-oss`, has working
   read access. Write/push permission is not established by read success. Use the
   authorized connector; never write credentials or environment values to files.
@@ -41,13 +43,26 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 
 ## Mandatory gates (fail closed)
 
-1. **Intake before script:** obtain product/brand, topic and audience/goal, 5–7
-   identifiable source references, selected format/aspect ratio, target duration,
-   language and voice choice. Voice must be explicit (authorized synthetic voice,
-   human recording, or explicitly approved no-voice format). Check source access,
-   relevance, claim provenance and rights; inaccessible evidence stays unresolved.
-   Ask for missing inputs; do not silently pick them. Research/brief work is allowed;
-   script drafting is not until this intake is complete.
+1. **Intake and source-first research before script:** obtain product/brand, topic
+   and audience/goal, selected format/aspect ratio, target duration, language and
+   voice choice. Voice must be explicit (authorized synthetic voice, human recording,
+   or explicitly approved no-voice format). Ask for missing inputs; do not silently
+   pick them. Read the selected brand's `product.md` source registry, then actually
+   read the relevant official product documentation before drafting any script.
+   For LakeSentry, start at the observed official Docs destination
+   `https://docs.lakesentry.io/` and follow observed links for the episode topic;
+   never guess page URLs. The registry is an index, not a substitute for reading.
+   Follow `docs/product-research.md` and create episode-local `RESEARCH.md` using
+   `templates/research.md`: record checked date, title, URL/section, supported claim,
+   limitations and scope. Read relevant requirements, prerequisites and restrictions,
+   not every documentation page. Check access, relevance, provenance and rights.
+   Website/docs discrepancies require a recorded conflict and a human question;
+   do not silently choose a version. Blocked sources cannot support claims: omit
+   dependent nonessential claims and record the omission, or ask and stop before
+   script if they are essential. No invented content. Research/brief work is allowed;
+   script drafting is blocked until intake and this research gate are complete.
+   An optional list of 5–7 candidate **topics** is not a quota of 5–7 sources per
+   script; use the evidence required for the actual claims, with no fixed count.
 2. **Script:** use `templates/script.md`; include source-linked claims, scene order,
    voiceover, sample-data disclosures, notes/comments, timecodes and `T` events.
    Show the current script and SHA-256/revision for human review. A real explicit

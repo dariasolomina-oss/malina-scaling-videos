@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "product": "LakeSentry",
+  "reviewed_at": "2026-10-30",
+  "documentation_root": "https://docs.lakesentry.io/",
+  "baseline_git_commit": "ab5782ba709ec58b5c7b744d94fff9c207aa3486",
+  "policy": "Read topic-relevant pages anew for each episode and record claims/limits in RESEARCH.md. Discovery is not reading; reading is not live-product verification.",
+  "sources": [
+    {
+      "id": "S01",
+      "title": "What is LakeSentry for Databricks Cost Optimization | LakeSentry Docs",
+      "url": "https://docs.lakesentry.io/getting-started/what-is-lakesentry/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "http_status": 200,
+      "page_last_updated": "2026-10-06",
+      "sections_read": [
+        "What LakeSentry does",
+        "Who LakeSentry is for",
+        "What LakeSentry connects to",
+        "Core principles"
+      ],
+      "discovered_from": "https://docs.lakesentry.io/",
+      "extracted_text_sha256": "ba7e5e7c7daafc3798e553987204b1f242836f86db6da8cd2d4eedad73dd606b",
+      "verification_scope": "Public documentation read; not live tenant or feature execution verification."
+    },
+    {
+      "id": "S02",
+      "title": "LakeSentry Quick Start for Databricks Cost Monitoring | LakeSentry Docs",
+      "url": "https://docs.lakesentry.io/getting-started/quick-start/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "http_status": 200,
+      "page_last_updated": "2026-10-06",
+      "sections_read": [
+        "Prerequisites",
+        "Step 2: Connect Databricks",
+        "Step 3: Add additional connectors if needed",
+        "Step 4: Wait for initial data"
+      ],
+      "discovered_from": "https://docs.lakesentry.io/",
+      "extracted_text_sha256": "df61c404860dc78d19e5e2ed17082d0c7e15ba53d7903a7077abe0672c6f23ac",
+      "verification_scope": "Public documentation read; not live tenant or feature execution verification."
+    },
+    {
+      "id": "S03",
+      "title": "How LakeSentry Works for Databricks Cost Intelligence | LakeSentry Docs",
+      "url": "https://docs.lakesentry.io/concepts/how-lakesentry-works/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "http_status": 200,
+      "page_last_updated": "2026-10-06",
+      "sections_read": [
+        "Deployment model",
+        "Data sources",
+        "Extraction modes",
+        "Sequential pipeline",
+        "Freshness expectations"
+      ],
+      "discovered_from": "https://docs.lakesentry.io/",
+      "extracted_text_sha256": "cec86021c056ac8b4ca5ea56afb8a0aabdaed6794921b45ed010ecc9f718a80a",
+      "verification_scope": "Public documentation read; not live tenant or feature execution verification."
+    },
+    {
+      "id": "S04",
+      "title": "Databricks Cost Explorer | LakeSentry Docs",
+      "url": "https://docs.lakesentry.io/features/cost-explorer/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "http_status": 200,
+      "page_last_updated": "2026-10-06",
+      "sections_read": [
+        "Breakdown",
+        "Compute Types",
+        "Principals",
+        "Tables",
+        "Matrix",
+        "Filters",
+        "Cost display",
+        "Deep linking"
+      ],
+      "discovered_from": "https://docs.lakesentry.io/",
+      "extracted_text_sha256": "5327410050c71ecf1b4f37c24568ff29261499bdb48359cfbc3c061d34beee4d",
+      "verification_scope": "Public documentation read; not live tenant or feature execution verification."
+    },
+    {
+      "id": "S05",
+      "title": "Databricks Cost Insights & Optimization Actions | LakeSentry Docs",
+      "url": "https://docs.lakesentry.io/features/insights-actions/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "http_status": 200,
+      "page_last_updated": "2026-10-06",
+      "sections_read": [
+        "Insight detail",
+        "Choosing a response",
+        "How findings update and close",
+        "Common questions"
+      ],
+      "discovered_from": "https://docs.lakesentry.io/",
+      "extracted_text_sha256": "2230cbbdc8e40109f665dc349211290446b5429c44f25d057e9939aaa14aad8f",
+      "verification_scope": "Public documentation read; not live tenant or feature execution verification."
+    },
+    {
+      "id": "S06",
+      "title": "Databricks Cost Attribution & Confidence Tiers | LakeSentry Docs",
+      "url": "https://docs.lakesentry.io/concepts/cost-attribution/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "http_status": 200,
+      "page_last_updated": "2026-10-06",
+      "sections_read": [
+        "Evaluation flow",
+        "Attribution paths",
+        "Confidence tiers",
+        "Attribution modes"
+      ],
+      "discovered_from": "https://docs.lakesentry.io/",
+      "extracted_text_sha256": "acaa0e7540773097cf313d84ab215c1b80cb8d5c27ec9c58c28e2cf2bfb7c965",
+      "verification_scope": "Public documentation read; not live tenant or feature execution verification."
+    },
+    {
+      "id": "S07",
+      "title": "Databricks Cost Allocation and Chargeback | LakeSentry Docs",
+      "url": "https://docs.lakesentry.io/features/cost-allocation/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "http_status": 200,
+      "page_last_updated": "2026-10-06",
+      "sections_read": [
+        "Overview",
+        "Rules",
+        "Resources",
+        "Projects",
+        "Tags",
+        "Evaluation order",
+        "Best practices"
+      ],
+      "discovered_from": "https://docs.lakesentry.io/",
+      "extracted_text_sha256": "63a5a5800ffaf449bf5aeea11b3559e2044b2daed585144a8bfc368bbb4b8280",
+      "verification_scope": "Public documentation read; not live tenant or feature execution verification."
+    },
+    {
+      "id": "S08",
+      "title": "Databricks Data Freshness and Pipeline Status | LakeSentry Docs",
+      "url": "https://docs.lakesentry.io/troubleshooting/data-freshness/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "http_status": 200,
+      "page_last_updated": "2026-10-06",
+      "sections_read": [
+        "Expected freshness by data type",
+        "Data Sync schedule tuning",
+        "Extraction settings",
+        "Understanding lag"
+      ],
+      "discovered_from": "https://docs.lakesentry.io/",
+      "extracted_text_sha256": "b1251fbf463a60697f16f1a9aa4238bf1d5f4ac71c0e26d732bf2c9a30d8553c",
+      "verification_scope": "Public documentation read; not live tenant or feature execution verification."
+    },
+    {
+      "id": "S09",
+      "title": "LakeSentry official website",
+      "url": "https://lakesentry.io/",
+      "kind": "marketing",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "discovered_links": [
+        "https://docs.lakesentry.io/",
+        "https://lakesentry.io/pricing/",
+        "https://demo.lakesentry.io/"
+      ],
+      "verification_scope": "Public positioning and discovery only. Displayed UI figures are not customer evidence."
+    },
+    {
+      "id": "S10",
+      "title": "LakeSentry documentation index",
+      "url": "https://docs.lakesentry.io/",
+      "kind": "documentation_index",
+      "status": "read",
+      "checked_at": "2026-10-30",
+      "discovered_from": "https://lakesentry.io/",
+      "verification_scope": "Index/entry point, not sufficient evidence for detailed feature behavior."
+    },
+    {
+      "id": "S11",
+      "title": "LakeSentry pricing",
+      "url": "https://lakesentry.io/pricing/",
+      "kind": "pricing",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "discovered_from": "https://lakesentry.io/",
+      "verification_scope": "Read current page and relevant plan details before quoting price/limits."
+    },
+    {
+      "id": "S12",
+      "title": "LakeSentry public demo",
+      "url": "https://demo.lakesentry.io/",
+      "kind": "demo",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "discovered_from": "https://lakesentry.io/",
+      "verification_scope": "Not entered or recorded during this task. No live UI verification claimed."
+    }
+  ]
+}

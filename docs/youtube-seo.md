@@ -41,7 +41,11 @@ verified. `human_review_required` is always true. Export does not advance lifecy
 Each output replaces atomically; two-file installation is not transactional. One
 writer per episode; hostile concurrent filesystem mutations are out of scope.
 
-## Product information finding
+## Product information finding (historical; superseded 2026-10-30)
+
+The placeholder described below was replaced by the source-backed current
+`brands/lakesentry/product.md` and `sources.json` in version 0.3.1. The following
+paragraph records the original SEO-task finding, not the current product brief.
 
 `brands/lakesentry/product.md` currently remains the historical placeholder headed
 `Product information status`. It has no populated positioning/features/verified

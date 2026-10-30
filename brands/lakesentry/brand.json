@@ -167,7 +167,14 @@
     ]
   ],
   "demo_login_url": "https://demo.lakesentry.io/login",
-  "product": null,
+  "product": {
+    "name": "LakeSentry",
+    "brief": "product.md",
+    "source_registry": "sources.json",
+    "documentation_url": "https://docs.lakesentry.io/",
+    "website_url": "https://lakesentry.io/",
+    "reviewed_at": "2026-10-30"
+  },
   "voice": null,
   "font_faces": [
     {

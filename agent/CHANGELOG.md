@@ -1,3 +1,19 @@
+## 0.3.1 — 2026-10-30
+
+- Added a source-first editorial gate: read the product registry and actual relevant
+  official docs before script, with required episode-local `RESEARCH.md`.
+- Added the research template and guidance: checked dates, titles, observed URLs and
+  sections, claim mapping, requirements, limitations, scope and current-page rechecks.
+- Replaced the fixed 5–7-source requirement with sufficient claim-specific evidence;
+  5–7 candidate topics remain optional, not a documentation quota.
+- Added explicit website/docs conflict escalation, blocked-source omissions or
+  essential-evidence stops, brandkit/sample-data boundaries and absent historical
+  `_product_core` / GTM-guidelines handling. No fabricated source content.
+- Retained all human approval gates and v0.3.0 SEO policy. Platform rollout remains
+  manual; these repository changes do not activate a published agent profile.
+- Documentation only in INSTRUCTIONS.md, demo-video/SKILL.md, research template,
+  product-research.md and this changelog; no engine or platform action.
+
 ## 0.3.0 — 2026-10-30
 
 - Mandatory YouTube metadata generation after explicit final delivery acceptance.
