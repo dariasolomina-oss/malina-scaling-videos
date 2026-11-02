@@ -5,18 +5,23 @@ import hashlib
 import json
 import re
 from pathlib import Path
+from language_policy import require_script
 
 
 def check(text, max_words=180):
     words = re.findall(r"\b[\w’'-]+\b", text, re.UNICODE)
     errors = []
+    try:
+        require_script(text)
+    except ValueError:
+        errors.append('english_output_policy')
     if not words: errors.append('empty_script')
     if len(words) > max_words: errors.append('word_limit_exceeded')
     if re.search(r'\b(TODO|TBD|FIXME)\b|\{\{.*?\}\}', text, re.I): errors.append('unresolved_placeholder')
     if any(ord(c) < 32 and c not in '\n\r\t' for c in text): errors.append('control_character')
     return dict(schema_version=1, script_hash=hashlib.sha256(text.encode('utf-8')).hexdigest(),
                 machine=dict(passed=not errors, errors=errors, word_count=len(words), max_words=max_words),
-                editorial=dict(status='pending', checks=['facts_and_claims', 'brand_and_tone', 'spoken_delivery', 'legal_and_rights']),
+                editorial=dict(status='pending', checks=['english_language_and_audio', 'facts_and_claims', 'brand_and_tone', 'spoken_delivery', 'legal_and_rights']),
                 grants_approval=False)
 
 

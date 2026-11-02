@@ -4,8 +4,9 @@ These are JSON Schema draft 2020-12 documents, not installed runtime validators.
 Python runtime performs critical gates and filesystem/timing checks without dependencies.
 `episode.yaml` is UTF-8 **JSON**, a YAML-compatible subset. General YAML is rejected.
 
-- `episode.schema.json`: required episode fields, French (`fr`) as the create default;
-  content/title/script may contain Unicode. `revision` is a monotonically increasing
+- `episode.schema.json`: required episode fields, English-only language (`en`) required, not merely the create default;
+  output prose is checked by the runtime language policy. Unicode punctuation
+  and legal authorship names remain supported. Semantic English review is required. `revision` is a monotonically increasing
   working-copy script revision; snapshot UUIDs are separate. Approvals bind the exact
   script SHA-256 and revision; video approval additionally binds video SHA-256.
 - `manifest.schema.json`: full persistent file snapshot, paths relative to `files/`,

@@ -27,7 +27,7 @@ class PipelineTests(unittest.TestCase):
 
     def approve_script(self):
         # Synthetic approval only in temporary test fixtures, not a real production approval.
-        (self.root/'script.md').write_text('Bonjour LakeSentry.\n', encoding='utf-8')
+        (self.root/'script.md').write_text('Hello LakeSentry.\n', encoding='utf-8')
         episode.load(self.root)
         episode.approve(self.root, 'script', 'TEST FIXTURE', True)
 
@@ -47,7 +47,7 @@ class PipelineTests(unittest.TestCase):
         result = subprocess.run([sys.executable, str(ROOT/'engine/scripts/pipeline.py'),
             'init', '--episode', str(self.root), '--id', 'fr-test', '--brand',
             str(ROOT/'brands/lakesentry'), '--format', 'vertical', '--duration', '1',
-            '--voice', 'none', '--author', 'Auteur'], capture_output=True, text=True)
+            '--voice', 'none', '--author', 'Author'], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         state = episode.load(self.root)
         self.assertEqual(state['metadata']['language'], 'en')
@@ -174,7 +174,7 @@ class PipelineTests(unittest.TestCase):
         subprocess.run(['ffmpeg', '-v', 'error', '-f', 'lavfi', '-i', 'sine=frequency=440:duration=0.5',
                         '-c:a', 'libmp3lame', str(audio)], check=True)
         words = self.base/'words.json'
-        episode.write_json(words, {'words': [{'text': 'Bonjour', 'start': 0, 'end': .4}]})
+        episode.write_json(words, {'words': [{'text': 'Hello', 'start': 0, 'end': .4}]})
         with self.assertRaisesRegex(ValueError, 'ready'):
             pipeline.import_voice(self.root, mp3=audio)
         pipeline.import_voice(self.root, mp3=audio, words=words)
@@ -206,7 +206,7 @@ class PipelineTests(unittest.TestCase):
                         '-c:a', 'libmp3lame', str(audio)], check=True)
         response = self.base/'connector.json'
         episode.write_json(response, dict(audio_base64=base64.b64encode(audio.read_bytes()).decode(),
-            alignment=dict(characters=['B', 'o', 'n'],
+            alignment=dict(characters=['H', 'e', 'y'],
                 character_start_times_seconds=[0, .1, .2], character_end_times_seconds=[.1, .2, .3])))
         pipeline.import_voice(self.root, response=response, authorized=True)
         self.assertTrue((self.root/'inputs/voiceover.mp3').is_file())

@@ -10,7 +10,7 @@ standalone keyword-research service.
    that merely authorizes final60 is not acceptance of the new delivery bytes.
 2. Agent reads approved script, actual video/review notes, research evidence, current
    brand rules and product.md. It generates one recommended title, two alternatives
-   and the description in the video's language. Use actual subject/search intent,
+   and the description in English only (`language=en`), regardless of the conversation language. Use actual subject/search intent,
    no unsupported capabilities or savings, no keyword stuffing/ranking promises.
 3. Agent prepares metadata JSON using `templates/youtube-metadata.json`, replacing
    every value and supplying the actual accepted script/video SHA-256 hashes.

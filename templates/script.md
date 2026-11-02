@@ -7,7 +7,7 @@
 - Topic / audience / one viewer outcome:
 - Format / aspect ratio / resolution:
 - Target duration (seconds):
-- Language / voice choice / authorized voice source (or explicit no-voice decision):
+- Fixed language: English (`en`) / voice choice / authorized voice source (or explicit no-voice decision):
 - Destination / CTA:
 - Brand/reference requirements and unresolved conflicts:
 
@@ -55,3 +55,5 @@ approval. Present current SHA-256/revision externally with the script review req
 - Production blocked until that decision is recorded.
 - Delivery plan: full-timeline preview30 → timecoded review → human video approval
   → same-content final60 (different artifact hash) → separate delivery acceptance.
+
+All completed prose, technical notes and script content must be in English. Source URLs and legal names remain unchanged. The current chat language does not change the output policy.

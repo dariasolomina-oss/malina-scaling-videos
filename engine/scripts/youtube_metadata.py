@@ -24,6 +24,7 @@ import tempfile
 import unicodedata
 
 import episode
+from language_policy import require_language, require_output_text, require_script
 
 
 def _bytes(value):
@@ -51,8 +52,14 @@ def validate(value):
     if not isinstance(value, dict) or not required <= value.keys() or value.keys() - required - {'alternative_titles', 'notes'}:
         raise ValueError('invalid metadata fields')
     result = dict(value)
+    require_language(result['language'], 'metadata language')
     for field, limit in [('title', 100), ('description', 5000), ('language', None), ('primary_keyword', None)]:
         _text(result[field], field, limit, field == 'description')
+    for field in ('title', 'description', 'primary_keyword'):
+        if field == 'description':
+            require_script(result[field], field)  # Literal source URLs are not prose.
+        else:
+            require_output_text(result[field], field)
     for field in ('video_hash', 'script_hash'):
         if not isinstance(result[field], str) or not re.fullmatch('[0-9a-f]{64}', result[field]):
             raise ValueError(f'{field}: SHA-256 required')
@@ -61,11 +68,13 @@ def validate(value):
         raise ValueError('alternative_titles: zero or two titles required')
     for title in titles:
         _text(title, 'alternative title', 100)
+        require_output_text(title, 'alternative title')
     notes = result.setdefault('notes', [])
     if not isinstance(notes, list):
         raise ValueError('notes: list required')
     for note in notes:
         _text(note, 'note', multiline=True)
+        require_output_text(note, 'note')
     evidence = result['evidence']
     if not isinstance(evidence, list) or not evidence:
         raise ValueError('nonempty evidence list required')
@@ -73,6 +82,7 @@ def validate(value):
         if not isinstance(item, dict) or set(item) != {'claim', 'references'}:
             raise ValueError('evidence: claim and references required')
         _text(item['claim'], 'claim', multiline=True)
+        require_output_text(item['claim'], 'claim')
         refs = item['references']
         if not isinstance(refs, list) or not refs:
             raise ValueError('claim references required')

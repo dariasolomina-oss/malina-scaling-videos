@@ -17,10 +17,10 @@ class EpisodeTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.base = Path(self.temp.name)
         self.root = self.base/'episode'
-        ep.create(self.root, 'test', 'Sujet français')
+        ep.create(self.root, 'test', 'English topic')
 
     def script(self):
-        (self.root/'script.md').write_text('Bonjour le monde.', encoding='utf-8')
+        (self.root/'script.md').write_text('Hello world.', encoding='utf-8')
         self.assertEqual(ep.load(self.root)['status'], 'script')
 
     def approve_script(self):

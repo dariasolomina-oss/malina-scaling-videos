@@ -7,13 +7,13 @@ from script_check import check
 
 class ScriptCheckTests(unittest.TestCase):
     def test_mechanical_pass_editorial_pending(self):
-        result = check('Bonjour, voici LakeSentry.')
+        result = check('Hello, this is LakeSentry.')
         self.assertTrue(result['machine']['passed'])
         self.assertEqual(result['editorial']['status'], 'pending')
         self.assertFalse(result['grants_approval'])
 
     def test_negative_checks(self):
-        for text in ('', 'TODO préciser', '{{claim}}', 'bad\x00text'):
+        for text in ('', 'TODO clarify', '{{claim}}', 'bad\x00text'):
             self.assertFalse(check(text)['machine']['passed'])
         self.assertIn('word_limit_exceeded', check('one two three', 2)['machine']['errors'])
 

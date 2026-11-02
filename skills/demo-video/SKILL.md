@@ -1,7 +1,7 @@
 ---
 name: demo-video
 description: Orchestrate a source-grounded product demo from complete intake through human script review, guarded preview30, final60 and delivery acceptance.
-version: 0.3.2
+version: 0.4.0
 ---
 
 # Demo video
@@ -44,3 +44,13 @@ waive its gates. CLI availability: `../../docs/s2-platform-setup.md`.
 
 If `pipeline.py` is not available or its guards have not been verified, stop at the
 last safe stage and report the blocker. Do not invent wrapper commands or flags.
+
+## Mandatory output language
+
+Follow `docs/language-policy.md` from the repository root. All generated project
+files, research/technical descriptions, scripts, code/comments, screen text,
+voice, captions, covers and YouTube metadata are English-only (`en`). Chat
+explanations may use the user's language. Translate source meaning accurately
+into English; preserve source URLs/names. Do not overwrite approved non-English
+assets: create a new English revision and obtain approval. Script/field checks
+are not semantic English detection or audio-language identification.

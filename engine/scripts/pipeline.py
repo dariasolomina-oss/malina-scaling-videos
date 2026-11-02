@@ -12,6 +12,7 @@ import tempfile
 from uuid import uuid4
 
 import episode
+import language_policy
 import prepare_page
 import timings
 import voice_elevenlabs
@@ -88,7 +89,8 @@ def import_voice(root, mp3=None, words=None, response=None, authorized=False):
     if mode == 'mp3':
         if mp3 is None or words is None or response is not None:
             raise ValueError('mp3 mode requires --mp3 and ready --timings words JSON')
-        normalized = timings.normalize(read(words), 'words')
+        normalized = language_policy.require_words(timings.normalize(read(words), 'words'))
+        # Supplied text and codec checks cannot certify spoken English; human review is required.
         duration = probe_audio(mp3, mp3=True)
         if normalized['words'][-1]['end'] > duration + .1:
             raise ValueError('word timings exceed audio duration')
@@ -107,13 +109,15 @@ def import_voice(root, mp3=None, words=None, response=None, authorized=False):
         # Run the existing offline parser in an isolated copy, validating before install.
         if not authorized:
             raise ValueError('explicit authorization for supplied connector response required')
+        supplied_response = read(response)
+        language_policy.require_words(timings.normalize(supplied_response, 'elevenlabs'))
         with tempfile.TemporaryDirectory(dir=episode.safe_path(root, 'work')) as tmp:
             staged = Path(tmp)
             episode.write_json(staged/'episode.yaml', state)
             shutil.copyfile(root/'script.md', staged/'script.md')
             (staged/'media').mkdir()
             (staged/'work').mkdir()
-            voice_elevenlabs.import_response(staged, read(response), authorized)
+            voice_elevenlabs.import_response(staged, supplied_response, authorized)
             duration = probe_audio(staged/'media/voice.audio')
             normalized = read(staged/'timings.json')
             if normalized['words'][-1]['end'] > duration + .1:
@@ -151,7 +155,7 @@ def inputs(root, state):
         if not audio:
             raise ValueError('import voice and ready word timings first')
         files[audio] = episode.digest(episode.safe_path(root, audio))
-        normalized = timings.normalize(read(episode.safe_path(root, 'timings.json')), 'words')
+        normalized = language_policy.require_words(timings.normalize(read(episode.safe_path(root, 'timings.json')), 'words'))
         if normalized['words'][-1]['end'] > cfg['duration']:
             raise ValueError('word timings exceed episode duration')
         files['timings.json'] = episode.digest(episode.safe_path(root, 'timings.json'))
@@ -160,7 +164,7 @@ def inputs(root, state):
         brand=tree_hash(Path(cfg['brand'])),
         engine={str(p.relative_to(REPO)): episode.digest(p) for p in
                 [Path(__file__), Path(episode.__file__), Path(prepare_page.__file__),
-                 Path(timings.__file__), Path(voice_elevenlabs.__file__),
+                 Path(timings.__file__), Path(voice_elevenlabs.__file__), Path(language_policy.__file__),
                  *sorted((REPO/'engine/render').glob('*.js'))]})
 
 

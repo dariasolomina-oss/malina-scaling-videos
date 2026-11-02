@@ -8,6 +8,7 @@ python engine/scripts/prepare_page.py --brand brands/lakesentry --template \
 from __future__ import annotations
 
 import argparse
+from language_policy import require_output_text
 from html.parser import HTMLParser
 import json
 from pathlib import Path, PurePosixPath
@@ -55,6 +56,7 @@ def validate_data(data):
     for key, limit in [("headline", 100), ("subtitle", 180), ("footer", 120)]:
         if not isinstance(result.get(key), str) or len(result[key]) > limit:
             raise ValueError(f"{key} must be a string of at most {limit} characters")
+        require_output_text(result[key], key)
     if not result["headline"].strip():
         raise ValueError("headline cannot be empty")
     if not isinstance(result["demo"], bool):
@@ -71,6 +73,7 @@ def validate_data(data):
         for key, limit in [("title", 36), ("body", 100)]:
             if not isinstance(block[key], str) or len(block[key]) > limit:
                 raise ValueError(f"Block {key} must be a string of at most {limit} characters")
+            require_output_text(block[key], "block " + key)
     return result
 
 
@@ -107,7 +110,9 @@ def check_resources(html, root):
 
 
 def prepare_page(brand, template, output, data=None):
-    """Return output/index.html. output must not exist, or be an empty directory.
+    """Validate static universal data only, not arbitrary JS or image/OCR text.
+
+    Return output/index.html. output must not exist, or be an empty directory.
 
     brand: brand.json or its directory. template: filename under brand/templates,
     or an explicit path to a trusted template. data: dict, JSON file, or None.

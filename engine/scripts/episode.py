@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Local, JSON-compatible YAML episode state and checksummed snapshots (stdlib)."""
 import argparse
+from language_policy import require_language, require_output_text, require_script
 import hashlib
 import json
 import os
@@ -46,6 +47,8 @@ def write_json(path, value):
 
 
 def create(root, episode_id, title, language='en'):
+    require_language(language)
+    require_output_text(title, 'episode title')
     if not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}', episode_id):
         raise ValueError('invalid episode id')
     root = Path(root)
@@ -65,6 +68,11 @@ def load(root):
     state = json.loads(safe_path(root, 'episode.yaml').read_text(encoding='utf-8'))
     if state.get('schema_version') != 1 or state.get('status') not in STATUSES:
         raise ValueError('invalid episode state')
+    require_language(state.get('language'))
+    for field in ('metadata', 'branch'):
+        nested = state.get(field)
+        if isinstance(nested, dict) and 'language' in nested:
+            require_language(nested['language'], field + ' language')
     current = digest(safe_path(root, state['script_path']))
     if current != state['script_hash']:
         state.update(script_hash=current, revision=state['revision']+1, approvals={}, status='script')
@@ -92,6 +100,7 @@ def require_production(root, action):
         raise ValueError('unknown production action')
     if not approved(state, 'script'):
         raise ValueError('explicit current script approval required')
+    require_script(safe_path(root, state['script_path']).read_text(encoding='utf-8'))
     if action == 'package' and not approved(state, 'video'):
         raise ValueError('explicit current video approval required')
     return state
@@ -105,6 +114,7 @@ def approve(root, kind, human, confirm=False):
         raise ValueError('approval not allowed in current status')
     if not safe_path(root, state['script_path']).read_text(encoding='utf-8').strip():
         raise ValueError('empty script')
+    require_script(safe_path(root, state['script_path']).read_text(encoding='utf-8'))
     a = dict(human=human.strip(), confirmed=True, at=now(), script_hash=state['script_hash'], revision=state['revision'])
     if kind == 'video':
         require_production(root, 'render')
@@ -197,6 +207,8 @@ class LocalDirectoryStorage:
             safe_path(destination, rel)
             if not path.is_file() or digest(path) != meta['sha256'] or path.stat().st_size != meta['size']:
                 raise ValueError('snapshot checksum mismatch')
+        snapshot_state = json.loads(safe_path(source/'files', 'episode.yaml').read_text(encoding='utf-8'))
+        require_language(snapshot_state.get('language'))
         destination.mkdir(parents=True)
         try:
             for rel in manifest['files']:

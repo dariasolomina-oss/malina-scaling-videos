@@ -38,7 +38,7 @@ No live production script/video was approved on the user's behalf. Automated app
 - `none` currently produces silence in the guarded CLI; events-based sound design is still a separate existing script, not integrated. LUFS does not apply to silence.
 - Audio timestamps are normalized and retained, but are not automatically used for click/camera synchronization by the universal editorial layout. Targeted phrase regeneration/live TTS is not implemented.
 - Existing `make_srt.py` legacy whisper path is unchanged. Normalized-timings integration/SRT publication belongs to the next integration task; no package is claimed.
-- Local snapshots reset approvals on restore for safety. This is stricter than transparent continuation in the original TЗ and requires a human review; full multi-author resume is not accepted yet.
+- Local snapshots reset approvals on restore for safety. This is stricter than transparent continuation in the original specification and requires a human review; full multi-author resume is not accepted yet.
 - State/approvals are trusted local JSON-compatible YAML, not IAM or signed records. Direct engine calls/manual state edits can bypass CLI guards. No concurrent writers.
 - Pipeline stores a local absolute brand path: another workspace must rebind the brand path and rebuild before production. Git/external-media fully portable recovery remains pending.
 - Agent/skills instructions are prepared, but platform deployment requires an administrator. No configured named Agent was available in this execution.

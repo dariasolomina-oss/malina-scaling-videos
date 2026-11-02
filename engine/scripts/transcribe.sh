@@ -6,7 +6,7 @@
 set -e
 IN="$1"; TMP=$(mktemp -d)
 ffmpeg -loglevel error -y -i "$IN" -ar 16000 -ac 1 "$TMP/a.wav"
-whisper-cli -m ~/.cache/whisper/ggml-base.en.bin -f "$TMP/a.wav" -ml 1 -sow -ojf -of "$TMP/w" >/dev/null 2>&1
+whisper-cli -m ~/.cache/whisper/ggml-base.en.bin -f "$TMP/a.wav" -l en -ml 1 -sow -ojf -of "$TMP/w" >/dev/null 2>&1
 python3 -c "
 import json;d=json.load(open('$TMP/w.json'))
 for s in d['transcription']:

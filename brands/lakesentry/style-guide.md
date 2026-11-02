@@ -170,7 +170,7 @@ The format for the TZ talking-head shorts (first used on TZ9): **top half = code
 ### Talking-head shorts after TZ10 (2026-10-14), these override the split-screen notes above
 - **Propose the cut first.** Which of her lines to drop, reorder or splice goes to the user as a list (with times) before anything is built.
 - **Problem + solution inside 2 s.** Her voice can't do it, so the screen does: headline + vendor logos built at frame 0, the answer ("→ FOCUS fixes that") by ~1 s. Then her lines, reordered if needed; ≤ ~35 s.
-- **Layout:** animation square 1080×1080 on top with all content inside the Shorts safe zone (`_assets/шортс_сейф_зоны_2025 (1).png`: top 240, left 60, right 120, bottom 380 clear), face 1080×840 below. Nothing cropped inside app windows either.
+- **Layout:** animation square 1080×1080 on top with all content inside the Shorts safe zone (`brands/lakesentry/assets/safe-zone/shorts-safe-zone-2025.png`: top 240, left 60, right 120, bottom 380 clear), face 1080×840 below. Nothing cropped inside app windows either.
 - **Captions are burned in** (overrides §8 for these shorts): one word at a time, Montserrat 900 italic, #FFD60A, black outline, on the seam (y≈1085), via `captions.html` rendered with `ALPHA=1`. Keep the SRT as an optional upload.
 - **Clean her speech by cutting:** stray words ("bill are all speak"), fillers ("uhh" before a line), version numbers she doesn't need ("FOCUS 1.2" → "FOCUS"). Check every join's energy so word ends ("languages", "bills", "LakeSentry") aren't clipped; Whisper reads clipped words as whole.
 - **Voice:** DeepFilterNet capped at 12 dB on the whole take (`_toolkit/scripts/isolate.sh`), so any re-cut has clean audio everywhere.

@@ -9,7 +9,7 @@ Replace placeholders with checked evidence; do not mark unread pages as verified
 - Research revision/date:
 - Product/brand and `product.md` registry path/revision read:
 - Topic, audience and goal:
-- Format/aspect ratio, duration, language, explicit voice choice:
+- Format/aspect ratio, duration, fixed language English (`en`), explicit voice choice:
 - Proposed claims and excluded topics:
 - Research status: BLOCKED / READY FOR SCRIPT (choose after the checklist below)
 
@@ -88,3 +88,5 @@ checkout: record any dependency as unavailable, never fabricate their content.
 
 Gate decision and rationale: <BLOCKED with exact question / READY FOR SCRIPT>.
 Research completion is not human script approval or authorization to produce media.
+
+All completed prose, technical notes and script content must be in English. Source URLs and legal names remain unchanged. The current chat language does not change the output policy.

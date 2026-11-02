@@ -1,7 +1,7 @@
 ---
 name: seo-publish
 description: After explicit acceptance of the current delivery video, generate source-grounded YouTube titles and description, validate their artifact binding, and deliver copy in chat without uploading.
-version: 0.3.0
+version: 0.4.0
 ---
 
 # YouTube SEO and delivery
@@ -22,7 +22,7 @@ approval between hashes or request a second approval for unchanged already accep
    research/evidence, brand tone and `brands/<id>/product.md`. A product.md placeholder
    is not evidence. If claims need further verification, use authoritative sources or
    omit the unsupported claim. Do not derive facts from sample HTML.
-2. Use the video's language. Infer the search intent from its actual subject, viewer
+2. Use English only (`language=en`), regardless of the conversation language. Infer the search intent from its actual subject, viewer
    problem and demonstrated mechanism. Select ONE primary keyword and a few relevant
    secondary terms. No invented search volume, trend, score or competitive analysis.
    No keyword stuffing or promise of better ranking/CTR. Research is optional when
@@ -62,3 +62,13 @@ approval between hashes or request a second approval for unchanged already accep
 Exporting metadata does not upload to YouTube and does not set `published` or claim a
 full publication package. Thumbnails/SRT are separate deliverables. A future upload
 requires explicit destination/account authorization and confirmed external success.
+
+## Mandatory output language
+
+Follow `docs/language-policy.md` from the repository root. All generated project
+files, research/technical descriptions, scripts, code/comments, screen text,
+voice, captions, covers and YouTube metadata are English-only (`en`). Chat
+explanations may use the user's language. Translate source meaning accurately
+into English; preserve source URLs/names. Do not overwrite approved non-English
+assets: create a new English revision and obtain approval. Script/field checks
+are not semantic English detection or audio-language identification.

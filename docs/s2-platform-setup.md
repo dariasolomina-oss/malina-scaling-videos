@@ -34,7 +34,7 @@ indented YAML is not supported. See [state-and-audio.md](state-and-audio.md).
 
 ```sh
 python3 engine/scripts/episode.py --help
-python3 engine/scripts/episode.py create episodes/demo --id demo --title 'Demo' --language fr
+python3 engine/scripts/episode.py create episodes/demo --id demo --title 'Demo' --language en
 # Complete intake first, then write the script; status detects its new bytes.
 python3 engine/scripts/episode.py status episodes/demo
 python3 engine/scripts/script_check.py episodes/demo/script.md --max-words 180
@@ -173,3 +173,10 @@ sources and known conflicts. Do not claim absent source documents were consulted
    `technical-validation.md` before deployment.
 5. Test restoration/re-review separately; do not claim verified persistence. Drive/S3
    and external publishing remain separate optional integrations, not first-run gates.
+
+## English-only release policy
+
+Use `docs/language-policy.md` and the v0.4.0 Git instructions. All authored files,
+technical descriptions, code/comments and video deliverables are English (`en`),
+regardless of chat language. Publish the updated profile before claiming the
+policy is active there; Git push alone does not replace embedded profile rules.

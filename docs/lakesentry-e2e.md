@@ -1,14 +1,25 @@
-# LakeSentry: локальный CLI до video review
+# LakeSentry: from the local CLI to video review
 
-`engine/scripts/pipeline.py` связывает существующие `episode.py`, `prepare_page.py`,
-`timings.py`, offline `voice_elevenlabs.py` и `engine/render/render.js`.
-Граница scope — локальный `media/video.mp4` со статусом `review`, **не публикация**.
-Внешнее media storage и агент не подключены. CLI не делает TTS/API-запросов,
-не пишет в git, не создаёт настоящий git branch, не публикует сайт/видео.
+`engine/scripts/pipeline.py` connects the existing `episode.py`, `prepare_page.py`,
+`timings.py`, offline `voice_elevenlabs.py`, and `engine/render/render.js`.
+The scope ends at a local `media/video.mp4` with status `review`, **not publication**.
+External media storage and an agent are not connected. The CLI makes no TTS/API
+requests, does not write to git or create a real git branch, and does not publish
+sites or videos.
 
-Нужны Python >=3.10, Node с установленными зависимостями renderer/Playwright и
-браузером; для аудио и MP4 — `ffmpeg`/`ffprobe` в PATH. Работать из корня repo.
-Один writer на эпизод, без параллельного редактирования во время build/render.
+Requirements: Python >=3.10, Node with the renderer/Playwright dependencies and a
+browser installed; audio and MP4 also require `ffmpeg`/`ffprobe` on PATH. Run commands
+from the repository root. Use one writer per episode; do not edit concurrently
+during build/render.
+
+## English-only video policy
+
+All video output must be in English. The required language code is `en`; language
+is not a free-choice input. This applies to video text, narration, and supplied
+word timings. The CLI records English language metadata; policy and metadata
+validation do not establish semantic language detection of text or audio. Human
+review must verify that the actual video content is English. English UI and video
+metadata are separate from the current user's chat language, which may be Russian.
 
 ## Silent draft → review → final60
 
@@ -16,68 +27,70 @@
 python3 engine/scripts/pipeline.py init --episode episodes/demo --id demo \
   --brand brands/lakesentry --format horizontal --duration 8 --voice none \
   --author 'Author' --thread-url 'https://example.org/thread'
-# Для 9:16: --format vertical (1080x1920 вместо 1920x1080).
-# Человек редактирует script.md и content.json; init оставляет FR-заглушки.
+# For 9:16: --format vertical (1080x1920 instead of 1920x1080).
+# A human edits script.md and content.json; replace placeholders with English content.
 python3 engine/scripts/episode.py status episodes/demo
-# Следующая команда — ТОЛЬКО после реального явного решения человека:
-python3 engine/scripts/episode.py approve episodes/demo script --human 'Проверяющий' --confirm
+# Run the next command ONLY after an actual, explicit human decision:
+python3 engine/scripts/episode.py approve episodes/demo script --human 'Reviewer' --confirm
 python3 engine/scripts/pipeline.py build --episode episodes/demo
 python3 engine/scripts/pipeline.py render --episode episodes/demo \
   --fps 30 --chunk-frames 240 --resume
-# Человек смотрит media/video.mp4 и принимает отдельное решение:
-python3 engine/scripts/episode.py approve episodes/demo video --human 'Проверяющий' --confirm
+# A human watches media/video.mp4 and makes a separate approval decision:
+python3 engine/scripts/episode.py approve episodes/demo video --human 'Reviewer' --confirm
 python3 engine/scripts/pipeline.py render --episode episodes/demo --final60 \
   --chunk-frames 240 --resume
 ```
 
-CLI **не вызывает approve** и не подставляет approvals от имени автора.
-`init` записывает FR `metadata` (author/thread_url), локальный descriptor `branch`
-(language/format/name), настройки `pipeline` в единственный `episode.yaml`.
-Это JSON-compatible YAML, не второй state file. Сценарий живёт в `script.md`;
-изменения и revision обрабатывает модуль episode. Descriptor branch — не git ref.
+The CLI **does not call approve** or supply approvals on the author's behalf.
+`init` writes English `metadata` (language/author/thread_url), a local `branch`
+descriptor (language/format/name), and `pipeline` settings into a single
+`episode.yaml`. This is JSON-compatible YAML, not a second state file. The script
+lives in `script.md`; the episode module handles changes and revisions. The branch
+descriptor is not a git ref.
 
-`content.json` принимает только безопасную схему universal templates: headline,
-subtitle, footer, до трёх blocks {title, body}, demo, duration. Duration должен
-совпадать с настройкой эпизода. HTML из данных не исполняется; данные внедряет
-`prepare_page.safe_json`. Шаблоны и локальные JS — доверенный код, не sandbox.
-Демонстрационный контент не выдаётся за настоящий UI или доказанные результаты.
+`content.json` accepts only the safe universal-template schema: headline,
+subtitle, footer, up to three blocks {title, body}, demo, and duration. Duration
+must match the episode setting. HTML from data is not executed; data is embedded
+by `prepare_page.safe_json`. Templates and local JS are trusted code, not a sandbox.
+Demo content must not be presented as a real UI or proven results.
 
-`build` требует актуальный script approval **до Node CSS subprocess и записи
-source/work**. Сохраняет self-contained `source/index.html`, `brand.json`,
-`content.json`, копию script.md, исходный universal template и локальные assets.
-Текст source пригоден для version control. Бинарные assets, MP3/MP4, work cache
-покрываются существующим `.gitignore` для стандартного `episodes/<id>/` layout;
-для произвольного PATH вне этого layout политику исключения work задаёт оператор.
-CLI сам ничего не добавляет в git. Не храните предоставленный connector response
-с base64-аудио в version control.
+`build` requires current script approval **before the Node CSS subprocess and
+source/work writes**. It saves a self-contained `source/index.html`, `brand.json`,
+`content.json`, a copy of script.md, the original universal template, and local
+assets. Source text is suitable for version control. Binary assets, MP3/MP4, and
+the work cache are covered by the existing `.gitignore` for the standard
+`episodes/<id>/` layout; for an arbitrary PATH outside that layout, the operator
+must define the work exclusion policy. The CLI adds nothing to git. Do not store
+a supplied connector response containing base64 audio in version control.
 
-## Что именно защищают guards
+## What the guards actually protect
 
-До production-побочных эффектов вызывается `episode.require_production`.
-Исключение: сам `episode.load` может записать state, снимая устаревшие approvals,
-как предусмотрено его контрактом. Пустой/изменённый/неодобренный сценарий
-блокирует build, voice и render до Node/FFprobe. Сценарий должен быть действительно
-согласован человеком, не только заполнен заглушкой.
+`episode.require_production` is called before production side effects. Exception:
+`episode.load` itself may write state to invalidate stale approvals, as specified
+by its contract. An empty, changed, or unapproved script blocks build, voice, and
+render before Node/FFprobe. A human must genuinely approve the script; merely
+filling in a placeholder is not approval.
 
-Build binding в `episode.yaml` фиксирует script hash/revision, настройки, hashes
-content/audio/timings, всего brand directory и используемых engine JS/Python.
-Отдельно фиксируются все файлы source. Render пересчитывает binding и source hashes
-до subprocess и после завершения: изменение production inputs требует rebuild;
-смена script требует нового script approval. Build не создаёт approvals.
+The build binding in `episode.yaml` records the script hash/revision, settings,
+hashes of content/audio/timings, the entire brand directory, and the engine
+JS/Python files in use. All source files are hashed separately. Render recomputes
+the binding and source hashes before subprocess execution and after completion:
+changes to production inputs require a rebuild; script changes require new script
+approval. Build does not create approvals.
 
-**Это prompt/workflow approval, не криптографическое согласование всех данных.**
-Существующий human approval подписывает только script hash/revision. Content/brand
-можно изменить и явно запустить новый build в рамках согласованного сценария;
-такой rebuild снимает video approval. Не утверждаем, что человек независимо одобрил
-каждый новый content/brand hash. Отдельного `bind-content`/content approval нет.
-Если редактура выходит за согласованный сценарий, сначала измените script.md и
-заново получите реальное human approval. Локальные state files доверенные;
-ручное редактирование, прямой запуск Node и другие scripts могут обойти CLI.
-Нет IAM, подписи, защиты от злонамеренного оператора или конкурентных writers.
+**This is prompt/workflow approval, not cryptographic approval of all data.**
+Existing human approval covers only the script hash/revision. Content/brand can
+be changed and a new build explicitly run within the approved script's scope;
+such a rebuild invalidates video approval. This does not mean a human independently
+approved each new content/brand hash. There is no separate `bind-content` or content
+approval. If edits go beyond the approved script, first change script.md and
+obtain genuine human approval again. Local state files are trusted; manual edits,
+direct Node execution, and other scripts can bypass the CLI. There is no IAM,
+signing, protection against a malicious operator, or support for concurrent writers.
 
-## MP3 и уже готовые words
+## MP3 and existing word timings
 
-При `init --voice mp3` вместо `none` после script approval:
+With `init --voice mp3` instead of `none`, after script approval:
 
 ```sh
 python3 engine/scripts/pipeline.py voice --episode episodes/demo \
@@ -86,71 +99,75 @@ python3 engine/scripts/pipeline.py build --episode episodes/demo
 python3 engine/scripts/pipeline.py render --episode episodes/demo --fps 30 --resume
 ```
 
-Импорт проверяет реальный MP3 codec/container и положительную длительность через
-FFprobe, сохраняет `inputs/voiceover.mp3` и нормализованный `timings.json`.
-Только существующие words: массив или `{ "words": [{"text":"Hello","start":0,"end":0.4}] }`.
-Timings обязательны, конечны, упорядочены, без overlap, в пределах аудио и видео.
-Транскрипции, alignment API, интерполяции segment timestamps нет. Точность слов
-не подтверждена машиной, соответствие голосу и сценарию проверяет человек.
+Import uses FFprobe to verify the actual MP3 codec/container and a positive duration,
+then saves `inputs/voiceover.mp3` and normalized `timings.json`.
+Only existing word timings are accepted: an array or
+`{ "words": [{"text":"Hello","start":0,"end":0.4}] }`.
+Timings are mandatory, finite, ordered, non-overlapping, and within both the audio
+and video durations. There is no transcription, alignment API, or interpolation
+of segment timestamps. Word accuracy is not machine-verified; a human checks
+consistency with the voice and script.
 
-## ElevenLabs — только supplied connector response
+## ElevenLabs: supplied connector response only
 
-Для эпизода `--voice elevenlabs` после script approval:
+For an episode using `--voice elevenlabs`, after script approval:
 
 ```sh
 python3 engine/scripts/pipeline.py voice --episode episodes/demo \
   --response /private/provided-response.json --authorized-connector-response
 ```
 
-Используется существующий offline parser: `audio_base64` плюс `alignment` или
-`normalized_alignment` с characters/character_start_times_seconds/
-character_end_times_seconds. Данные должны быть реально предоставлены через
-авторизованный процесс; CLI их не получает сам. Parser работает в изолированной
-временной копии эпизода; аудио проверяется FFprobe, преобразуется в
-`inputs/voiceover.mp3`, timings сохраняются отдельно. Нет ключей, сети, вызова
-ElevenLabs или подключённого connector в этом репозитории.
+This uses the existing offline parser: `audio_base64` plus `alignment` or
+`normalized_alignment` with characters/character_start_times_seconds/
+character_end_times_seconds. The data must actually have been supplied through an
+authorized process; the CLI does not fetch it. The parser runs in an isolated
+temporary copy of the episode; FFprobe validates the audio, which is converted to
+`inputs/voiceover.mp3`, and timings are saved separately. This repository contains
+no keys, network calls, ElevenLabs calls, or connected connector.
 
-## Render, ошибки, аудио и повторный review
+## Render, errors, audio, and repeat review
 
-Node получает HTML, отдельный рабочий cache directory и `--video`, `--fps 30|60`,
-`--chunk-frames N`, опциональный `--resume`; размеры задаются W/H, HTML_ROOT и
-RENDER_CACHE_KEY фиксированы. Cache key зависит от production binding/source,
-fps и chunk size разделяют каталоги. Возобновление сохраняет готовые chunks;
-ошибки Node/FFmpeg не маскируются и ненулевой код возвращается CLI.
-Неудачный render не заменяет предыдущее `media/video.mp4`.
+Node receives HTML, a separate working cache directory, and `--video`, `--fps 30|60`,
+`--chunk-frames N`, and optional `--resume`; dimensions are set through W/H, while
+HTML_ROOT and RENDER_CACHE_KEY are fixed. The cache key depends on the production
+binding/source; fps and chunk size use separate directories. Resuming preserves
+completed chunks; Node/FFmpeg errors are not hidden, and the CLI returns a nonzero
+exit code. A failed render does not replace the previous `media/video.mp4`.
 
-Выход готовится под уникальным version filename, затем атомарно заменяет
-`media/video.mp4`; только после этого state становится `review`. История содержит
-input/video hashes и fps. File replace и state write не являются общей транзакцией:
-после аварии между ними нужно повторно загрузить state/сделать review.
+Output is prepared under a unique versioned filename, then atomically replaces
+`media/video.mp4`; only then does state become `review`. History records input/video
+hashes and fps. File replacement and state writing are not a single transaction:
+after a crash between them, reload state and review the video again.
 
-`none` намеренно выдаёт **silent output**, без events.json mix в этом CLI.
-К тишине требование −14 LUFS неприменимо: loudness не измеряется и не заявляется.
-В voice modes FFmpeg добавляет audio с apad и loudnorm target −14 LUFS/−1 dBTP,
-AAC; это однопроходная обработка, не сертификат измеренного integrated loudness.
-Captions/word-driven animation автоматически не добавляются: timings сохраняются
-как обязательный проверяемый production input, а не обещание burned-in subtitles.
+`none` deliberately produces **silent output**, without an events.json mix in this
+CLI. The −14 LUFS requirement does not apply to silence: loudness is neither
+measured nor claimed. In voice modes, FFmpeg adds audio with apad and a loudnorm
+target of −14 LUFS/−1 dBTP, encoded as AAC; this is single-pass processing, not
+certification of measured integrated loudness. Captions/word-driven animation are
+not added automatically: timings are stored as a mandatory, validated production
+input, not a promise of burned-in subtitles.
 
-Draft 30 fps всегда заканчивается review. `--final60` (или `--fps 60`) разрешён
-только после настоящего video approval текущего draft с тем же build hash.
-Изменение approved video bytes уже снимает approval через `episode.load`, возвращая
-review. Новый 60 fps файл **не наследует approval** draft: pipeline также явно
-снимает video approval и ставит review, даже если encoder случайно выдал те же
-байты. Нужно заново посмотреть и одобрить новый файл через `episode.py approve`.
-Переходы publish_ready/published и публикация не входят в CLI.
+A 30 fps draft always ends in review. `--final60` (or `--fps 60`) is allowed only
+after genuine video approval of the current draft with the same build hash.
+Changes to approved video bytes already invalidate approval through `episode.load`,
+returning the episode to review. The new 60 fps file **does not inherit the draft's
+approval**: the pipeline also explicitly clears video approval and sets review,
+even if the encoder happens to produce identical bytes. Watch and approve the new
+file again through `episode.py approve`. Transitions to publish_ready/published
+and publication are outside the CLI's scope.
 
-## Проверка
+## Verification
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_pipeline.py' -v
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
 ```
 
-Тесты проверяют guards до subprocess, init, оба self-contained формата,
-инвалидацию script/content/source/brand/config/audio, ошибки Node, draft/final
-approval и offline импорт. MP3/renamed WAV/битое аудио проверяются реальными
-FFmpeg/FFprobe. Отдельный audio integration test реально mux-ит аудио, но Node
-подменён маленьким FFmpeg video fixture. **Ни один mock Node test не является
-доказательством реального browser render**. Для настоящего browser E2E запустите
-команды выше с установленным Playwright, реальными approvals и визуальным review;
-эта автоматическая проверка такого результата не заявляет.
+Tests cover guards before subprocess execution, init, both self-contained formats,
+script/content/source/brand/config/audio invalidation, Node errors, draft/final
+approval, and offline import. MP3, renamed WAV, and corrupt audio are checked with
+real FFmpeg/FFprobe. A separate audio integration test actually muxes audio, but
+replaces Node with a small FFmpeg video fixture. **No mocked Node test proves that
+a real browser render succeeded**. For actual browser E2E, run the commands above
+with Playwright installed, genuine approvals, and visual review; this automated
+verification does not claim that result.

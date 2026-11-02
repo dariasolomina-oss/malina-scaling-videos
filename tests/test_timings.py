@@ -8,8 +8,8 @@ import timings
 class TimingTests(unittest.TestCase):
     def test_words_and_whisper(self):
         for source in ('words', 'whisper'):
-            value = timings.normalize({'words':[{'word':'Bonjour', 'start':0, 'end':.5}]}, source)
-            self.assertEqual(value['words'][0]['text'], 'Bonjour')
+            value = timings.normalize({'words':[{'word':'Hello', 'start':0, 'end':.5}]}, source)
+            self.assertEqual(value['words'][0]['text'], 'Hello')
             self.assertEqual(value['accuracy'], 'not_verified')
 
     def test_alignment(self):

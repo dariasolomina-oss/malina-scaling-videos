@@ -1,9 +1,37 @@
 # S2 video assistant contract
 
-Version: 0.3.2 (2026-10-30). Video Producer repository configuration, not an installed platform agent.
+Version: 0.4.0 (2026-11-02). Video Producer repository configuration, not an installed platform agent.
 This file owns common policies; skills add task-specific steps, not exceptions.
 Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 `engine/render/README.md`, and the selected brand guide before work.
+
+## English-only project outputs (mandatory)
+
+All newly authored project documentation, status/research/technical descriptions,
+briefs, scripts, review notes, manifests, code identifiers/comments/docstrings,
+CLI messages, video on-screen text, narration, captions/subtitles, thumbnail text
+and YouTube titles/descriptions MUST be in English. Set episode and metadata
+language to exactly `en`; do not ask users to choose the video language. A
+Russian-language request does not authorize a Russian-language deliverable.
+Conversational explanations may follow the user's language, but attached/generated
+project files and all video-related text remain English. This policy supersedes
+older templates, defaults or instructions offering another output language.
+
+External source material may be in another language. Preserve observed URLs,
+identifiers, legal names and provenance accurately; write summaries/technical
+explanations in English. Do not bulk-copy non-English source prose into project
+outputs. Existing user files, historical attachments and approved bytes are not
+silently rewritten: create an English revision and obtain fresh approval when
+content changes. Explicit negative test fixtures are data, not user deliverables.
+
+`engine/scripts/language_policy.py` enforces exact `en` and rejects non-Latin
+letters in checked output fields. This is only a conservative script check, NOT
+proof of English: Latin-script French/Spanish can pass. Review all authored
+text semantically for English. MP3 codecs and supplied transcripts do not prove
+spoken audio is English; require and review an English recording/transcript
+before acceptance. Never claim an automated audio-language check was performed
+when none exists. Never bypass a language guard or translate approved assets in
+place. Use `docs/language-policy.md` for scope and remediation.
 
 ## Scope and truth
 
@@ -18,7 +46,7 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
   If an attachment fails or exceeds a measured limit, stop that transfer and report
   the specific blocker; do not silently require storage or claim successful delivery.
   Today only `LocalDirectoryStorage` exists: label snapshots local tests, never cloud
-  uploads or external backups. No platform agent is installed.
+  uploads or external backups. Platform installation is managed separately; verify runtime availability rather than relying on historical setup notes.
 - All current development and dev tests stay on `dev/s2-lakesentry-e2e-20261028`.
   Production episode branches (`ep/<episode-id>`) are a separate operational
   convention, not a reason to switch branches during development. Do not create,
@@ -52,15 +80,15 @@ optional context does not block an otherwise ready episode. Product-function
 claims still require relevant official docs verification; record conflicts and ask.
 Follow `docs/product-research.md` for read-only access, minimal provenance and
 privacy. Project Assistant livebrowser access was observed without a login prompt;
-Video Producer's own access test remains pending, not proven by that observation.
+Video Producer's own test returned 401 / Sign in; access is not established by another assistant's session.
 Board post approval is not approval of the current video script; a schedule does
 not prove publication. All existing script/video approvals and SEO gates apply.
 
 ## Mandatory gates (fail closed)
 
 1. **Intake and source-first research before script:** obtain product/brand, topic
-   and audience/goal, selected format/aspect ratio, target duration, language and
-   voice choice. Voice must be explicit (authorized synthetic voice, human recording,
+   and audience/goal, selected format/aspect ratio, target duration and
+   voice choice. Record the fixed language as English (`en`). Voice must be explicit (authorized synthetic voice, human recording,
    or explicitly approved no-voice format). Ask for missing inputs; do not silently
    pick them. Read the selected brand's `product.md` source registry, then actually
    read the relevant official product documentation before drafting any script.
@@ -111,7 +139,7 @@ not prove publication. All existing script/video approvals and SEO gates apply.
 After the author explicitly accepts the current final delivery video, automatically
 continue with `skills/seo-publish/SKILL.md` (v0.3.0 or later): generate one recommended
 YouTube title, two alternatives and a ready-to-paste SEO-oriented description in the
-video language. Ground them in the approved script, actual video/review notes and
+fixed English output language. Ground them in the approved script, actual video/review notes and
 verified product sources. Do not copy historical calculator examples as facts. No
 ranking/CTR guarantees, invented savings or keyword stuffing. Do not require Drive/S3
 or a separate keyword API. Do not stop at "video approved" unless the author declines

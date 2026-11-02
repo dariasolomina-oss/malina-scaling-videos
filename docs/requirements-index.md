@@ -7,7 +7,7 @@ The rules are spread over four files in the source folder `z_04_ai videos/`. Thi
 | Video, animated (16:9 and 9:16) | `_flow/STYLE_GUIDE.md` | §1 brand, §2 real product UI, §3 camera and motion, §4 interaction, §5 story and on-screen text, §6 sound, §7 vertical teaser structure |
 | Video, talking-head Short | `_flow/STYLE_GUIDE.md` | §10 and "after TZ10" (layout square + face, 2-second hook, cut proposal, burned-in captions, 12 dB voice clean) |
 | Video, talking-head Short (older Remotion pipeline, TZ3 to TZ8) | `CLAUDE.md` | "Creative rules", "Retention", "Variety system", "Episode style log" |
-| Safe zone for Shorts | `_assets/шортс_сейф_зоны_2025 (1).png` | top 240, left 60, right 120, bottom 380 clear (three other safe-zone PNGs in `_assets/` are older) |
+| Safe zone for Shorts | `brands/lakesentry/assets/safe-zone/shorts-safe-zone-2025.png` | top 240, left 60, right 120, bottom 380 clear (three other safe-zone PNGs in `_assets/` are older) |
 | Thumbnail (16:9) and cover (9:16) | `_flow/STYLE_GUIDE.md` | §8 "Thumbnails": size, safe area, word count, type, proof element, file name; templates `_flow/templates/thumbnail-*.html` |
 | Thumbnail face cutout (talking head) | `CLAUDE.md` | step 8 + "Retention" (rembg, `smooth_cutout.py`) |
 | SRT | `_flow/STYLE_GUIDE.md` | §8 table: characters per line, cue length, source, line-break rules |

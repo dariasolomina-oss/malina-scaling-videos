@@ -15,6 +15,7 @@ Brand spellings come from the brand pack: set BRAND=brands/<name>/brand.json ("s
 Without BRAND, no spelling fixes are applied.
 """
 import json, os, re, subprocess, sys, tempfile, textwrap
+from language_policy import require_output_text
 
 FORMATS = {
     "horizontal": dict(line=42, lines=2, min_d=1.0, max_d=6.0),
@@ -55,7 +56,7 @@ def words_from_audio(audio):
     tmp = tempfile.mkdtemp(); wav = os.path.join(tmp, "a.wav")
     subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", audio, "-ar", "16000", "-ac", "1", wav], check=True)
     model = os.path.expanduser("~/.cache/whisper/ggml-base.en.bin")
-    subprocess.run(["whisper-cli", "-m", model, "-f", wav, "-ml", "1", "-sow", "-ojf", "-of", os.path.join(tmp, "w")],
+    subprocess.run(["whisper-cli", "-m", model, "-f", wav, "-l", "en", "-ml", "1", "-sow", "-ojf", "-of", os.path.join(tmp, "w")],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     segs = json.load(open(os.path.join(tmp, "w.json")))["transcription"]
     words = [(s["offsets"]["from"] / 1000, s["offsets"]["to"] / 1000, s["text"].strip()) for s in segs if s["text"].strip()]
@@ -91,7 +92,10 @@ def cues_from_words(words, f):
     return cues
 
 def write(cues, f, out):
-    with open(out, "w") as fh:
+    # Check every cue before opening/truncating any output. This is not semantic English detection.
+    for _, _, text in cues:
+        require_output_text(fix(text), "subtitle cue")
+    with open(out, "w", encoding="utf-8") as fh:
         for i, (a, b, text) in enumerate(cues, 1):
             fh.write(f"{i}\n{ts(a)} --> {ts(b)}\n" + "\n".join(wrap(fix(text), f)) + "\n\n")
     # report anything that breaks the format rules

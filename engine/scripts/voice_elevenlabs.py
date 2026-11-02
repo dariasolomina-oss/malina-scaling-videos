@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 from episode import require_production, safe_path, work_dir, write_json
 from timings import normalize
+from language_policy import require_words
 import shutil
 
 
@@ -22,7 +23,7 @@ def import_response(episode, response, authorized=False):
         raise ValueError('invalid base64 audio') from e
     if not audio:
         raise ValueError('empty audio')
-    timings = normalize(response, 'elevenlabs')
+    timings = require_words(normalize(response, 'elevenlabs'))
     # Generic extension: parser does not guess the supplied audio codec.
     audio_path = safe_path(episode, 'media/voice.audio')
     timings_path = safe_path(episode, 'timings.json')

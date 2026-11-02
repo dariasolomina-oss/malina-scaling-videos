@@ -1,3 +1,10 @@
+## 0.4.0 — 2026-11-02
+
+- Require English-only documentation, technical descriptions, code/comments, episode files and all video/voice/caption/YouTube outputs. Chat may follow the user's language.
+- Reject episode/metadata language other than exact `en`; validate checked production prose before side effects. A script guard is not semantic English or spoken-audio detection.
+- Translate CLI/state documentation to English, correct French defaults/examples, and retain approved historical bytes instead of silently translating them.
+- Update schema and tests. Platform profile rollout remains a separate explicit publication step.
+
 ## 0.3.2 — 2026-10-30
 
 - Added the LakeSentry content board as optional supplemental/editorial context,

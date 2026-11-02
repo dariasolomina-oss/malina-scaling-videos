@@ -30,7 +30,8 @@
     },
     "language": {
       "type": "string",
-      "description": "Content language tag, default en; not an editorial approval."
+      "const": "en",
+      "description": "Required English-only output policy. Authorship names and source URLs are not translated."
     },
     "status": {
       "enum": [
@@ -149,10 +150,22 @@
       "format": "date-time"
     },
     "metadata": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string",
+          "const": "en"
+        }
+      }
     },
     "branch": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string",
+          "const": "en"
+        }
+      }
     },
     "pipeline": {
       "type": "object"
