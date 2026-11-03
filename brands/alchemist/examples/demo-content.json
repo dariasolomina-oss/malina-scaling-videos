@@ -1,0 +1,21 @@
+{
+  "demo": true,
+  "headline": "A clear story. Grounded in evidence.",
+  "subtitle": "Editorial layout test \u2014 not a product walkthrough.",
+  "blocks": [
+    {
+      "title": "Context",
+      "body": "Start with the question."
+    },
+    {
+      "title": "Evidence",
+      "body": "Verify the relevant sources."
+    },
+    {
+      "title": "Review",
+      "body": "Keep the human approval gate."
+    }
+  ],
+  "footer": "Illustrative example only.",
+  "duration": 8
+}

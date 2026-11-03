@@ -8,6 +8,7 @@ python engine/scripts/prepare_page.py --brand brands/lakesentry --template \
 from __future__ import annotations
 
 import argparse
+import language_policy
 from html.parser import HTMLParser
 import json
 from pathlib import Path, PurePosixPath
@@ -71,6 +72,11 @@ def validate_data(data):
         for key, limit in [("title", 36), ("body", 100)]:
             if not isinstance(block[key], str) or len(block[key]) > limit:
                 raise ValueError(f"Block {key} must be a string of at most {limit} characters")
+    for key in ('headline', 'subtitle', 'footer'):
+        language_policy.check_prose(result[key])
+    for block in blocks:
+        for value in block.values():
+            language_policy.check_prose(value)
     return result
 
 
@@ -118,6 +124,7 @@ def prepare_page(brand, template, output, data=None):
         brand_path /= "brand.json"
     brand_root = brand_path.parent
     config = json.loads(brand_path.read_text(encoding="utf-8"))
+    language_policy.require_en(config.get('output_language', 'en'))
     source = Path(template)
     if not source.is_file():
         source = brand_root / "templates" / source
@@ -146,7 +153,8 @@ def prepare_page(brand, template, output, data=None):
     injection = ('<style id="generated-brand-css">\n' + css + '</style>\n'
                  '<script id="prepared-page-data">window.PAGE_DATA=' + safe_json(content)
                  + ';window.PAGE_BRAND=' + safe_json({"name": config.get("name", ""),
-                                                     "logo": config.get("logo", {})}) + ';</script>')
+                                                     "logo": config.get("logo", {}),
+                                                     "editorial": config.get("editorial", {})}) + ';</script>')
     marker = "<!-- PREPARE_PAGE_HEAD -->"
     if marker in html:
         html = html.replace(marker, injection, 1)

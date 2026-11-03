@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-11-03",
+  "policy": "Official artwork unmodified; preserve source trademarks. Fonts retain bundled OFL licenses. Do not imply endorsement or redistribute third-party logos.",
+  "assets": [
+    {
+      "path": "assets/logo/alchemist-dark.svg",
+      "url": "https://alchemist-brandkit.spot.t1a.dev/",
+      "extraction": "Original inline SVG outerHTML; no path or color changes.",
+      "sha256": "7a5788c70a6ad48657a3df273ad359bd2904e22a5da87c5c580d6fb249d18d8b"
+    },
+    {
+      "path": "assets/logo/alchemist-mark.svg",
+      "url": "https://alchemist-brandkit.spot.t1a.dev/",
+      "extraction": "Original inline SVG outerHTML; no path or color changes.",
+      "sha256": "cfa0d62eb3c12cd899aa912d646b96fdeebc90c6b45a21bd6404ddaa446405e2"
+    },
+    {
+      "path": "assets/fonts/inter-latin-wght-normal.woff2",
+      "url": "https://www.npmjs.com/package/@fontsource-variable/inter/v/5.3.0",
+      "archive": "fontsource-variable-inter-5.3.0.tgz",
+      "license": "assets/fonts/inter-OFL.txt",
+      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"
+    },
+    {
+      "path": "assets/fonts/geist-mono-latin-wght-normal.woff2",
+      "url": "https://www.npmjs.com/package/@fontsource-variable/geist-mono/v/5.3.0",
+      "archive": "fontsource-variable-geist-mono-5.3.0.tgz",
+      "license": "assets/fonts/geist-mono-OFL.txt",
+      "sha256": "684ad5b531f81d43c1e8c7038262d5db7cdc1f68006e04d6c7769efa8d33c8cc"
+    }
+  ]
+}

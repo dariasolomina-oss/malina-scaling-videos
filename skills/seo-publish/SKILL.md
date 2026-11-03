@@ -1,7 +1,7 @@
 ---
 name: seo-publish
 description: After explicit acceptance of the current delivery video, generate source-grounded YouTube titles and description, validate their artifact binding, and deliver copy in chat without uploading.
-version: 0.3.0
+version: 0.4.0
 ---
 
 # YouTube SEO and delivery
@@ -22,7 +22,7 @@ approval between hashes or request a second approval for unchanged already accep
    research/evidence, brand tone and `brands/<id>/product.md`. A product.md placeholder
    is not evidence. If claims need further verification, use authoritative sources or
    omit the unsupported claim. Do not derive facts from sample HTML.
-2. Use the video's language. Infer the search intent from its actual subject, viewer
+2. Use English only; metadata language is exactly `en`. Infer the search intent from its actual subject, viewer
    problem and demonstrated mechanism. Select ONE primary keyword and a few relevant
    secondary terms. No invented search volume, trend, score or competitive analysis.
    No keyword stuffing or promise of better ranking/CTR. Research is optional when

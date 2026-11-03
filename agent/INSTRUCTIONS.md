@@ -1,9 +1,15 @@
 # S2 video assistant contract
 
-Version: 0.3.2 (2026-10-30). Video Producer repository configuration, not an installed platform agent.
+Version: 0.4.0 (2026-11-03). Video Producer repository configuration, not an installed platform agent.
 This file owns common policies; skills add task-specific steps, not exceptions.
 Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
 `engine/render/README.md`, and the selected brand guide before work.
+For all four product profiles and source boundaries, read `docs/multi-product.md`.
+Select the product explicitly at intake; never silently default to LakeSentry.
+All authored deliverables and actual speech are English-only; record language as
+exactly `en`, never as an intake choice. Semantically review prose and actual speech.
+`language_policy.py` rejects non-en metadata and non-Latin output letters; it is NOT
+a language detector, and audio timing/codec checks do not establish English speech.
 
 ## Scope and truth
 
@@ -19,7 +25,8 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
   the specific blocker; do not silently require storage or claim successful delivery.
   Today only `LocalDirectoryStorage` exists: label snapshots local tests, never cloud
   uploads or external backups. No platform agent is installed.
-- All current development and dev tests stay on `dev/s2-lakesentry-e2e-20261028`.
+- Use the development branch explicitly authorized for the task.
+  `dev/s2-lakesentry-e2e-20261028` is a historical increment, not a mandatory branch.
   Production episode branches (`ep/<episode-id>`) are a separate operational
   convention, not a reason to switch branches during development. Do not create,
   switch, commit or push branches without an authorized task.
@@ -34,14 +41,25 @@ Read `docs/s2-platform-setup.md`, `docs/state-and-audio.md`,
   tool or claim the agent exists. A supported platform UI/admin setup is required.
   Repository updates require manual platform profile update/publication and validation;
   they do not automatically activate this configuration in a published profile.
-- Mariia’s current Git connection, `Mariia Git · dariasolomina-oss`, has working
-  read access. Write/push permission is not established by read success. Use the
-  authorized connector; never write credentials or environment values to files.
+- Check Git connection capabilities for the executing sender and session.
+  A historical read-success observation does not establish push permission. Use
+  the authorized connector; never write credentials or environment values to files.
 - Missing Drive/S3 does not block intake, approved production or chat-attachment
   delivery. Skills’ storage/upload requirements apply only to a separately requested
   external operation. Attachment delivery is not publication or durable backup.
 
-## Optional LakeSentry editorial context
+## Product selection and optional editorial context
+
+Read the selected profile at `brands/<id>/brand.json`, `product.md`,
+`sources.json` and `style-guide.md`: `lakesentry`, `antares`, `secondstack`,
+`alchemist`. Use only its scheduler URL, logos, tokens, templates and vocabulary.
+Do not transfer product claims or LakeSentry UI to another brand. Scheduler URLs
+for every product are listed in `docs/multi-product.md`; all have the same optional,
+read-only, privacy and evidence boundaries below. Antares and Alchemist still
+need official topic documentation before technical scripts; stop and ask if
+essential evidence is absent. Source registration is not an access grant.
+
+### LakeSentry example and historical access record
 
 `https://content-machine.spot.t1a.dev/ls/` is one optional information/context
 source, not a required topic source or a boundary on original ideas. Use relevant
@@ -59,11 +77,13 @@ not prove publication. All existing script/video approvals and SEO gates apply.
 ## Mandatory gates (fail closed)
 
 1. **Intake and source-first research before script:** obtain product/brand, topic
-   and audience/goal, selected format/aspect ratio, target duration, language and
-   voice choice. Voice must be explicit (authorized synthetic voice, human recording,
+   and audience/goal, selected format/aspect ratio, target duration and
+   voice choice. Output language is fixed to `en`. Voice must be explicit (authorized synthetic voice, human recording,
    or explicitly approved no-voice format). Ask for missing inputs; do not silently
    pick them. Read the selected brand's `product.md` source registry, then actually
    read the relevant official product documentation before drafting any script.
+   For every product, use its registry and observed official documentation links.
+   A null documentation root means missing evidence, not permission to invent it.
    For LakeSentry, start at the observed official Docs destination
    `https://docs.lakesentry.io/` and follow observed links for the episode topic;
    never guess page URLs. The registry is an index, not a substitute for reading.
@@ -110,8 +130,8 @@ not prove publication. All existing script/video approvals and SEO gates apply.
 
 After the author explicitly accepts the current final delivery video, automatically
 continue with `skills/seo-publish/SKILL.md` (v0.3.0 or later): generate one recommended
-YouTube title, two alternatives and a ready-to-paste SEO-oriented description in the
-video language. Ground them in the approved script, actual video/review notes and
+YouTube title, two alternatives and a ready-to-paste SEO-oriented description in
+English (`en`). Ground them in the approved script, actual video/review notes and
 verified product sources. Do not copy historical calculator examples as facts. No
 ranking/CTR guarantees, invented savings or keyword stuffing. Do not require Drive/S3
 or a separate keyword API. Do not stop at "video approved" unless the author declines

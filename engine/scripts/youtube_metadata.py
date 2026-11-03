@@ -15,6 +15,7 @@ replaced; the pair is not a filesystem transaction (check detects partial writes
 Use a single writer; concurrent hostile filesystem mutations are not supported.
 """
 import argparse
+import language_policy
 import hashlib
 import json
 import os
@@ -34,7 +35,7 @@ def _hash(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def _text(value, field, limit=None, multiline=False):
+def _text(value, field, limit=None, multiline=False, prose=True):
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f'{field}: nonempty text required')
     if any(unicodedata.category(c).startswith('C') and not (multiline and c == '\n') for c in value):
@@ -43,6 +44,8 @@ def _text(value, field, limit=None, multiline=False):
         raise ValueError(f'{field}: placeholder forbidden')
     if limit is not None and len(value) > limit:
         raise ValueError(f'{field}: maximum {limit} characters')
+    if prose:
+        language_policy.check_prose(value)
     return value
 
 
@@ -50,6 +53,7 @@ def validate(value):
     required = {'title', 'description', 'language', 'primary_keyword', 'evidence', 'video_hash', 'script_hash'}
     if not isinstance(value, dict) or not required <= value.keys() or value.keys() - required - {'alternative_titles', 'notes'}:
         raise ValueError('invalid metadata fields')
+    language_policy.require_en(value.get('language'))
     result = dict(value)
     for field, limit in [('title', 100), ('description', 5000), ('language', None), ('primary_keyword', None)]:
         _text(result[field], field, limit, field == 'description')
@@ -77,7 +81,7 @@ def validate(value):
         if not isinstance(refs, list) or not refs:
             raise ValueError('claim references required')
         for ref in refs:
-            _text(ref, 'reference')
+            _text(ref, 'reference', prose=False)
     return result
 
 

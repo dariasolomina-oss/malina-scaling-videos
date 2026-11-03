@@ -1,5 +1,7 @@
 # Brief: <working title>
 
+- **Product / brand profile:** lakesentry | antares | secondstack | alchemist (select one explicitly)
+- **Output language:** en (fixed; semantically review text and speech)
 - **Idea in one line:** <the one thing the viewer should get>
 - **Anchor source:** <feature page / LinkedIn post id / GTM repo script path / blog URL>
 - **Format:** long form 16:9 | Short 9:16

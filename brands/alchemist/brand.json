@@ -1,0 +1,66 @@
+{
+  "name": "Alchemist",
+  "id": "alchemist",
+  "output_language": "en",
+  "colors": {
+    "page": "#181818",
+    "surface": "#1F1F1F",
+    "ink": "#E9E9E9",
+    "muted": "#A8A8A8",
+    "border": "#2F2F2F",
+    "primary": "#5EC269",
+    "accent": "#5EC269"
+  },
+  "fonts": {
+    "headline": "Inter",
+    "ui": "Inter",
+    "mono": "\"Geist Mono\""
+  },
+  "font_faces": [
+    {
+      "family": "Inter",
+      "src": "assets/fonts/inter-latin-wght-normal.woff2",
+      "weight": "100 900",
+      "style": "normal"
+    },
+    {
+      "family": "Geist Mono",
+      "src": "assets/fonts/geist-mono-latin-wght-normal.woff2",
+      "weight": "100 900",
+      "style": "normal"
+    }
+  ],
+  "logo": {
+    "dark": "assets/logo/alchemist-dark.svg",
+    "mark": "assets/logo/alchemist-mark.svg"
+  },
+  "editorial": {
+    "theme": "dark",
+    "logo_variant": "dark",
+    "radius": "10px",
+    "disclosure": "Illustrative example \u2014 not product UI."
+  },
+  "safe_zone_shorts": {
+    "top": 240,
+    "left": 60,
+    "right": 120,
+    "bottom": 380
+  },
+  "transcription_prompt": "Alchemist.",
+  "spelling_fixes": [],
+  "split_word_merges": [],
+  "voice": null,
+  "brand_rules_source": "https://alchemist-brandkit.spot.t1a.dev/",
+  "brand_rules_checked_at": "2026-11-03",
+  "product": {
+    "name": "Alchemist",
+    "brief": "product.md",
+    "source_registry": "sources.json",
+    "documentation_url": null,
+    "website_url": null,
+    "reviewed_at": "2026-11-03",
+    "supplemental_context_urls": [
+      "https://content-machine.spot.t1a.dev/alch/"
+    ]
+  }
+}

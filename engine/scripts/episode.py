@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Local, JSON-compatible YAML episode state and checksummed snapshots (stdlib)."""
 import argparse
+import language_policy
 import hashlib
 import json
 import os
@@ -46,6 +47,8 @@ def write_json(path, value):
 
 
 def create(root, episode_id, title, language='en'):
+    language_policy.require_en(language)
+    language_policy.check_prose(title)
     if not re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}', episode_id):
         raise ValueError('invalid episode id')
     root = Path(root)
@@ -65,6 +68,11 @@ def load(root):
     state = json.loads(safe_path(root, 'episode.yaml').read_text(encoding='utf-8'))
     if state.get('schema_version') != 1 or state.get('status') not in STATUSES:
         raise ValueError('invalid episode state')
+    language_policy.require_en(state.get('language'))
+    for section in ('metadata', 'branch'):
+        if section in state:
+            language_policy.require_en(state[section].get('language'))
+    language_policy.check_prose(safe_path(root, state['script_path']).read_text(encoding='utf-8'))
     current = digest(safe_path(root, state['script_path']))
     if current != state['script_hash']:
         state.update(script_hash=current, revision=state['revision']+1, approvals={}, status='script')
@@ -222,7 +230,7 @@ def main():
         p = sub.add_parser(cmd)
         p.add_argument('episode', type=Path)
         if cmd == 'create':
-            p.add_argument('--id', required=True); p.add_argument('--title', required=True); p.add_argument('--language', default='en')
+            p.add_argument('--id', required=True); p.add_argument('--title', required=True); p.add_argument('--language', default='en', choices=('en',))
         if cmd == 'approve':
             p.add_argument('kind', choices=['script', 'video']); p.add_argument('--human', required=True); p.add_argument('--confirm', action='store_true')
         if cmd == 'transition':

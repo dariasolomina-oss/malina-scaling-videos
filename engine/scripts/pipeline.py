@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Local LakeSentry production CLI. Human approvals belong to episode.py only."""
+"""Local multi-product production CLI. Human approvals belong to episode.py only."""
 import argparse
 import hashlib
 import json
 import math
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -12,6 +13,7 @@ import tempfile
 from uuid import uuid4
 
 import episode
+import language_policy
 import prepare_page
 import timings
 import voice_elevenlabs
@@ -49,17 +51,23 @@ def init(root, episode_id, brand, format, duration, voice, author, thread_url=No
         raise ValueError('positive finite duration <=3600 and author required')
     brand = Path(brand).resolve()
     config = read(brand/'brand.json')
-    if config.get('name') != 'LakeSentry':
-        raise ValueError('LakeSentry brand required')
+    name = config.get('name')
+    slug = config.get('id', brand.name)
+    if not isinstance(name, str) or not name.strip():
+        raise ValueError('brand name required')
+    if not isinstance(slug, str) or not re.fullmatch(r'[a-z0-9][a-z0-9_-]{0,79}', slug):
+        raise ValueError('invalid brand id')
+    if config.get('output_language', 'en') != 'en':
+        raise ValueError('output language must be en')
     root = Path(root)
-    state = episode.create(root, episode_id, 'LakeSentry demo', 'en')
+    state = episode.create(root, episode_id, name + ' demo', 'en')
     state['metadata'] = dict(language='en', author=author, thread_url=thread_url)
-    state['branch'] = dict(name='ep/lakesentry/'+episode_id, language='en', format=format)
-    state['pipeline'] = dict(brand=str(brand), format=format, duration=duration, voice=voice)
+    state['branch'] = dict(name='ep/'+slug+'/'+episode_id, language='en', format=format)
+    state['pipeline'] = dict(brand=str(brand), product=slug, format=format, duration=duration, voice=voice)
     save(root, state)
     # No facts/results or product UI are invented here. Editor replaces placeholders.
-    (root/'script.md').write_text('# LakeSentry demo\n\nTODO: write the script and obtain explicit human approval.\n', encoding='utf-8')
-    episode.write_json(root/'content.json', dict(demo=True, headline='LakeSentry',
+    (root/'script.md').write_text('# ' + name + ' demo\n\nTODO: write the script and obtain explicit human approval.\n', encoding='utf-8')
+    episode.write_json(root/'content.json', dict(demo=True, headline=name,
         subtitle='Editorial demo', footer='Pending review', blocks=[], duration=duration))
     (root/'inputs').mkdir()
     (root/'source').mkdir()
@@ -160,7 +168,7 @@ def inputs(root, state):
         brand=tree_hash(Path(cfg['brand'])),
         engine={str(p.relative_to(REPO)): episode.digest(p) for p in
                 [Path(__file__), Path(episode.__file__), Path(prepare_page.__file__),
-                 Path(timings.__file__), Path(voice_elevenlabs.__file__),
+                 Path(timings.__file__), Path(voice_elevenlabs.__file__), Path(language_policy.__file__),
                  *sorted((REPO/'engine/render').glob('*.js'))]})
 
 
