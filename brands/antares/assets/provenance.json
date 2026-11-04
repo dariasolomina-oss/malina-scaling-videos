@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-11-03",
+  "policy": "Official artwork unmodified; preserve source trademarks. Fonts retain bundled OFL licenses. Do not imply endorsement or redistribute third-party logos.",
+  "assets": [
+    {
+      "path": "assets/logo/antares-wordmark-black-transparent-2400.png",
+      "url": "https://getantares.io/brand/wordmark/antares-wordmark-black-transparent-2400.png",
+      "sha256": "7944cc80385270d8881adb28fc2c9f61aff5b4b0ef6f55db4868628ed1efa3db"
+    },
+    {
+      "path": "assets/logo/antares-wordmark-white-transparent-2400.png",
+      "url": "https://getantares.io/brand/wordmark/antares-wordmark-white-transparent-2400.png",
+      "sha256": "01c95034c9e8e8d79ea9bd516aecbf0d3789419a77b0a1587dc80e3b4478e85a"
+    },
+    {
+      "path": "assets/logo/antares-mark-blue-transparent-1024.png",
+      "url": "https://getantares.io/brand/mark/antares-mark-blue-transparent-1024.png",
+      "sha256": "efaa458acf22f5aecdcf8b1545736c973031ea35b2cfd460b10830b89925b451"
+    },
+    {
+      "path": "assets/logo/antares-wordmark-blue-transparent-2400.png",
+      "url": "https://getantares.io/brand/wordmark/antares-wordmark-blue-transparent-2400.png",
+      "sha256": "3991023b9c149a0ae15046a1daa238b09e78c602eede817c5d3b98e9ae8f315b"
+    }
+  ]
+}

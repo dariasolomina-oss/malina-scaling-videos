@@ -29,8 +29,8 @@
       "type": "string"
     },
     "language": {
-      "type": "string",
-      "description": "Content language tag, default en; not an editorial approval."
+      "const": "en",
+      "description": "Fixed English output; semantic prose and speech review remains mandatory."
     },
     "status": {
       "enum": [

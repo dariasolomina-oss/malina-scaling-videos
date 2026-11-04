@@ -1,0 +1,52 @@
+{
+  "checked_at": "2026-11-03",
+  "policy": "Official artwork unmodified; preserve source trademarks. Fonts retain bundled OFL licenses. Do not imply endorsement or redistribute third-party logos.",
+  "assets": [
+    {
+      "path": "assets/logo/secondstack-lockup-cyan-forlight-transparent-2400.png",
+      "url": "https://secondstack.ai/brandkit/secondstack/lockups/secondstack-lockup-cyan-forlight-transparent-2400.png",
+      "sha256": "d3868b0c4986f648d4d05234a523b193df319e8f315fcb5bc923d93f37277c6e"
+    },
+    {
+      "path": "assets/logo/secondstack-lockup-cyan-fordark-transparent-2400.png",
+      "url": "https://secondstack.ai/brandkit/secondstack/lockups/secondstack-lockup-cyan-fordark-transparent-2400.png",
+      "sha256": "1f943b1d29ad78c93738e94b4c825d909198d4d5b7860c77e5514401ad6500d7"
+    },
+    {
+      "path": "assets/logo/secondstack-black-transparent-1024.png",
+      "url": "https://secondstack.ai/brandkit/secondstack/secondstack-black-transparent-1024.png",
+      "sha256": "d21590da10a7d313328548d8bb140cf526768f32bf28a43ef9a40c47531361cb"
+    },
+    {
+      "path": "assets/logo/secondstack-white-transparent-1024.png",
+      "url": "https://secondstack.ai/brandkit/secondstack/secondstack-white-transparent-1024.png",
+      "sha256": "9ab2002287b0fd125f3920189f89904810d55ecf993c9539008212260b9cb563"
+    },
+    {
+      "path": "assets/logo/secondstack-multicolor-forlight-transparent-1024.png",
+      "url": "https://secondstack.ai/brandkit/secondstack/secondstack-multicolor-forlight-transparent-1024.png",
+      "sha256": "ae14e386b275247420342433b9ffb91daaeef7249d92253e15a2624350b5cc23"
+    },
+    {
+      "path": "assets/fonts/geist-latin-wght-normal.woff2",
+      "url": "https://www.npmjs.com/package/@fontsource-variable/geist/v/5.3.0",
+      "archive": "fontsource-variable-geist-5.3.0.tgz",
+      "license": "assets/fonts/geist-OFL.txt",
+      "sha256": "19f9c92546aa300c312235e3125af1b81394d8db9a4bc4a425cd5b641d2d54e1"
+    },
+    {
+      "path": "assets/fonts/inter-latin-wght-normal.woff2",
+      "url": "https://www.npmjs.com/package/@fontsource-variable/inter/v/5.3.0",
+      "archive": "fontsource-variable-inter-5.3.0.tgz",
+      "license": "assets/fonts/inter-OFL.txt",
+      "sha256": "3100e775e8616cd2611beecfa23a4263d7037586789b43f035236a2e6fbd4c62"
+    },
+    {
+      "path": "assets/fonts/geist-mono-latin-wght-normal.woff2",
+      "url": "https://www.npmjs.com/package/@fontsource-variable/geist-mono/v/5.3.0",
+      "archive": "fontsource-variable-geist-mono-5.3.0.tgz",
+      "license": "assets/fonts/geist-mono-OFL.txt",
+      "sha256": "684ad5b531f81d43c1e8c7038262d5db7cdc1f68006e04d6c7769efa8d33c8cc"
+    }
+  ]
+}

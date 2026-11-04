@@ -1,0 +1,75 @@
+{
+  "name": "SecondStack",
+  "id": "secondstack",
+  "output_language": "en",
+  "colors": {
+    "page": "#F4F5F7",
+    "surface": "#FFFFFF",
+    "ink": "#0B0D10",
+    "muted": "#565D66",
+    "border": "#A7AEB6",
+    "primary": "#0A6E9C",
+    "accent": "#2FB5F4"
+  },
+  "fonts": {
+    "headline": "Geist",
+    "ui": "Inter",
+    "mono": "\"Geist Mono\""
+  },
+  "font_faces": [
+    {
+      "family": "Geist",
+      "src": "assets/fonts/geist-latin-wght-normal.woff2",
+      "weight": "100 900",
+      "style": "normal"
+    },
+    {
+      "family": "Inter",
+      "src": "assets/fonts/inter-latin-wght-normal.woff2",
+      "weight": "100 900",
+      "style": "normal"
+    },
+    {
+      "family": "Geist Mono",
+      "src": "assets/fonts/geist-mono-latin-wght-normal.woff2",
+      "weight": "100 900",
+      "style": "normal"
+    }
+  ],
+  "logo": {
+    "light": "assets/logo/secondstack-lockup-cyan-forlight-transparent-2400.png",
+    "dark": "assets/logo/secondstack-lockup-cyan-fordark-transparent-2400.png",
+    "mark": "assets/logo/secondstack-black-transparent-1024.png",
+    "white": "assets/logo/secondstack-white-transparent-1024.png",
+    "multicolor": "assets/logo/secondstack-multicolor-forlight-transparent-1024.png"
+  },
+  "editorial": {
+    "theme": "light",
+    "logo_variant": "light",
+    "radius": "16px",
+    "disclosure": "Illustrative example \u2014 not product UI."
+  },
+  "safe_zone_shorts": {
+    "top": 240,
+    "left": 60,
+    "right": 120,
+    "bottom": 380
+  },
+  "transcription_prompt": "SecondStack.",
+  "spelling_fixes": [],
+  "split_word_merges": [],
+  "voice": null,
+  "brand_rules_source": "https://secondstack.ai/brandkit/agents.md",
+  "brand_rules_checked_at": "2026-11-03",
+  "product": {
+    "name": "SecondStack",
+    "brief": "product.md",
+    "source_registry": "sources.json",
+    "documentation_url": "https://docs.secondstack.ai/",
+    "website_url": "https://secondstack.ai/",
+    "reviewed_at": "2026-11-03",
+    "supplemental_context_urls": [
+      "https://content-machine.spot.t1a.dev/2s/"
+    ]
+  }
+}

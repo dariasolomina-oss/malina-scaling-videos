@@ -1,7 +1,7 @@
 ---
 name: video-format
 description: Specify aspect ratio, duration, scene structure, captions and timing requirements for an approved video format without changing workflow approvals.
-version: 0.2.0
+version: 0.4.0
 ---
 
 # Video format
@@ -10,7 +10,8 @@ Common policy: `../../agent/INSTRUCTIONS.md`. This skill defines the deliverable
 contract; it does not authorize production.
 
 - Confirm 16:9 landscape (1920×1080) or 9:16 vertical (1080×1920), duration in
-  seconds, language, voice, caption treatment and intended channel before script.
+  seconds, voice, caption treatment and intended channel before script.
+  Output language is fixed to `en`; semantically review text and actual speech.
   Different aspect ratios need explicit layout review, not an automatic crop.
 - State the opening problem, evidence-led demonstration, takeaway and CTA. Keep
   each beat's viewer benefit, visible action and narration in the script table.

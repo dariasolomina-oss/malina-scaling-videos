@@ -21,6 +21,7 @@ import pipeline
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--run', action='store_true', help='explicitly run real browser fixture')
+    p.add_argument('--brand', choices=('lakesentry','antares','secondstack','alchemist'), default='lakesentry')
     p.add_argument('--duration', type=int, default=1, choices=range(1,31), metavar='1..30')
     p.add_argument('--format', choices=('horizontal','vertical','both'), default='both')
     p.add_argument('--draft-only', action='store_true')
@@ -31,9 +32,9 @@ def main():
     report = dict(kind='synthetic_browser_smoke_NOT_production_approval', cases=[], directory=str(base))
     for fmt in (('horizontal', 'vertical') if a.format=='both' else (a.format,)):
         ep = base/fmt
-        pipeline.init(ep, 'smoke-'+fmt, ROOT/'brands/lakesentry', fmt, a.duration, 'none', 'AUTOMATED TEST FIXTURE')
-        (ep/'script.md').write_text('# Synthetic smoke fixture\nShow the LakeSentry demo layout for the configured test duration. Not a production video.\n')
-        content = json.loads((ROOT/'brands/lakesentry/examples/demo-content.json').read_text())
+        pipeline.init(ep, 'smoke-'+fmt, ROOT/'brands'/a.brand, fmt, a.duration, 'none', 'AUTOMATED TEST FIXTURE')
+        (ep/'script.md').write_text('# Synthetic smoke fixture\nShow the selected editorial layout for the configured test duration. Not a production video.\n')
+        content = json.loads((ROOT/'brands'/a.brand/'examples/demo-content.json').read_text())
         content['duration'] = a.duration
         episode.write_json(ep/'content.json', content)
         episode.load(ep)

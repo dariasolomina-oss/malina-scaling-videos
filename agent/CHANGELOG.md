@@ -1,3 +1,18 @@
+## 0.4.0 — 2026-11-03
+
+- Added independent Antares, SecondStack and Alchemist profiles, official logos,
+  font licenses/provenance, style guides, source registries and two offline
+  editorial templates per product. No LakeSentry UI/assets/claims copied.
+- Removed the LakeSentry-only pipeline initialization gate; product-specific
+  titles, branch descriptors and content now follow the selected profile.
+- Kept existing production approval gates and hash checks. Added fixed `en`
+  metadata/prose checks; these are not language detection or speech validation.
+- Scheduler URLs are optional read-only context. Browser checks redirected to
+  sign in; no scheduler content copied, access granted or named-agent test claimed.
+- Documented Antares marketing/brand percentage conflict and missing Antares /
+  Alchemist official topic docs. Technical scripts still require actual research.
+- Repository changes only: no platform Agent/profile publication or main merge.
+
 ## 0.3.2 — 2026-10-30
 
 - Added the LakeSentry content board as optional supplemental/editorial context,

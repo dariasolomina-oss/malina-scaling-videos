@@ -1,7 +1,7 @@
 ---
 name: demo-video
 description: Orchestrate a source-grounded product demo from complete intake through human script review, guarded preview30, final60 and delivery acceptance.
-version: 0.3.2
+version: 0.4.0
 ---
 
 # Demo video
@@ -9,7 +9,9 @@ version: 0.3.2
 Common policy: read and follow `../../agent/INSTRUCTIONS.md`. This skill cannot
 waive its gates. CLI availability: `../../docs/s2-platform-setup.md`.
 
-1. Identify the thread's one episode and collect every mandatory intake input.
+1. Identify the thread's one episode, select the product explicitly using
+   `../../docs/multi-product.md`, and collect every mandatory intake input.
+   Output language is fixed to `en`; semantically review all prose and actual speech.
    Follow `../../docs/product-research.md`: read the brand's `product.md` registry,
    then read topic-relevant official product docs (LakeSentry:
    `https://docs.lakesentry.io/`, following observed links only). Save episode-local
@@ -19,7 +21,7 @@ waive its gates. CLI availability: `../../docs/s2-platform-setup.md`.
    website/docs conflicts with the human; omit unsupported nonessential claims or
    stop and ask when essential evidence is blocked. Do not invent missing content.
    No fixed source quota applies; 5–7 candidate topics are optional, not 5–7 docs.
-   LakeSentry's `https://content-machine.spot.t1a.dev/ls/` is optional supplemental
+   The selected product's scheduler (see its `sources.json`) is optional supplemental
    editorial context, never a mandatory topic source or limit on original ideas.
    Check only relevant posts as needed; combine with docs/user topic or skip them.
    Follow the research guide's read-only/privacy rules and record actual reading

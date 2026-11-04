@@ -1,0 +1,55 @@
+{
+  "name": "Antares",
+  "id": "antares",
+  "output_language": "en",
+  "colors": {
+    "page": "#FFFFFF",
+    "surface": "#FAFAFA",
+    "ink": "#0A0A0A",
+    "muted": "#525252",
+    "border": "#E5E5E5",
+    "primary": "#2563EB",
+    "accent": "#2563EB"
+  },
+  "fonts": {
+    "headline": "\"Helvetica Neue\", Helvetica, Arial",
+    "ui": "\"Helvetica Neue\", Helvetica, Arial",
+    "mono": "ui-monospace, monospace"
+  },
+  "font_faces": [],
+  "logo": {
+    "light": "assets/logo/antares-wordmark-black-transparent-2400.png",
+    "dark": "assets/logo/antares-wordmark-white-transparent-2400.png",
+    "mark": "assets/logo/antares-mark-blue-transparent-1024.png",
+    "blue": "assets/logo/antares-wordmark-blue-transparent-2400.png"
+  },
+  "editorial": {
+    "theme": "light",
+    "logo_variant": "light",
+    "radius": "0px",
+    "disclosure": "Example data \u2014 not a customer environment. Not product UI."
+  },
+  "safe_zone_shorts": {
+    "top": 240,
+    "left": 60,
+    "right": 120,
+    "bottom": 380
+  },
+  "transcription_prompt": "Antares.",
+  "spelling_fixes": [],
+  "split_word_merges": [],
+  "voice": null,
+  "brand_rules_source": "https://getantares.io/brand/agents.md",
+  "brand_rules_checked_at": "2026-11-03",
+  "product": {
+    "name": "Antares",
+    "brief": "product.md",
+    "source_registry": "sources.json",
+    "documentation_url": null,
+    "website_url": "https://getantares.io/",
+    "reviewed_at": "2026-11-03",
+    "supplemental_context_urls": [
+      "https://content-machine.spot.t1a.dev/ant/"
+    ]
+  }
+}

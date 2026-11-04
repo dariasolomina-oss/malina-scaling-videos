@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "product": "SecondStack",
+  "reviewed_at": "2026-11-03",
+  "documentation_root": "https://docs.secondstack.ai/",
+  "policy": "Read current topic-specific official documentation before script. Brandkit and scheduler are not feature evidence.",
+  "sources": [
+    {
+      "id": "S01",
+      "title": "SecondStack brandkit",
+      "url": "https://secondstack.ai/brandkit/",
+      "kind": "brand_guidance",
+      "status": "read",
+      "checked_at": "2026-11-03",
+      "verification_scope": "Visual identity only; not product-function evidence."
+    },
+    {
+      "id": "S02",
+      "title": "SecondStack scheduler",
+      "url": "https://content-machine.spot.t1a.dev/2s/",
+      "kind": "supplemental_editorial_context",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "required": false,
+      "topic_origin_required": false,
+      "read_only": true,
+      "access_checks": [
+        {
+          "actor": "Project Assistant",
+          "date": "2026-11-03",
+          "outcome": "Redirected to platform sign in; no cards or post bodies read. No login performed."
+        }
+      ],
+      "verification_scope": "Optional editorial context. Access by Video Producer is untested; source registration grants no access.",
+      "privacy": "No internal post bodies, personal data or login URLs/tokens copied into Git."
+    },
+    {
+      "id": "S03",
+      "title": "SecondStack Documentation",
+      "url": "https://docs.secondstack.ai/",
+      "kind": "documentation_index",
+      "status": "read",
+      "checked_at": "2026-11-03",
+      "verification_scope": "Documentation entry page read; not topic-specific evidence or live feature testing."
+    }
+  ]
+}
