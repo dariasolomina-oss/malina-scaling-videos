@@ -50,9 +50,9 @@
     "name": "Alchemist",
     "brief": "product.md",
     "source_registry": "sources.json",
-    "documentation_url": null,
-    "website_url": null,
-    "reviewed_at": "2026-11-03",
+    "documentation_url": "https://docs.getalchemist.io/",
+    "website_url": "https://getalchemist.io/",
+    "reviewed_at": "2026-11-05",
     "supplemental_context_urls": [
       "https://content-machine.spot.t1a.dev/alch/"
     ]

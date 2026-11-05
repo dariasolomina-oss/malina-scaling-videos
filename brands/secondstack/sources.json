@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "product": "SecondStack",
-  "reviewed_at": "2026-11-03",
+  "reviewed_at": "2026-11-05",
   "documentation_root": "https://docs.secondstack.ai/",
   "policy": "Read current topic-specific official documentation before script. Brandkit and scheduler are not feature evidence.",
   "sources": [
@@ -40,8 +40,101 @@
       "url": "https://docs.secondstack.ai/",
       "kind": "documentation_index",
       "status": "read",
-      "checked_at": "2026-11-03",
-      "verification_scope": "Documentation entry page read; not topic-specific evidence or live feature testing."
+      "checked_at": "2026-11-05",
+      "sections_read": ["Explore the docs", "What the platform includes"],
+      "verification_scope": "Documentation index for discovery. Use the linked feature pages for specific claims."
+    },
+    {
+      "id": "S04",
+      "title": "SecondStack — Enterprise AI agents",
+      "url": "https://secondstack.ai/platform/agents/",
+      "kind": "marketing",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "verification_scope": "Public product description of personal, project and named agents, their scope, and the test-and-publish workflow. Verify actual controls and channels in the target deployment."
+    },
+    {
+      "id": "S05",
+      "title": "Self-Hosting SecondStack",
+      "url": "https://docs.secondstack.ai/getting-started/self-hosting/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "Deployment model",
+        "Minimum requirements",
+        "Authentication"
+      ],
+      "verification_scope": "Deployment options, infrastructure, identity and upstream-provider prerequisites. Platform storage requirements do not establish the storage configuration of a specific agent."
+    },
+    {
+      "id": "S06",
+      "title": "SecondAgent · Agent Mode",
+      "url": "https://docs.secondstack.ai/features/ai-agent/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "How it runs",
+        "Where it runs",
+        "Skills"
+      ],
+      "verification_scope": "Documented Cowork runtime, isolated workspaces and extensible Skills. Admin configuration determines runtimes and tools. The page does not verify installation of a particular skill package."
+    },
+    {
+      "id": "S07",
+      "title": "Projects",
+      "url": "https://docs.secondstack.ai/features/projects/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "Working across project chats",
+        "Project Memories",
+        "Access and collaboration"
+      ],
+      "verification_scope": "Project-scoped threads, files and context. Access is role-dependent and checked for the requesting user."
+    },
+    {
+      "id": "S08",
+      "title": "Knowledge Collections",
+      "url": "https://docs.secondstack.ai/features/knowledge-collections/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "How it works",
+        "Sharing and permissions"
+      ],
+      "verification_scope": "Document indexing, retrieval, and separate read, edit and manage grants. Verify collection access for the actual user or agent."
+    },
+    {
+      "id": "S09",
+      "title": "SecondGate · API Routing",
+      "url": "https://docs.secondstack.ai/features/api-routing/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "Virtual API keys",
+        "Access control",
+        "Guardrails, budgets, and observability"
+      ],
+      "verification_scope": "Virtual keys, upstream routing, model permissions, policy and budgets. Check configured providers and rules before making a claim about access or data handling."
+    },
+    {
+      "id": "S10",
+      "title": "Cost Management",
+      "url": "https://docs.secondstack.ai/features/cost-management/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "Budgets at every level",
+        "Threshold alerts",
+        "Usage analytics"
+      ],
+      "verification_scope": "Request-time budget checks and configurable alerts. Verify the applicable budget, attribution and notification settings in the deployment shown."
     }
   ]
 }

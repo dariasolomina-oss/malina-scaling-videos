@@ -11,9 +11,9 @@ speech are English-only; record language as exactly `en`, not an intake choice.
 | Product / profile ID | Brandkit | Optional read-only scheduler | Official docs status |
 |---|---|---|---|
 | LakeSentry / `lakesentry` | https://lakesentry.io/brandkit/ | https://content-machine.spot.t1a.dev/ls/ | https://docs.lakesentry.io/ — dated registry; re-read topic pages |
-| Antares / `antares` | https://getantares.io/brandkit/ | https://content-machine.spot.t1a.dev/ant/ | Not identified from observed homepage links; obtain official topic evidence |
-| SecondStack / `secondstack` | https://secondstack.ai/brandkit/ | https://content-machine.spot.t1a.dev/2s/ | https://docs.secondstack.ai/ — entry page read, topic pages still required |
-| Alchemist / `alchemist` | https://alchemist-brandkit.spot.t1a.dev/ | https://content-machine.spot.t1a.dev/alch/ | Not supplied/discovered in the brandkit; obtain official topic evidence |
+| Antares / `antares` | https://getantares.io/brandkit/ | https://content-machine.spot.t1a.dev/ant/ | https://docs.getantares.io/ — dated registry covers Analyzer and Converter. Re-read topic pages. |
+| SecondStack / `secondstack` | https://secondstack.ai/brandkit/ | https://content-machine.spot.t1a.dev/2s/ | https://docs.secondstack.ai/ — dated registry covers agents, Projects, Collections, deployment and controls. |
+| Alchemist / `alchemist` | https://alchemist-brandkit.spot.t1a.dev/ | https://content-machine.spot.t1a.dev/alch/ | https://docs.getalchemist.io/ — dated registry covers SAS analysis, conversion and target-specific caveats. |
 
 Each profile owns `brand.json`, `product.md`, `sources.json`, `style-guide.md`, local
 assets and templates. New profiles do not inherit LakeSentry UI, claims, fonts,
