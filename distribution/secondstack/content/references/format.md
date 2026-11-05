@@ -13,7 +13,43 @@ Review actual phone-sized frames for line breaks, contrast and clipping.
 Shared geometry lives in runtime/formats/shorts/safe-zone.json, not brand settings.
 Current 1080x1920 preset uses x=60..880, y=240..1540 plus a 10px inner inset in
 universal layouts, including the right button exclusion. Verify current target UI;
-other platform overlays/cover crops need separate review.
+review other platform overlays and the cover crop separately.
+
+## Camera and sound
+
+- Frame the active control or result so it reads at phone size. Hold long enough
+  to show the action and its effect. For a dense interface, start around 2x zoom
+  and allow at least 0.7 s for a camera move, then adjust to the scene and speech.
+  Keep related controls in one frame when a move would interrupt the explanation.
+- Keep speech clear and effects below it. Check the actual mix and use -14 LUFS
+  as a starting target for voiced output. Follow the selected brand guide for
+  music and sound choices.
+
+## Captions
+
+Use these starting settings for English captions. Time each cue to the actual
+speech or approved on-screen text. Keep cues to two lines, break at natural
+phrase boundaries and check readability at delivery size.
+
+| Format | Characters per line | Cue duration |
+|---|---:|---:|
+| Horizontal 16:9 | Up to 42 | 1.5–3.5 s |
+| Vertical 9:16 | Up to 24 | 0.6–2.5 s |
+
+Use a separate SRT when the destination supports it. Burn captions into the
+video when the approved format calls for it.
+
+## Covers
+
+- For a 1280x720 landscape cover with a duration badge, leave the bottom-right
+  clear of essential content.
+- For a 1080x1920 vertical cover shown in a centered 4:5 crop, keep essential
+  text, logo and focal image within y=285..1635. Check the destination's actual
+  crop and overlays before delivery.
+- Review a phone-sized preview. Use the selected brand's typography, colors
+  and official logo.
+
+## Rendering and review
 
 Use finite window.DURATION and pure seekable render(t) in absolute seconds. Avoid
 wall-clock animation, unseeded randomness and network resources. preview30 and
