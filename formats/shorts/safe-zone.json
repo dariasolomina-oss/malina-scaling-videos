@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "id": "shorts",
+  "viewport": [
+    1080,
+    1920
+  ],
+  "safe_rect": {
+    "left": 60,
+    "top": 240,
+    "right": 880,
+    "bottom": 1540
+  },
+  "content_padding": 10,
+  "excluded_regions": [
+    {
+      "left": 880,
+      "top": 720,
+      "right": 960,
+      "bottom": 1920,
+      "role": "action_buttons"
+    }
+  ],
+  "reference_mask": "shorts-safe-zone-2025.png",
+  "scope": "Conservative shared production preset, not a guarantee of current platform overlay geometry. Recheck against the target platform before delivery."
+}

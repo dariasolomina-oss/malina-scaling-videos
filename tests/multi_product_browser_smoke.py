@@ -79,6 +79,26 @@ def main():
                             assert not state['overflow'], (state, page.evaluate("[...document.querySelectorAll('#headline,#subtitle,article,footer')].map(e=>({id:e.id,sw:e.scrollWidth,cw:e.clientWidth,sh:e.scrollHeight,ch:e.clientHeight,css:getComputedStyle(e).overflow}))"))
                             for box in state['bounds']:
                                 assert box['x'] >= 0 and box['y'] >= 0 and box['right'] <= size[0] and box['bottom'] <= size[1], state
+                            if orientation == 'vertical':
+                                rect = json.loads((ROOT/'formats/shorts/safe-zone.json').read_text())['safe_rect']
+                                for box in state['bounds']:
+                                    assert box['x'] >= rect['left'] and box['y'] >= rect['top'] and box['right'] <= rect['right'] and box['bottom'] <= rect['bottom'], state
+                            if orientation == 'vertical':
+                                # Inspect animated content bounds at every preview30 timestamp.
+                                duration = page.evaluate('window.DURATION')
+                                failures = page.evaluate('''({duration, rect}) => {
+                                    const failures = [];
+                                    for (let frame=0; frame<=Math.ceil(duration*30); frame++) {
+                                        window.render(Math.min(frame/30, duration));
+                                        for (const e of document.querySelectorAll('#stage > *, article')) {
+                                            const b=e.getBoundingClientRect();
+                                            if(b.left<rect.left || b.top<rect.top || b.right>rect.right || b.bottom>rect.bottom)
+                                                failures.push({frame, id:e.id, left:b.left, top:b.top, right:b.right, bottom:b.bottom});
+                                        }
+                                    }
+                                    return failures;
+                                }''', {'duration': duration, 'rect': rect})
+                                assert not failures, (brand, failures[:5])
                             if brand != 'lakesentry':
                                 assert state['disclosure'] == config['editorial']['disclosure']
                                 for font in config['font_faces']:

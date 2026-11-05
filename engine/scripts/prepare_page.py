@@ -19,6 +19,7 @@ import tempfile
 from urllib.parse import unquote, urlsplit
 
 REPO = Path(__file__).resolve().parents[2]
+SHORTS_SAFE_ZONE = REPO / 'formats/shorts/safe-zone.json'
 UNIVERSAL = {"universal-landscape.html", "universal-vertical.html"}
 
 
@@ -148,9 +149,26 @@ def prepare_page(brand, template, output, data=None):
             local_asset(font["src"], brand_root)
     for value in config.get("logo", {}).values():
         local_asset(value, brand_root)
+    # Platform geometry is shared, never supplied by a product profile.
+    format_policy = None
+    format_css = ''
+    if source.name == 'universal-vertical.html':
+        format_policy = json.loads(SHORTS_SAFE_ZONE.read_text(encoding='utf-8'))
+        width, height = format_policy['viewport']
+        rect = format_policy['safe_rect']
+        pad = format_policy['content_padding']
+        if (width, height) != (1080, 1920) or not (
+                0 <= rect['left'] < rect['right'] <= width
+                and 0 <= rect['top'] < rect['bottom'] <= height
+                and 0 <= pad < min(rect['right']-rect['left'], rect['bottom']-rect['top'])/2):
+            raise ValueError('Invalid shared Shorts safe zone')
+        margins = {'top': rect['top'] + pad, 'right': width - rect['right'] + pad,
+                   'bottom': height - rect['bottom'] + pad, 'left': rect['left'] + pad}
+        format_css = '\n:root {' + ''.join(
+            f'--shorts-{key}: {value}px;' for key, value in margins.items()) + '}\n'
     css = subprocess.run(["node", str(REPO / "engine/render/brand_css.js"), str(brand_path)],
                          check=True, capture_output=True, text=True).stdout
-    injection = ('<style id="generated-brand-css">\n' + css + '</style>\n'
+    injection = ('<style id="generated-brand-css">\n' + css + format_css + '</style>\n'
                  '<script id="prepared-page-data">window.PAGE_DATA=' + safe_json(content)
                  + ';window.PAGE_BRAND=' + safe_json({"name": config.get("name", ""),
                                                      "logo": config.get("logo", {}),
@@ -184,6 +202,7 @@ def prepare_page(brand, template, output, data=None):
         (staged / "content.json").write_text(json.dumps(content, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         (staged / "build.json").write_text(json.dumps({"template": source.name, "legacy": not universal,
             "viewport": {"universal-landscape.html": [1920, 1080], "universal-vertical.html": [1080, 1920]}.get(source.name),
+            "format_policy": format_policy,
             "warning": "Editorial demo; not verified product UI or evidence of results."}, indent=2) + "\n", encoding="utf-8")
         if dest.exists():
             dest.rmdir()

@@ -21,7 +21,7 @@ Content is JSON. Supported keys:
 
 `examples/demo-content.json` is explicitly illustrative, not product information. Missing `--data` uses this demo file from the chosen brand directory. Text enters an escaped JSON script and is assigned with `textContent`, never interpolated as HTML. HTML markup, arbitrary CSS, URLs and image overrides are not supported as content.
 
-The label remains visible. Use approved copy for production. Character caps are conservative input bounds, **not a promise of fit**: review line breaks and all frames, especially with other fonts/languages. These fonts are not guaranteed to cover every script. Fixed 1080/1920 geometry does not resize automatically. The vertical layout reserves top 250, bottom 390, left 70 and right 120 px; actual platform overlays vary. No voiceover, audio, captions, source verification or publishing is performed here.
+The label remains visible. Use approved copy for production. Character caps are conservative input bounds, **not a promise of fit**: review line breaks and all frames, especially with other fonts/languages. These fonts are not guaranteed to cover every script. Fixed 1080/1920 geometry does not resize automatically. The vertical layout consumes the shared `formats/shorts/safe-zone.json` policy with a 10px inner inset: top 250, bottom 390, left 70 and right 210 px. This includes the action-button exclusion; actual platform overlays vary. No voiceover, audio, captions, source verification or publishing is performed here.
 
 ## Legacy (retained filenames, not universal)
 

@@ -29,12 +29,6 @@
     "radius": "0px",
     "disclosure": "Example data \u2014 not a customer environment. Not product UI."
   },
-  "safe_zone_shorts": {
-    "top": 240,
-    "left": 60,
-    "right": 120,
-    "bottom": 380
-  },
   "transcription_prompt": "Antares.",
   "spelling_fixes": [],
   "split_word_merges": [],

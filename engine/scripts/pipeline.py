@@ -163,13 +163,16 @@ def inputs(root, state):
         if normalized['words'][-1]['end'] > cfg['duration']:
             raise ValueError('word timings exceed episode duration')
         files['timings.json'] = episode.digest(episode.safe_path(root, 'timings.json'))
-    return dict(script_hash=state['script_hash'], revision=state['revision'],
+    binding = dict(script_hash=state['script_hash'], revision=state['revision'],
         config={k: v for k, v in cfg.items() if k not in ('build', 'review_input_hash')}, files=files,
         brand=tree_hash(Path(cfg['brand'])),
         engine={str(p.relative_to(REPO)): episode.digest(p) for p in
                 [Path(__file__), Path(episode.__file__), Path(prepare_page.__file__),
                  Path(timings.__file__), Path(voice_elevenlabs.__file__), Path(language_policy.__file__),
                  *sorted((REPO/'engine/render').glob('*.js'))]})
+    if cfg['format'] == 'vertical':
+        binding['shorts_safe_zone'] = episode.digest(prepare_page.SHORTS_SAFE_ZONE)
+    return binding
 
 
 def build(root):

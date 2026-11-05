@@ -16,10 +16,11 @@ engine/                 brand-free code, same for every product
   render/               HTML page -> frames (Playwright) -> mp4; thumbnails; product screen recordings
   scripts/              transcribe, voice clean, cut on silence, join checks, captions, srt, sound mix
 brands/<name>/          one folder per brand
-  brand.json            colours, fonts, logo paths, safe zone, transcription vocabulary, spelling fixes
+  brand.json            colours, fonts, logo paths, transcription vocabulary, spelling fixes
   style-guide.md        the brand's video rules and rejected ideas
-  assets/               logo, sfx, safe-zone overlay
+  assets/               logo, fonts and sound effects
   templates/            starting pages (demo, teaser, thumbnails) and publish templates
+formats/shorts/         shared safe zone and reference overlay for vertical templates
 templates/brief.md      the intake file every new video starts from
 episodes/               one folder per video (media is git-ignored)
 docs/                   flow maps and process docs
@@ -59,7 +60,7 @@ copy LakeSentry claims, login URLs, sound effects or inline legacy UI.
 
 ## Status and what is not ported yet
 
-- **Ported:** the `_flow` HTML renderer and tools, the `_toolkit` voice and cut scripts, and the LakeSentry logo, sfx, safe zone, templates and style guide.
+- **Ported:** the `_flow` HTML renderer and tools, the `_toolkit` voice and cut scripts, the shared Shorts safe-zone overlay, and the LakeSentry logo, sfx, templates and style guide.
 - **Not ported on purpose:** the old Remotion renderer (TZ3 to TZ8, 1.3 GB, licence free only for teams of three or fewer) and the two scripts that depend on it (`sfx_mix.sh`, `remap_cues.py`); `music_mix.py`, since music beds are off per the style rules; `scratch_vo.py`, since voiceovers come from ElevenLabs only.
 - **Still LakeSentry-specific:** legacy demo/thumbnail templates and `docs/agent-flow.md`. New products have independent universal editorial layouts. Existing episode folders reference `../../../_assets/brand/`; new episodes should point at `brands/<name>/assets/` instead.
 - **Licences:** the sounds in `brands/lakesentry/assets/sfx/` come from Pixabay and Freesound. Check attribution terms before the repo goes public.

@@ -125,13 +125,6 @@
     "dark": "assets/logo/lakesentry-lockup-fordark-transparent-2400.png",
     "mark": "assets/logo/lakesentry-red-transparent-1024.png"
   },
-  "safe_zone_shorts": {
-    "image": "assets/safe-zone/shorts-safe-zone-2025.png",
-    "top": 240,
-    "left": 60,
-    "right": 120,
-    "bottom": 380
-  },
   "transcription_prompt": "Databricks, DBUs, system tables, SQL warehouses, AWS, Azure, GCP, LakeSentry.",
   "spelling_fixes": [
     [

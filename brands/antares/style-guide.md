@@ -15,7 +15,7 @@ savings, pricing or model availability. The example JSON makes no product claims
 Output language is exactly `en`. Semantically review authored text and actual
 speech for English; character checks and audio timing do not detect language.
 Voice is not preselected: `voice: null` requires explicit intake.
-Shorts use conservative shared platform margins, not a brand-owned safe-zone asset.
+Shorts geometry and reference mask are owned by `formats/shorts/`, not the brand.
 Inspect actual frames for text fit, contrast, logo space and final-resolution size.
 
 ## Assets and rights

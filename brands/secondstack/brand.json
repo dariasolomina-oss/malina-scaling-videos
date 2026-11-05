@@ -49,12 +49,6 @@
     "radius": "16px",
     "disclosure": "Illustrative example \u2014 not product UI."
   },
-  "safe_zone_shorts": {
-    "top": 240,
-    "left": 60,
-    "right": 120,
-    "bottom": 380
-  },
   "transcription_prompt": "SecondStack.",
   "spelling_fixes": [],
   "split_word_merges": [],
