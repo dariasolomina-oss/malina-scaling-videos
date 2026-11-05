@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0-candidate.1",
+  "artifacts": {
+    "UPLOAD.md": {
+      "sha256": "fca48e3cf343e988fa7625c183d8d790e56f727d708d58aa5339e7bb00a44662",
+      "bytes": 1744
+    },
+    "agent-instructions.txt": {
+      "sha256": "e2e8c7ca2b14d62f3f5ac12ba341c1f1a514c6a6773ba9de48dd3fe52c2e58ea",
+      "bytes": 1921
+    },
+    "product-collections.zip": {
+      "sha256": "0a733c66ba1d3e5fa0877db0ddff241f37b031db6dd6b3dd20b09a83797b2999",
+      "bytes": 14365
+    },
+    "video-production-toolkit.zip": {
+      "sha256": "a0856064cf2d7374a349da459a2b6937cc21e0de0c442cd4cb686a7ef2fb2542",
+      "bytes": 3254003
+    },
+    "validation.json": {
+      "sha256": "1fa6ee3f9736bbfc83e13401e0f9a35f1c427977a875a7a700236bb2092719dd",
+      "bytes": 395
+    }
+  }
+}

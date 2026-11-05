@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "installer": "not_tested",
+  "browser_layout": true,
+  "production_media": "not_generated",
+  "collections_access": "not_tested",
+  "notes": [
+    "Ported regression suite excludes source-registry file checks and removed legacy-template rendering; replacement structural checks executed.",
+    "No Agent installation, publication or user approval was performed."
+  ]
+}
