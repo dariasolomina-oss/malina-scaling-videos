@@ -51,12 +51,19 @@ video when the approved format calls for it.
 
 ## Rendering and review
 
-Use finite window.DURATION and pure seekable render(t) in absolute seconds. Avoid
-wall-clock animation, unseeded randomness and network resources. preview30 and
-final60 are frame rates for the entire timeline, not excerpts. Review both.
+Plan the opening problem, evidence-led demonstration, takeaway and CTA. For each
+beat, record the viewer benefit, visible action and narration. Review each aspect
+ratio as its own layout before approval.
+
+Use finite window.DURATION and pure seekable render(t) in absolute seconds.
+Express `T` event times in global seconds, independent of frame rate and chunks.
+Avoid wall-clock animation, unseeded randomness and network resources. Review the
+entire timeline at both preview30 and final60, including motion, caption timing
+and audio sync.
 Raw renderer video is silent H.264; guarded pipeline handles selected audio.
 Caption/transcription/codec checks do not prove correct English speech.
 
-Historical fixed demo/cover templates are excluded. Missing walkthrough/complex
-scene support is a tooling gap, not permission to invent UI or substitute static
-cards for an approved storyboard. No voice is preselected.
+The [LakeSentry historical references](lakesentry-history.md) document past
+styling and fixed examples. Use the selected brand's current style guide for
+production. If the runtime lacks a trusted scene needed for the approved
+storyboard, report the gap and get approval for any change in scope.

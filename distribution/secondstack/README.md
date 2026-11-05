@@ -2,6 +2,8 @@
 
 Baseline: `951fc06e6ee429498de5a842c196eb2a820ecf2a`.
 Release: `1.0.0-candidate.1`. Status: locally validated; not installed/published.
+The source guidance and historical references added after this release are
+prepared for the next build.
 
 This additive build layer leaves the developer toolkit's source directories and
 existing instructions unchanged. Only generated runtime copies are adapted.
@@ -42,10 +44,10 @@ changed by these scripts.
 
 Existing sibling runtime paths remain. Product documents move to Collections;
 brand configs route by Collection label, with no missing local brief/registry
-paths. Workflow/research/SEO instructions are rewritten, not copied with dangling
-links. Common policy lives only in Agent text. Fixed historical demo/cover templates
-and historical style experiments are not distributed. Universal layouts remain
-limited editorial cards, not a complete arbitrary product-demo generator.
+paths. Workflow, research and SEO procedures use the installed runtime paths.
+Common policy lives in Agent text. The builder keeps LakeSentry's historical
+style guide and six fixed templates under `references/lakesentry-history/` for
+reference. The runtime catalog contains only the universal editorial layouts.
 
 The local branch descriptor is replaced with episode_metadata. Old states are
 rejected explicitly, not silently migrated. Toolkit version participates in the
@@ -63,7 +65,8 @@ re-read during export: retain source dates and evidence limits.
 
 The disposable extracted runtime runs a ported subset of upstream regressions:
 56 Python tests, plus 7 Node renderer tests. Two upstream checks are excluded
-because they exercise removed fixed legacy templates and local product registries;
+because they exercise fixed legacy templates outside the runtime catalog and
+local product registries;
 the source-registry-specific test module is not part of the runtime suite. Routing,
 archive contents, absence of obsolete instruction links, manifest integrity,
 legacy-state rejection and four-brand no-product-file builds are checked separately.

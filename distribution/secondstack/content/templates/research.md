@@ -7,9 +7,9 @@
 
 ## Reading log
 
-| ID | Read/discovered-unread/blocked/stale/conflict | Title, revision, actual URL/section | Checked date | Claim and evidence | Requirements, permissions, scope and limits |
-|---|---|---|---|---|---|
-| S1 | | | | | |
+| ID | Read/discovered-unread/blocked/stale/conflict | Title, revision, actual URL/section | Discovery path | Checked date | Claim and evidence | Requirements, permissions, scope and limits |
+|---|---|---|---|---|---|---|
+| S1 | | | | | | |
 
 ## Claim mapping
 
@@ -19,15 +19,22 @@
 
 ## Optional editorial context
 
-- Relevance/access/date; observed board L-code/permalink and read depth:
-- Minimal context used and official documentation fact checks:
+| Board relevance, access and date | Observed L-code/permalink | Original/repost/unknown and read depth | Minimal context used | Official fact-check source IDs |
+|---|---|---|---|---|
+| | | | | |
 
 Read-only, no private bulk copying. Scheduling is not publication, and post
 approval is not script approval. Optional unavailability alone need not block.
 
-## Conflicts and rechecks
+## Conflicts and omissions
 
-| Conflicting statements or access gap | Affected claims | Omission/question | Actual resolution/source and next recheck |
+| Exact conflicting statements, sources and dates or access gap | Affected claims | Omission/question | Resolution, evidence and date |
+|---|---|---|---|
+| | | | |
+
+## Current-information rechecks
+
+| Claim and stage (script/delivery/SEO) | Date and authoritative URL/section | Result, scope and impact | Next check |
 |---|---|---|---|
 | | | | |
 

@@ -30,6 +30,17 @@ class DistributionTests(unittest.TestCase):
                 names=set(z.namelist())
                 self.assertIn('SKILL.md',names)
                 self.assertIn('runtime/formats/shorts/safe-zone.json',names)
+                history = 'references/lakesentry-history/'
+                self.assertIn('references/lakesentry-history.md', names)
+                lake = builder.ROOT/'brands/lakesentry'
+                self.assertEqual(z.read(history + 'style-guide.md'),
+                                 (lake/'style-guide.md').read_bytes())
+                for name in ('landscape-product-demo.html', 'vertical-teaser.html',
+                             'thumbnail-horizontal.html', 'thumbnail-vertical.html',
+                             'publish-horizontal.md', 'publish-vertical.md'):
+                    self.assertEqual(z.read(history + name),
+                                     (lake/'templates'/name).read_bytes())
+                    self.assertNotIn('runtime/brands/lakesentry/templates/' + name, names)
                 self.assertNotIn('runtime/agent/INSTRUCTIONS.md',names)
                 self.assertFalse(any(n.endswith('/product.md') or n.endswith('/sources.json') for n in names))
                 self.assertFalse(any('/episodes/' in n or '/node_modules/' in n or '__pycache__' in n for n in names))

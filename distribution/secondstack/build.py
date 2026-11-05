@@ -171,6 +171,14 @@ Optional editorial sources do not grant access or authorize actions.
     # Operational references are authored specifically for an installed library.
     for p in (ROOT/'distribution/secondstack/content/references').glob('*.md'):
         write(skill/'references'/p.name, p.read_text())
+    lakesentry = source/'brands/lakesentry'
+    history = skill/'references/lakesentry-history'
+    history.mkdir()
+    shutil.copy2(lakesentry/'style-guide.md', history/'style-guide.md')
+    for name in ('landscape-product-demo.html', 'vertical-teaser.html',
+                 'thumbnail-horizontal.html', 'thumbnail-vertical.html',
+                 'publish-horizontal.md', 'publish-vertical.md'):
+        shutil.copy2(lakesentry/'templates'/name, history/name)
     write(skill/'SKILL.md', (ROOT/'distribution/secondstack/content/SKILL.md').read_text())
     write(output/'agent-instructions.txt', (ROOT/'distribution/secondstack/content/agent-instructions.txt').read_text())
     write(output/'UPLOAD.md', (ROOT/'distribution/secondstack/content/UPLOAD.md').read_text())

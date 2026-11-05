@@ -33,6 +33,8 @@ def validate(output, browser=False):
         assert not (runtime/'agent').exists()
         assert not (runtime/'docs').exists()
         for p in skill.rglob('*.md'):
+            if p.is_relative_to(skill/'references/lakesentry-history'):
+                continue
             text = p.read_text()
             for stale in ('../../agent/', 'agent/INSTRUCTIONS.md', '_flow/', '_toolkit/', 'dev/s2-', 'origin/main'):
                 assert stale not in text, (p, stale)
