@@ -1,7 +1,7 @@
 # SecondStack distribution candidate
 
 Baseline: `951fc06e6ee429498de5a842c196eb2a820ecf2a`.
-Release: `1.0.0-candidate.3`. Status: locally validated; not installed/published.
+Release: `1.0.0-candidate.4`. Status: locally validated; not installed/published.
 The source guidance and historical references added after this release are
 prepared for the next build.
 
