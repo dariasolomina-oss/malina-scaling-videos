@@ -24,7 +24,7 @@ PRODUCTS = {'lakesentry': ('LakeSentry', 'ls'), 'antares': ('Antares', 'ant'),
 class MultiProductTests(unittest.TestCase):
     def test_all_profiles_initialize_and_guard_build(self):
         for slug, (name, _) in PRODUCTS.items():
-            for fmt in ('horizontal', 'vertical'):
+            for fmt in ('horizontal', 'vertical', 'square'):
                 with self.subTest(product=slug, format=fmt), tempfile.TemporaryDirectory() as tmp:
                     root = Path(tmp) / 'episode'
                     state = pipeline.init(root, 'test', ROOT/'brands'/slug, fmt, 8, 'none',

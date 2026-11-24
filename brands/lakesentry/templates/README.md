@@ -8,6 +8,7 @@
 | --- | --- | --- |
 | `universal-landscape.html` | 1920 × 1080 (16:9) | Headline, supporting sentence, up to 3 editorial blocks, footer |
 | `universal-vertical.html` | 1080 × 1920 (9:16) | Same content model, stacked blocks, reserved top/bottom/side margins |
+| `universal-square.html` | 1080 × 1080 (1:1) | Same content model, compact two-column blocks |
 
 “Universal” means this **small editorial content schema**, not arbitrary product UI, a slide language, a calculator engine, responsive design or an automatic storyboard. There are no fake controls, invented results or product screenshots in these layouts. They expose deterministic `window.render(t)` and numeric `window.DURATION` (seconds); mild entrances depend only on absolute time, with no wall clock or CSS transitions.
 

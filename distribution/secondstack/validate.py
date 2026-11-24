@@ -32,6 +32,8 @@ def validate(output, browser=False):
         run([sys.executable, str(skill/'verify.py')])
         assert not (runtime/'agent').exists()
         assert not (runtime/'docs').exists()
+        assert (runtime/'templates/video-scenes.html').is_file()
+        assert (runtime/'schemas/scenes.schema.json').is_file()
         for p in skill.rglob('*.md'):
             if p.is_relative_to(skill/'references/lakesentry-history'):
                 continue
@@ -44,7 +46,7 @@ def validate(output, browser=False):
             config = json.loads((brand/'brand.json').read_text())
             assert 'brief' not in config['product'] and 'source_registry' not in config['product']
             assert config['product']['knowledge_collection'].endswith(' Product Knowledge')
-            assert sorted(p.name for p in (brand/'templates').glob('*.html')) == ['universal-landscape.html', 'universal-vertical.html']
+            assert sorted(p.name for p in (brand/'templates').glob('*.html')) == ['universal-landscape.html', 'universal-square.html', 'universal-vertical.html']
         # Port tests into a disposable extracted runtime; developer files stay unchanged.
         shutil.copytree(ROOT/'tests', runtime/'tests')
         pipeline_test = runtime/'tests/test_pipeline.py'
@@ -80,7 +82,7 @@ import pipeline,episode
 with tempfile.TemporaryDirectory() as tmp:
  root=Path(tmp)/'episode'
  state=pipeline.init(root,'probe',Path.cwd()/'brands/antares','vertical',1,'none','TEST ONLY')
- assert 'branch' not in state and state['episode_metadata']['toolkit_version']=='1.0.0-candidate.1'
+ assert 'branch' not in state and state['episode_metadata']['toolkit_version']=='1.0.0-candidate.3'
  state['branch']={'language':'en'}
  episode.write_json(root/'episode.yaml',state)
  try:episode.load(root)

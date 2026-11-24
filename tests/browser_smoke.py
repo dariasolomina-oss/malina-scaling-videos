@@ -23,14 +23,14 @@ def main():
     p.add_argument('--run', action='store_true', help='explicitly run real browser fixture')
     p.add_argument('--brand', choices=('lakesentry','antares','secondstack','alchemist'), default='lakesentry')
     p.add_argument('--duration', type=int, default=1, choices=range(1,31), metavar='1..30')
-    p.add_argument('--format', choices=('horizontal','vertical','both'), default='both')
+    p.add_argument('--format', choices=('horizontal','vertical','square','both'), default='both')
     p.add_argument('--draft-only', action='store_true')
     a = p.parse_args()
     if not a.run:
         p.error('--run required: this is an opt-in synthetic fixture, not a production episode')
     base = Path(tempfile.mkdtemp(prefix='malina-browser-smoke-'))
     report = dict(kind='synthetic_browser_smoke_NOT_production_approval', cases=[], directory=str(base))
-    for fmt in (('horizontal', 'vertical') if a.format=='both' else (a.format,)):
+    for fmt in (('horizontal', 'vertical', 'square') if a.format=='both' else (a.format,)):
         ep = base/fmt
         pipeline.init(ep, 'smoke-'+fmt, ROOT/'brands'/a.brand, fmt, a.duration, 'none', 'AUTOMATED TEST FIXTURE')
         (ep/'script.md').write_text('# Synthetic smoke fixture\nShow the selected editorial layout for the configured test duration. Not a production video.\n')
@@ -49,7 +49,7 @@ def main():
             info = json.loads(result.stdout)
             video = next(s for s in info['streams'] if s['codec_type'] == 'video')
             assert int(video['nb_read_frames']) == fps*a.duration, video
-            assert (video['width'], video['height']) == ((1920,1080) if fmt=='horizontal' else (1080,1920))
+            assert (video['width'], video['height']) == {'horizontal': (1920,1080), 'vertical': (1080,1920), 'square': (1080,1080)}[fmt]
             state = episode.load(ep)
             assert state['status']=='review' and 'video' not in state['approvals']
             report['cases'].append(dict(format=fmt, fps=fps, frames=int(video['nb_read_frames']), width=video['width'], height=video['height'], elapsed_seconds=round(time.monotonic()-start,2), status=state['status']))

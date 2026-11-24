@@ -25,7 +25,8 @@ class PreparePageTests(unittest.TestCase):
 
     def test_real_cli_and_self_contained_build_both_formats(self):
         for name, viewport in [('universal-landscape.html', [1920, 1080]),
-                               ('universal-vertical.html', [1080, 1920])]:
+                               ('universal-vertical.html', [1080, 1920]),
+                               ('universal-square.html', [1080, 1080])]:
             out = self.base / name
             proc = subprocess.run([sys.executable, str(Path(pp.__file__)), '--brand', str(BRAND),
                 '--template', name, '--data', str(BRAND / 'examples/demo-content.json'), '--out', str(out)],
@@ -48,6 +49,51 @@ class PreparePageTests(unittest.TestCase):
             script.write_text(scripts)
             run = subprocess.run(['node', '--check', str(script)], capture_output=True, text=True)
             self.assertEqual(run.returncode, 0, run.stderr)
+
+    def test_multi_scene_template_builds_ordered_storyboard(self):
+        data = {
+            'layout': 'scenes', 'format': 'vertical', 'demo': True, 'duration': 6,
+            'scenes': [
+                {'id': 'intro', 'kind': 'title', 'start': 0, 'end': 2,
+                 'eyebrow': 'Problem', 'title': 'Too much guesswork', 'body': 'Start with evidence.'},
+                {'id': 'proof', 'kind': 'kpi', 'start': 2, 'end': 4,
+                 'title': 'A visible result', 'value': '$42K', 'body': 'Hold the number.'},
+                {'id': 'finish', 'kind': 'cta', 'start': 4, 'end': 6,
+                 'title': 'Take the next step', 'button': 'Open the demo'},
+            ],
+        }
+        page = self.build(str(ROOT / 'templates/video-scenes.html'), data=data, target='scenes')
+        text = page.read_text()
+        self.assertIn("scene.kind==='kpi'", text)
+        self.assertIn('window.DURATION=data.duration', text)
+        build = json.loads((page.parent / 'build.json').read_text())
+        self.assertEqual(build['template'], 'video-scenes.html')
+        self.assertEqual(build['layout'], 'scenes')
+        scripts = self.base / 'scenes.js'
+        scripts.write_text('\n'.join(re.findall(r'<script[^>]*>(.*?)</script>', text, re.S)))
+        run = subprocess.run(['node', '--check', str(scripts)], capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stderr)
+
+    def test_multi_scene_rejects_overlap_and_remote_asset(self):
+        base = {'layout': 'scenes', 'duration': 4, 'scenes': [
+            {'id': 'a', 'kind': 'title', 'start': 0, 'end': 3, 'title': 'A'},
+            {'id': 'b', 'kind': 'cta', 'start': 2, 'end': 4, 'title': 'B'},
+        ]}
+        with self.assertRaisesRegex(ValueError, 'overlap'):
+            self.build(str(ROOT / 'templates/video-scenes.html'), data=base, target='overlap')
+        base['scenes'][1]['start'] = 3
+        base['scenes'][0]['kind'] = 'screen'
+        base['scenes'][0]['src'] = 'https://example.org/capture.mp4'
+        with self.assertRaises(ValueError):
+            self.build(str(ROOT / 'templates/video-scenes.html'), data=base, target='remote')
+
+    def test_multi_scene_rejects_non_screen_media(self):
+        data = {'layout': 'scenes', 'duration': 2, 'scenes': [
+            {'id': 'title', 'kind': 'title', 'start': 0, 'end': 2,
+             'title': 'Title', 'src': 'assets/logo/light.svg'},
+        ]}
+        with self.assertRaisesRegex(ValueError, 'Only screen'):
+            self.build(str(ROOT / 'templates/video-scenes.html'), data=data, target='wrong-kind')
 
     def test_brand_switch_uses_generated_css_and_new_assets(self):
         first = self.build(target='first').read_text()

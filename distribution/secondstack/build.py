@@ -8,7 +8,7 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '1.0.0-candidate.1'
+VERSION = '1.0.0-candidate.3'
 PRODUCTS = {'lakesentry': 'LakeSentry', 'antares': 'Antares', 'secondstack': 'SecondStack', 'alchemist': 'Alchemist'}
 
 
@@ -70,7 +70,7 @@ def build(output):
         src = source/'brands'/slug
         dest = runtime/'brands'/slug
         shutil.copytree(src/'assets', dest/'assets')
-        for namefile in ('universal-landscape.html', 'universal-vertical.html'):
+        for namefile in ('universal-landscape.html', 'universal-vertical.html', 'universal-square.html'):
             write(dest/'templates'/namefile, (src/'templates'/namefile).read_text())
         shutil.copytree(src/'examples', dest/'examples')
         config = json.loads((src/'brand.json').read_text())
@@ -103,11 +103,13 @@ sound files may be present; presence is not permission to override current styli
             visual = (src/'style-guide.md').read_text()
         write(dest/'style-guide.md', visual)
         write(dest/'templates/README.md', '''# Editorial templates
-Use only the two universal layouts through prepare_page.py. Supply approved JSON;
-examples are synthetic layout fixtures, not product facts. Read the skill research
-reference and the selected product Collection. Fixed historical demos and covers
-are not included. New scene types require separately prepared trusted templates;
-these layouts are not an arbitrary storyboard generator.''')
+Use the universal landscape, vertical and square layouts for a single editorial
+card. For an approved multi-scene storyboard, use the shared
+`runtime/templates/video-scenes.html`
+template with `layout: scenes` and the scene content contract. Examples are
+synthetic layout fixtures, not product facts. Read the skill research reference
+and the selected product Collection. Fixed historical demos and covers remain
+reference material; they are not silently used as current product UI.''')
         collection = output/'collections'/slug
         brief = (src/'product.md').read_text()
         if slug == 'lakesentry':

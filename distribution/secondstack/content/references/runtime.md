@@ -38,6 +38,13 @@ python3 engine/scripts/pipeline.py build --episode "$EP"
 python3 engine/scripts/pipeline.py render --episode "$EP" --fps 30
 ```
 
+The runtime supports horizontal, vertical and square universal card layouts and the shared
+`templates/video-scenes.html` storyboard layout. Use `content.json` with
+`layout: scenes` for ordered title, KPI, steps, screen and CTA scenes. A screen
+scene may reference a local authorized capture under `assets/`; review its frames
+and timing separately because real-time capture has different resume behavior
+from the deterministic HTML renderer.
+
 After review, preserved preview bytes/hash and explicit preview acceptance:
 
 ```sh

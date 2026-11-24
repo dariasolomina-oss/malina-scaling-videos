@@ -1,13 +1,17 @@
 # Format and brand
 
-Confirm horizontal 1920x1080 or vertical 1080x1920, duration, explicit voice,
+Confirm horizontal 1920x1080, vertical 1080x1920 or square 1080x1080, duration, explicit voice,
 caption treatment, destination and CTA. Use selected brand.json/style-guide.md.
 Output copy and actual speech must be English.
 
 Universal templates are editorial graphics, not verified UI. Prepare them through
-prepare_page.py. JSON accepts headline <=100, subtitle <=180, footer <=120 and up
-to 3 blocks (title <=36, body <=100 characters), plus duration/demo. Bounds do not
-guarantee fit. Keep disclosures, official logos, local fonts and proper clear space.
+prepare_page.py. Card JSON accepts headline <=100, subtitle <=180, footer <=120
+and up to 3 blocks (title <=36, body <=100 characters), plus duration/demo.
+For a storyboard use `layout: scenes` and the shared `video-scenes.html` template.
+Scenes have ordered `start`/`end` times and one of `title`, `kpi`, `steps`, `screen`
+or `cta` kinds. A screen scene may use a local `assets/` image or video as an
+authorized capture; it must be reviewed for private data and timing. Bounds do
+not guarantee fit. Keep disclosures, official logos, local fonts and proper clear space.
 Review actual phone-sized frames for line breaks, contrast and clipping.
 
 Shared geometry lives in runtime/formats/shorts/safe-zone.json, not brand settings.
@@ -35,6 +39,7 @@ phrase boundaries and check readability at delivery size.
 |---|---:|---:|
 | Horizontal 16:9 | Up to 42 | 1.5–3.5 s |
 | Vertical 9:16 | Up to 24 | 0.6–2.5 s |
+| Square 1:1 | Up to 32 | 0.8–3.5 s |
 
 Use a separate SRT when the destination supports it. Burn captions into the
 video when the approved format calls for it.

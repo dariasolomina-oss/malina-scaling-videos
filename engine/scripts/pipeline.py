@@ -19,6 +19,16 @@ import timings
 import voice_elevenlabs
 
 REPO = Path(__file__).resolve().parents[2]
+FORMAT_TEMPLATES = {
+    'horizontal': 'universal-landscape.html',
+    'vertical': 'universal-vertical.html',
+    'square': 'universal-square.html',
+}
+FORMAT_VIEWPORTS = {
+    'horizontal': (1920, 1080),
+    'vertical': (1080, 1920),
+    'square': (1080, 1080),
+}
 
 
 def read(path):
@@ -44,8 +54,27 @@ def save(root, state):
     episode.write_json(episode.safe_path(root, 'episode.yaml'), state)
 
 
+def scene_assets(root, content):
+    """Resolve episode-owned scene assets without allowing path escapes."""
+    assets = {}
+    if content.get('layout') != 'scenes':
+        return assets
+    for scene in content.get('scenes', []):
+        src = scene.get('src')
+        if not isinstance(src, str) or not src.startswith('assets/episode/'):
+            continue
+        relative = src[len('assets/episode/'):]
+        if not relative or '..' in Path(relative).parts or Path(relative).is_absolute():
+            raise ValueError('invalid episode scene asset path')
+        source = episode.safe_path(root, 'inputs/' + relative)
+        if not source.is_file():
+            raise ValueError('missing episode scene asset: ' + src)
+        assets[src] = source
+    return assets
+
+
 def init(root, episode_id, brand, format, duration, voice, author, thread_url=None):
-    if format not in ('horizontal', 'vertical') or voice not in ('none', 'mp3', 'elevenlabs'):
+    if format not in FORMAT_TEMPLATES or voice not in ('none', 'mp3', 'elevenlabs'):
         raise ValueError('invalid format/voice')
     if not math.isfinite(duration) or not 0 < duration <= 3600 or not author.strip():
         raise ValueError('positive finite duration <=3600 and author required')
@@ -68,7 +97,8 @@ def init(root, episode_id, brand, format, duration, voice, author, thread_url=No
     # No facts/results or product UI are invented here. Editor replaces placeholders.
     (root/'script.md').write_text('# ' + name + ' demo\n\nTODO: write the script and obtain explicit human approval.\n', encoding='utf-8')
     episode.write_json(root/'content.json', dict(demo=True, headline=name,
-        subtitle='Editorial demo', footer='Pending review', blocks=[], duration=duration))
+        subtitle='Editorial demo', footer='Pending review', blocks=[], duration=duration,
+        format=format))
     (root/'inputs').mkdir()
     (root/'source').mkdir()
     # This is a local branch descriptor, not a git operation.
@@ -154,6 +184,12 @@ def inputs(root, state):
     if content['duration'] != cfg['duration']:
         raise ValueError('content duration must equal episode duration')
     files = {'content.json': episode.digest(episode.safe_path(root, 'content.json'))}
+    episode_assets = scene_assets(root, content)
+    files.update({'asset:'+name: episode.digest(path) for name, path in episode_assets.items()})
+    template_name = 'video-scenes.html' if content.get('layout') == 'scenes' else FORMAT_TEMPLATES[cfg['format']]
+    template_path = (REPO/'templates'/template_name if template_name == 'video-scenes.html'
+                     else Path(cfg['brand'])/'templates'/template_name)
+    files['template:'+template_name] = episode.digest(template_path)
     if cfg['voice'] != 'none':
         audio = cfg.get('audio')
         if not audio:
@@ -180,13 +216,17 @@ def build(root):
     root = Path(root)
     binding = inputs(root, state)  # validation before Node/creating working directories
     cfg = state['pipeline']
-    template = 'universal-landscape.html' if cfg['format'] == 'horizontal' else 'universal-vertical.html'
+    content = read(episode.safe_path(root, 'content.json'))
+    episode_assets = scene_assets(root, content)
+    template = 'video-scenes.html' if content.get('layout') == 'scenes' else FORMAT_TEMPLATES[cfg['format']]
+    template_path = (REPO/'templates'/template if template == 'video-scenes.html'
+                     else Path(cfg['brand'])/'templates'/template)
     work = episode.work_dir(root)
     try:
         page = work/'page'
-        prepare_page.prepare_page(cfg['brand'], template, page, root/'content.json')
+        prepare_page.prepare_page(cfg['brand'], template_path, page, root/'content.json', episode_assets)
         # Keep the editable trusted template plus prepared HTML, content and brand tokens.
-        shutil.copyfile(Path(cfg['brand'])/'templates'/template, page/template)
+        shutil.copyfile(template_path, page/template)
         shutil.copyfile(root/'script.md', page/'script.md')
         if inputs(root, episode.require_production(root, 'render')) != binding:
             raise ValueError('production inputs changed during build')
@@ -232,7 +272,7 @@ def render(root, fps=30, chunk_frames=240, resume=False, final60=False):
     version = episode.safe_path(root, 'media/'+uuid4().hex+'.mp4')
     raw = cache/'silent.mp4'
     cfg = state['pipeline']
-    width, height = (1920, 1080) if cfg['format'] == 'horizontal' else (1080, 1920)
+    width, height = FORMAT_VIEWPORTS[cfg['format']]
     env = dict(os.environ, W=str(width), H=str(height),
         HTML_ROOT=str((root/'source').resolve()), RENDER_CACHE_KEY=key)
     env.pop('ALPHA', None)
@@ -279,7 +319,7 @@ def main(argv=None):
         if name == 'init':
             p.add_argument('--id', required=True)
             p.add_argument('--brand', required=True, type=Path)
-            p.add_argument('--format', required=True, choices=['horizontal', 'vertical'])
+            p.add_argument('--format', required=True, choices=sorted(FORMAT_TEMPLATES))
             p.add_argument('--duration', required=True, type=float)
             p.add_argument('--voice', required=True, choices=['none', 'mp3', 'elevenlabs'])
             p.add_argument('--author', required=True)

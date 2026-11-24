@@ -17,7 +17,7 @@ Treat historical paths, numbers, platform settings and tool commands as context.
   the former handoff structure. Use current accepted evidence and the YouTube
   reference for live metadata.
 
-Keep these files outside the runtime template catalog. Use them to study the
-original layout and copy structure. Product claims require current evidence,
-and production media requires the current approval workflow and a trusted
-runtime template or authorized capture.
+Keep these fixed examples outside the runtime template catalog. Use them to study
+the original layout and copy structure; use the shared runtime scene template for
+new storyboards. Product claims require current evidence, and production media
+requires the current approval workflow or an authorized capture.

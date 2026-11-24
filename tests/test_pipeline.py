@@ -79,7 +79,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(episode.load(self.root)['approvals'], {})
 
     def test_build_self_contained_both_formats(self):
-        for format in ('horizontal', 'vertical'):
+        for format in ('horizontal', 'vertical', 'square'):
             with self.subTest(format=format):
                 self.root = self.base/format
                 self.create(format=format)
@@ -89,6 +89,39 @@ class PipelineTests(unittest.TestCase):
                 self.assertIn('window.PAGE_DATA', (self.root/'source/index.html').read_text())
                 self.assertEqual((self.root/'source/script.md').read_bytes(), (self.root/'script.md').read_bytes())
                 self.assertTrue((self.root/'source/brand.json').exists())
+
+    def test_square_render_uses_square_viewport(self):
+        self.root = self.base/'square'
+        self.create(format='square')
+        self.approve_script()
+        pipeline.build(self.root)
+        self.assertEqual(json.loads((self.root/'source/build.json').read_text())['viewport'], [1080, 1080])
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_node) as run:
+            pipeline.render(self.root)
+            command = run.call_args.args[0]
+            self.assertIn('--fps', command)
+        self.assertTrue((self.root/'media/video.mp4').is_file())
+
+    def test_build_multi_scene_uses_shared_template(self):
+        self.create(format='vertical')
+        self.approve_script()
+        content = pipeline.read(self.root/'content.json')
+        content.update({
+            'layout': 'scenes',
+            'scenes': [
+                {'id': 'intro', 'kind': 'title', 'start': 0, 'end': .4, 'title': 'Problem'},
+                {'id': 'result', 'kind': 'screen', 'start': .4, 'end': .8, 'title': 'Result',
+                 'src': 'assets/episode/capture.mp4'},
+                {'id': 'cta', 'kind': 'cta', 'start': .8, 'end': 1, 'title': 'Try it'},
+            ],
+        })
+        (self.root/'inputs/capture.mp4').write_bytes(b'fixture capture, not a real video')
+        episode.write_json(self.root/'content.json', content)
+        pipeline.build(self.root)
+        source = (self.root/'source/index.html').read_text()
+        self.assertIn("scene.kind==='screen'", source)
+        self.assertEqual((self.root/'source/assets/episode/capture.mp4').read_bytes(), b'fixture capture, not a real video')
+        self.assertEqual(json.loads((self.root/'source/build.json').read_text())['template'], 'video-scenes.html')
 
     def test_content_source_and_config_changes_block_before_node(self):
         self.ready()

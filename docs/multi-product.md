@@ -104,7 +104,7 @@ python3 tests/multi_product_browser_smoke.py --run
 ```
 
 Observed results: **58 Python tests passed**, **7 Node tests passed**, and **8 local
-browser layout cases passed** (four products, landscape and vertical). Tests cover
+browser layout cases passed** (four products, landscape, vertical and square). Tests cover
 profile selection, pre-approval build rejection, script-edit invalidation,
 self-contained output, no cross-brand assets, provenance hashes, bundled licenses,
 English metadata constraints, real font/image loading, viewport bounds and no

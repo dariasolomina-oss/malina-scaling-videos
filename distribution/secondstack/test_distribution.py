@@ -29,6 +29,10 @@ class DistributionTests(unittest.TestCase):
             with zipfile.ZipFile(a/'video-production-toolkit.zip') as z:
                 names=set(z.namelist())
                 self.assertIn('SKILL.md',names)
+                self.assertIn('runtime/templates/video-scenes.html', names)
+                self.assertIn('runtime/schemas/scenes.schema.json', names)
+                for slug in builder.PRODUCTS:
+                    self.assertIn(f'runtime/brands/{slug}/templates/universal-square.html', names)
                 self.assertIn('runtime/formats/shorts/safe-zone.json',names)
                 history = 'references/lakesentry-history/'
                 self.assertIn('references/lakesentry-history.md', names)

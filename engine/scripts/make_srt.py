@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Make an .srt subtitle file in the right format for horizontal or vertical video.
+"""Make an .srt subtitle file in the right format for horizontal, vertical or square video.
 
 From a voiceover (transcribed with whisper.cpp, word timings):
     python3 make_srt.py horizontal voiceover.mp3 out.srt
@@ -11,6 +11,7 @@ From on-screen text, for videos with no voice (a JSON list of {"start","end","te
 Format rules (see STYLE_GUIDE.md §8 Publishing):
   horizontal: <=42 chars/line, <=2 lines, 1.0–6.0 s per cue, break at sentence/clause ends
   vertical:   <=24 chars/line, <=2 lines, 0.6–2.5 s per cue, short phrases for small screens
+  square:     <=32 chars/line, <=2 lines, 0.8–3.5 s per cue, compact phrases
 Brand spellings come from the brand pack: set BRAND=brands/<name>/brand.json ("spelling_fixes", "split_word_merges").
 Without BRAND, no spelling fixes are applied.
 """
@@ -19,6 +20,7 @@ import json, os, re, subprocess, sys, tempfile, textwrap
 FORMATS = {
     "horizontal": dict(line=42, lines=2, min_d=1.0, max_d=6.0),
     "vertical":   dict(line=24, lines=2, min_d=0.6, max_d=2.5),
+    "square":     dict(line=32, lines=2, min_d=0.8, max_d=3.5),
 }
 # whisper mis-hearings -> brand spelling (case-insensitive), from the brand pack
 _BRAND = json.load(open(os.environ["BRAND"])) if os.environ.get("BRAND") else {}

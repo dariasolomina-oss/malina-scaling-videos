@@ -13,9 +13,11 @@
 4. After approval, import selected authorized English audio and timings, if any.
    Verify actual speech and alignment. Never replace supplied narration without
    permission. No-voice is an explicit intake choice, not an integration fallback.
-5. Populate content.json from approved copy and use pipeline.py build. Available
-   layouts are editorial cards, not arbitrary product UI/storyboards. Report missing
-   trusted scene/template support before promising the requested video.
+5. Populate content.json from approved copy and use pipeline.py build. Use the
+   universal card layout for a single editorial page or `layout: scenes` for the
+   shared multi-scene template. Screen scenes require an authorized local capture;
+   the template does not turn an unverified mockup into product evidence. Report
+   missing trusted scene support before promising a requested visual.
 6. Inspect control frames, then render the full timeline at 30 fps. Review actual
    output for facts, English, readability, clipping, brand, safe zones and audio.
    Deliver preview bytes/hash and wait for explicit acceptance.

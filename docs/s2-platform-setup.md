@@ -81,7 +81,7 @@ python3 engine/scripts/prepare_page.py --brand brands/lakesentry \
 ```
 
 `--output` aliases `--out`. Output must be new/empty and separate from brand and
-template inputs. Universal landscape/vertical templates accept validated JSON:
+template inputs. Universal landscape, vertical and square templates accept validated JSON:
 `demo`, `headline`, `subtitle`, `blocks`, `footer`, `duration`; at most three blocks.
 Assets must be local under `assets/`. Legacy templates reject content overrides;
 prepared pages explicitly warn that demos are not verified product UI or results.

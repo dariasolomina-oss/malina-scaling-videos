@@ -20,7 +20,8 @@ from urllib.parse import unquote, urlsplit
 
 REPO = Path(__file__).resolve().parents[2]
 SHORTS_SAFE_ZONE = REPO / 'formats/shorts/safe-zone.json'
-UNIVERSAL = {"universal-landscape.html", "universal-vertical.html"}
+UNIVERSAL = {"universal-landscape.html", "universal-vertical.html", "universal-square.html"}
+SCENE_TEMPLATE = "video-scenes.html"
 
 
 def safe_json(value):
@@ -46,14 +47,79 @@ def local_asset(value, root):
     return target
 
 
+def _scene_asset_paths(data):
+    for scene in data.get("scenes", []):
+        if "src" in scene:
+            yield scene["src"]
+
+
+def _validate_scenes(data):
+    if data.get("layout") != "scenes":
+        raise ValueError("scene content requires layout=scenes")
+    scenes = data.get("scenes")
+    if not isinstance(scenes, list) or not scenes:
+        raise ValueError("scenes must contain at least one scene")
+    previous_end = 0.0
+    for scene in scenes:
+        if not isinstance(scene, dict):
+            raise ValueError("Each scene must be an object")
+        required = {"id", "kind", "start", "end", "title"}
+        if not required.issubset(scene):
+            raise ValueError("Each scene requires id, kind, start, end and title")
+        if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", scene["id"]):
+            raise ValueError("Scene id is invalid")
+        if scene["kind"] not in {"title", "kpi", "steps", "screen", "cta"}:
+            raise ValueError("Unsupported scene kind")
+        start, end = scene["start"], scene["end"]
+        if (isinstance(start, bool) or isinstance(end, bool) or
+                not isinstance(start, (int, float)) or not isinstance(end, (int, float)) or
+                not 0 <= start < end <= data["duration"]):
+            raise ValueError("Scene times must be ordered within duration")
+        if start < previous_end:
+            raise ValueError("Scenes must be ordered and cannot overlap")
+        previous_end = end
+        for key, limit in (("eyebrow", 80), ("title", 180), ("body", 240),
+                           ("value", 80), ("button", 80), ("alt", 160)):
+            if key in scene and (not isinstance(scene[key], str) or len(scene[key]) > limit):
+                raise ValueError(f"Scene {key} must be a string of at most {limit} characters")
+        if "src" in scene:
+            if scene["kind"] != "screen":
+                raise ValueError("Only screen scenes may contain src")
+            if (not isinstance(scene["src"], str) or not scene["src"].startswith("assets/") or
+                    ".." in PurePosixPath(scene["src"]).parts):
+                raise ValueError("Scene src must be a local assets/ path")
+        if scene["kind"] == "screen" and "src" not in scene:
+            raise ValueError("Screen scenes require src")
+        if scene["kind"] == "steps":
+            steps = scene.get("steps")
+            if not isinstance(steps, list) or not 1 <= len(steps) <= 6:
+                raise ValueError("Steps scene requires one to six steps")
+            for step in steps:
+                if (not isinstance(step, dict) or set(step) != {"title", "body"} or
+                        not isinstance(step["title"], str) or not isinstance(step["body"], str) or
+                        len(step["title"]) > 60 or len(step["body"]) > 140):
+                    raise ValueError("Each step requires title and body")
+        for key in ("eyebrow", "title", "body", "value", "button", "alt"):
+            if key in scene:
+                language_policy.check_prose(scene[key])
+        for step in scene.get("steps", []):
+            language_policy.check_prose(step["title"])
+            language_policy.check_prose(step["body"])
+
+
 def validate_data(data):
     if not isinstance(data, dict):
         raise ValueError("Content must be a JSON object")
-    allowed = {"demo", "headline", "subtitle", "blocks", "footer", "duration"}
+    allowed = {"demo", "headline", "subtitle", "blocks", "footer", "duration", "layout", "format", "scenes"}
     if set(data) - allowed:
         raise ValueError("Unknown content keys: " + ", ".join(sorted(set(data) - allowed)))
-    result = {"demo": True, "subtitle": "", "footer": "", "duration": 8, "blocks": []}
+    result = {"demo": True, "subtitle": "", "footer": "", "duration": 8, "blocks": [], "layout": "card", "format": "responsive"}
     result.update(data)
+    if result["format"] not in {"responsive", "horizontal", "vertical", "square"}:
+        raise ValueError("format must be responsive, horizontal, vertical or square")
+    if result.get("layout") == "scenes" or "scenes" in data:
+        _validate_scenes(result)
+        return result
     for key, limit in [("headline", 100), ("subtitle", 180), ("footer", 120)]:
         if not isinstance(result.get(key), str) or len(result[key]) > limit:
             raise ValueError(f"{key} must be a string of at most {limit} characters")
@@ -113,7 +179,7 @@ def check_resources(html, root):
         raise ValueError("Dynamic network/resource loading is not supported")
 
 
-def prepare_page(brand, template, output, data=None):
+def prepare_page(brand, template, output, data=None, extra_assets=None):
     """Return output/index.html. output must not exist, or be an empty directory.
 
     brand: brand.json or its directory. template: filename under brand/templates,
@@ -121,6 +187,7 @@ def prepare_page(brand, template, output, data=None):
     Non-universal legacy templates deliberately reject content overrides.
     """
     brand_path = Path(brand).resolve()
+    extra_assets = {str(k): Path(v).resolve() for k, v in (extra_assets or {}).items()}
     if brand_path.is_dir():
         brand_path /= "brand.json"
     brand_root = brand_path.parent
@@ -132,12 +199,23 @@ def prepare_page(brand, template, output, data=None):
     source = source.resolve()
     html = source.read_text(encoding="utf-8")
     universal = source.name in UNIVERSAL
-    if universal:
+    scenes = source.name == SCENE_TEMPLATE
+    if universal or scenes:
         if data is None:
+            if scenes:
+                raise ValueError("Scene template requires episode content with scenes")
             data = brand_root / "examples" / "demo-content.json"
         if isinstance(data, (str, Path)):
             data = json.loads(Path(data).read_text(encoding="utf-8"))
         content = validate_data(data)
+        if scenes:
+            for path in _scene_asset_paths(content):
+                if path.startswith("assets/episode/"):
+                    source_path = extra_assets.get(path)
+                    if source_path is None or not source_path.is_file() or source_path.is_symlink():
+                        raise ValueError(f"Missing episode asset: {path}")
+                else:
+                    local_asset(path, brand_root)
     else:
         if data is not None:
             raise ValueError("Legacy templates have fixed demo content; use universal-*.html for data overrides")
@@ -172,7 +250,8 @@ def prepare_page(brand, template, output, data=None):
                  '<script id="prepared-page-data">window.PAGE_DATA=' + safe_json(content)
                  + ';window.PAGE_BRAND=' + safe_json({"name": config.get("name", ""),
                                                      "logo": config.get("logo", {}),
-                                                     "editorial": config.get("editorial", {})}) + ';</script>')
+                                                     "editorial": config.get("editorial", {})})
+                 + ';window.PAGE_FORMAT=' + safe_json(content.get("format", "responsive")) + ';</script>')
     marker = "<!-- PREPARE_PAGE_HEAD -->"
     if marker in html:
         html = html.replace(marker, injection, 1)
@@ -197,11 +276,20 @@ def prepare_page(brand, template, output, data=None):
     with tempfile.TemporaryDirectory(prefix="prepare-page-", dir=dest.parent) as temporary:
         staged = Path(temporary)
         shutil.copytree(assets, staged / "assets")
+        for destination, source_path in extra_assets.items():
+            if not destination.startswith("assets/episode/") or Path(destination).is_absolute() or ".." in PurePosixPath(destination).parts:
+                raise ValueError("Episode assets must be under assets/episode/")
+            destination_path = staged / destination
+            destination_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source_path, destination_path)
         (staged / "index.html").write_text(html, encoding="utf-8")
         (staged / "brand.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
         (staged / "content.json").write_text(json.dumps(content, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        (staged / "build.json").write_text(json.dumps({"template": source.name, "legacy": not universal,
-            "viewport": {"universal-landscape.html": [1920, 1080], "universal-vertical.html": [1080, 1920]}.get(source.name),
+        (staged / "build.json").write_text(json.dumps({"template": source.name, "legacy": not (universal or scenes),
+            "layout": content.get("layout", "legacy"),
+            "viewport": {"universal-landscape.html": [1920, 1080],
+                         "universal-vertical.html": [1080, 1920],
+                         "universal-square.html": [1080, 1080]}.get(source.name),
             "format_policy": format_policy,
             "warning": "Editorial demo; not verified product UI or evidence of results."}, indent=2) + "\n", encoding="utf-8")
         if dest.exists():

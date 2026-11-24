@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://malina.local/schemas/scenes.schema.json",
+  "title": "Video scene content",
+  "type": "object",
+  "required": ["layout", "duration", "scenes"],
+  "properties": {
+    "layout": {"const": "scenes"},
+    "format": {"enum": ["responsive", "horizontal", "vertical", "square"]},
+    "demo": {"type": "boolean"},
+    "duration": {"type": "number", "exclusiveMinimum": 0, "maximum": 3600},
+    "scenes": {
+      "type": "array", "minItems": 1,
+      "items": {"$ref": "#/$defs/scene"}
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "scene": {
+      "type": "object",
+      "required": ["id", "kind", "start", "end", "title"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{0,79}$"},
+        "kind": {"enum": ["title", "kpi", "steps", "screen", "cta"]},
+        "start": {"type": "number", "minimum": 0},
+        "end": {"type": "number", "exclusiveMinimum": 0},
+        "eyebrow": {"type": "string", "maxLength": 80},
+        "title": {"type": "string", "maxLength": 180},
+        "body": {"type": "string", "maxLength": 240},
+        "value": {"type": "string", "maxLength": 80},
+        "button": {"type": "string", "maxLength": 80},
+        "src": {"type": "string", "pattern": "^assets/[^\\\\]*$"},
+        "alt": {"type": "string", "maxLength": 160},
+        "steps": {
+          "type": "array", "minItems": 1, "maxItems": 6,
+          "items": {"type": "object", "required": ["title", "body"], "properties": {"title": {"type": "string", "maxLength": 60}, "body": {"type": "string", "maxLength": 140}}, "additionalProperties": false}
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"kind": {"const": "screen"}}}, "then": {"required": ["src"]}},
+        {"if": {"properties": {"kind": {"enum": ["title", "kpi", "steps", "cta"]}}}, "then": {"not": {"required": ["src"]}}}
+      ],
+      "additionalProperties": false
+    }
+  }
+}

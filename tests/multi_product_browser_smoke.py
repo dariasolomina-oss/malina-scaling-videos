@@ -36,7 +36,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='multi-product-smoke-') as tmp:
         root = Path(tmp)
         for brand in ('lakesentry', 'antares', 'secondstack', 'alchemist'):
-            for orientation in ('landscape', 'vertical'):
+            for orientation in ('landscape', 'vertical', 'square'):
                 prepare_page.prepare_page(ROOT/'brands'/brand, 'universal-'+orientation+'.html',
                                           root/(brand+'-'+orientation))
         server = ThreadingHTTPServer(('127.0.0.1', 0), partial(QuietHandler, directory=tmp))
@@ -57,7 +57,7 @@ def main():
                     page.route('**/*', route)
                     for brand in ('lakesentry', 'antares', 'secondstack', 'alchemist'):
                         config = json.loads((ROOT/'brands'/brand/'brand.json').read_text())
-                        for orientation, size in [('landscape', (1920,1080)), ('vertical', (1080,1920))]:
+                        for orientation, size in [('landscape', (1920,1080)), ('vertical', (1080,1920)), ('square', (1080,1080))]:
                             page.set_viewport_size({'width': size[0], 'height': size[1]})
                             response = page.goto(f'http://127.0.0.1:{server.server_port}/{brand}-{orientation}/index.html')
                             assert response.status == 200

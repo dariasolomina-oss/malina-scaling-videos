@@ -9,7 +9,8 @@ version: 0.4.0
 Common policy: `../../agent/INSTRUCTIONS.md`. This skill defines the deliverable
 contract; it does not authorize production.
 
-- Confirm 16:9 landscape (1920×1080) or 9:16 vertical (1080×1920), duration in
+- Confirm 16:9 landscape (1920×1080), 9:16 vertical (1080×1920) or 1:1 square
+  (1080×1080), duration in
   seconds, voice, caption treatment and intended channel before script.
   Output language is fixed to `en`; semantically review text and actual speech.
   Different aspect ratios need explicit layout review, not an automatic crop.

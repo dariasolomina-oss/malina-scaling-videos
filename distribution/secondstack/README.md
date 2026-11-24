@@ -1,7 +1,7 @@
 # SecondStack distribution candidate
 
 Baseline: `951fc06e6ee429498de5a842c196eb2a820ecf2a`.
-Release: `1.0.0-candidate.1`. Status: locally validated; not installed/published.
+Release: `1.0.0-candidate.3`. Status: locally validated; not installed/published.
 The source guidance and historical references added after this release are
 prepared for the next build.
 
@@ -47,7 +47,9 @@ brand configs route by Collection label, with no missing local brief/registry
 paths. Workflow, research and SEO procedures use the installed runtime paths.
 Common policy lives in Agent text. The builder keeps LakeSentry's historical
 style guide and six fixed templates under `references/lakesentry-history/` for
-reference. The runtime catalog contains only the universal editorial layouts.
+reference. The runtime catalog contains universal editorial layouts for 16:9,
+9:16 and 1:1 delivery plus the shared `video-scenes.html` storyboard template;
+LakeSentry fixed demos remain historical references.
 
 The local branch descriptor is replaced with episode_metadata. Old states are
 rejected explicitly, not silently migrated. Toolkit version participates in the
