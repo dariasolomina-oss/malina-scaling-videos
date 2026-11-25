@@ -87,6 +87,29 @@ class PreparePageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.build(str(ROOT / 'templates/video-scenes.html'), data=base, target='remote')
 
+    def test_multi_scene_disclosure_and_vertical_safe_zone(self):
+        data = {'layout': 'scenes', 'format': 'vertical', 'duration': 4,
+                'disclosure': 'Illustrative example.', 'scenes': [
+            {'id': 'a', 'kind': 'title', 'start': 0, 'end': 2, 'title': 'A'},
+            {'id': 'b', 'kind': 'screen', 'start': 2, 'end': 4, 'title': 'B',
+             'src': 'assets/logo/lakesentry-lockup-fordark-transparent-2400.png', 'disclosure': 'Product UI recorded with demo data.'},
+        ]}
+        page = self.build(str(ROOT / 'templates/video-scenes.html'), data=data, target='disclosure')
+        text = page.read_text()
+        self.assertIn('--shorts-top', text)
+        self.assertIn('Product UI recorded with demo data.', text)
+        self.assertNotIn('DEMO DATA', text)
+        build = json.loads((page.parent / 'build.json').read_text())
+        self.assertEqual(build['viewport'], [1080, 1920])
+        self.assertEqual(build['format_policy']['id'], 'shorts')
+        data['scenes'][0]['subtitle'] = 'unknown'
+        with self.assertRaisesRegex(ValueError, 'Unknown scene keys'):
+            self.build(str(ROOT / 'templates/video-scenes.html'), data=data, target='unknown')
+        del data['scenes'][0]['subtitle']
+        data['disclosure'] = 'x' * 121
+        with self.assertRaisesRegex(ValueError, 'disclosure'):
+            self.build(str(ROOT / 'templates/video-scenes.html'), data=data, target='long')
+
     def test_multi_scene_rejects_non_screen_media(self):
         data = {'layout': 'scenes', 'duration': 2, 'scenes': [
             {'id': 'title', 'kind': 'title', 'start': 0, 'end': 2,

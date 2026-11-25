@@ -183,6 +183,8 @@ def inputs(root, state):
     content = prepare_page.validate_data(read(episode.safe_path(root, 'content.json')))
     if content['duration'] != cfg['duration']:
         raise ValueError('content duration must equal episode duration')
+    if content.get('layout') == 'scenes' and content.get('format', 'responsive') not in ('responsive', cfg['format']):
+        raise ValueError('content format must match the episode format')
     files = {'content.json': episode.digest(episode.safe_path(root, 'content.json'))}
     episode_assets = scene_assets(root, content)
     files.update({'asset:'+name: episode.digest(path) for name, path in episode_assets.items()})
@@ -224,7 +226,13 @@ def build(root):
     work = episode.work_dir(root)
     try:
         page = work/'page'
-        prepare_page.prepare_page(cfg['brand'], template_path, page, root/'content.json', episode_assets)
+        page_data = dict(content)
+        if template == 'video-scenes.html':
+            # The episode format decides the scene geometry (incl. the Shorts safe zone).
+            if page_data.get('format', 'responsive') not in ('responsive', cfg['format']):
+                raise ValueError('content format must match the episode format')
+            page_data['format'] = cfg['format']
+        prepare_page.prepare_page(cfg['brand'], template_path, page, page_data, episode_assets)
         # Keep the editable trusted template plus prepared HTML, content and brand tokens.
         shutil.copyfile(template_path, page/template)
         shutil.copyfile(root/'script.md', page/'script.md')

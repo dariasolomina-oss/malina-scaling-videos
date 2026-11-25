@@ -79,7 +79,7 @@ def _validate_scenes(data):
             raise ValueError("Scenes must be ordered and cannot overlap")
         previous_end = end
         for key, limit in (("eyebrow", 80), ("title", 180), ("body", 240),
-                           ("value", 80), ("button", 80), ("alt", 160)):
+                           ("value", 80), ("button", 80), ("alt", 160), ("disclosure", 120)):
             if key in scene and (not isinstance(scene[key], str) or len(scene[key]) > limit):
                 raise ValueError(f"Scene {key} must be a string of at most {limit} characters")
         if "src" in scene:
@@ -99,7 +99,11 @@ def _validate_scenes(data):
                         not isinstance(step["title"], str) or not isinstance(step["body"], str) or
                         len(step["title"]) > 60 or len(step["body"]) > 140):
                     raise ValueError("Each step requires title and body")
-        for key in ("eyebrow", "title", "body", "value", "button", "alt"):
+        unknown = set(scene) - {"id", "kind", "start", "end", "eyebrow", "title", "body",
+                                "value", "button", "src", "alt", "steps", "disclosure"}
+        if unknown:
+            raise ValueError("Unknown scene keys: " + ", ".join(sorted(unknown)))
+        for key in ("eyebrow", "title", "body", "value", "button", "alt", "disclosure"):
             if key in scene:
                 language_policy.check_prose(scene[key])
         for step in scene.get("steps", []):
@@ -110,13 +114,17 @@ def _validate_scenes(data):
 def validate_data(data):
     if not isinstance(data, dict):
         raise ValueError("Content must be a JSON object")
-    allowed = {"demo", "headline", "subtitle", "blocks", "footer", "duration", "layout", "format", "scenes"}
+    allowed = {"demo", "headline", "subtitle", "blocks", "footer", "duration", "layout", "format", "scenes", "disclosure"}
     if set(data) - allowed:
         raise ValueError("Unknown content keys: " + ", ".join(sorted(set(data) - allowed)))
     result = {"demo": True, "subtitle": "", "footer": "", "duration": 8, "blocks": [], "layout": "card", "format": "responsive"}
     result.update(data)
     if result["format"] not in {"responsive", "horizontal", "vertical", "square"}:
         raise ValueError("format must be responsive, horizontal, vertical or square")
+    if "disclosure" in data and (not isinstance(data["disclosure"], str) or len(data["disclosure"]) > 120):
+        raise ValueError("disclosure must be a string of at most 120 characters")
+    if "disclosure" in data:
+        language_policy.check_prose(data["disclosure"])
     if result.get("layout") == "scenes" or "scenes" in data:
         _validate_scenes(result)
         return result
@@ -230,7 +238,7 @@ def prepare_page(brand, template, output, data=None, extra_assets=None):
     # Platform geometry is shared, never supplied by a product profile.
     format_policy = None
     format_css = ''
-    if source.name == 'universal-vertical.html':
+    if source.name == 'universal-vertical.html' or (scenes and content.get('format') == 'vertical'):
         format_policy = json.loads(SHORTS_SAFE_ZONE.read_text(encoding='utf-8'))
         width, height = format_policy['viewport']
         rect = format_policy['safe_rect']
@@ -287,9 +295,11 @@ def prepare_page(brand, template, output, data=None, extra_assets=None):
         (staged / "content.json").write_text(json.dumps(content, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         (staged / "build.json").write_text(json.dumps({"template": source.name, "legacy": not (universal or scenes),
             "layout": content.get("layout", "legacy"),
-            "viewport": {"universal-landscape.html": [1920, 1080],
-                         "universal-vertical.html": [1080, 1920],
-                         "universal-square.html": [1080, 1080]}.get(source.name),
+            "viewport": ({"horizontal": [1920, 1080], "vertical": [1080, 1920],
+                          "square": [1080, 1080]}.get(content.get("format")) if scenes else
+                         {"universal-landscape.html": [1920, 1080],
+                          "universal-vertical.html": [1080, 1920],
+                          "universal-square.html": [1080, 1080]}.get(source.name)),
             "format_policy": format_policy,
             "warning": "Editorial demo; not verified product UI or evidence of results."}, indent=2) + "\n", encoding="utf-8")
         if dest.exists():

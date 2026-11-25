@@ -25,5 +25,10 @@ test('CDP HTTP bridge serves MIME/assets and blocks filesystem escape without br
  process.env.CDP_URL='not-used-no-browser';process.env.BROWSER_HTTP_HOST='127.0.0.1';let server;
  const get=url=>new Promise((resolve,reject)=>http.get(url,res=>{let body='';res.on('data',b=>body+=b);res.on('end',()=>resolve({status:res.statusCode,type:res.headers['content-type'],body}));}).on('error',reject));
  try{fs.writeFileSync(path.join(d,'index.html'),'<h1>OK</h1>');fs.writeFileSync(path.join(d,'style.css'),'body{}');fs.symlinkSync('/etc/passwd',path.join(d,'secret'));server=await serveHTML(path.join(d,'index.html'));const page=await get(server.url);assert.equal(page.status,200);assert.equal(page.type,'text/html');assert.match(page.body,/OK/);assert.equal((await get(new URL('style.css',server.url))).type,'text/css');assert.equal((await get(new URL('secret',server.url))).status,403);
+ // Video seeking needs a video MIME type and byte ranges (206), otherwise Chromium shows only the first frame.
+ fs.writeFileSync(path.join(d,'clip.mp4'),Buffer.from('0123456789'));const range=(url,r)=>new Promise((resolve,reject)=>http.get(url,{headers:{Range:r}},res=>{let body='';res.on('data',b=>body+=b);res.on('end',()=>resolve({status:res.statusCode,type:res.headers['content-type'],range:res.headers['content-range'],accept:res.headers['accept-ranges'],body}));}).on('error',reject));
+ const clip=new URL('clip.mp4',server.url);const whole=await get(clip);assert.equal(whole.type,'video/mp4');assert.equal(whole.body,'0123456789');
+ const part=await range(clip,'bytes=2-5');assert.equal(part.status,206);assert.equal(part.range,'bytes 2-5/10');assert.equal(part.accept,'bytes');assert.equal(part.body,'2345');
+ assert.equal((await range(clip,'bytes=7-')).body,'789');assert.equal((await range(clip,'bytes=-3')).body,'789');assert.equal((await range(clip,'bytes=20-')).status,416);
  }finally{if(server)await server.close();if(oldCDP===undefined)delete process.env.CDP_URL;else process.env.CDP_URL=oldCDP;if(oldHost===undefined)delete process.env.BROWSER_HTTP_HOST;else process.env.BROWSER_HTTP_HOST=oldHost;fs.rmSync(d,{recursive:true,force:true});}
 });

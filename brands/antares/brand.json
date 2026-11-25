@@ -9,6 +9,7 @@
     "muted": "#525252",
     "border": "#E5E5E5",
     "primary": "#2563EB",
+    "on_primary": "#FFFFFF",
     "accent": "#2563EB"
   },
   "fonts": {
@@ -39,9 +40,9 @@
     "name": "Antares",
     "brief": "product.md",
     "source_registry": "sources.json",
-    "documentation_url": null,
+    "documentation_url": "https://docs.getantares.io/",
     "website_url": "https://getantares.io/",
-    "reviewed_at": "2026-11-03",
+    "reviewed_at": "2026-11-05",
     "supplemental_context_urls": [
       "https://content-machine.spot.t1a.dev/ant/"
     ]

@@ -1,9 +1,10 @@
 # SecondStack distribution candidate
 
 Baseline: `951fc06e6ee429498de5a842c196eb2a820ecf2a`.
-Release: `1.0.0-candidate.5`. Status: locally validated; not installed/published.
-The source guidance and historical references added after this release are
-prepared for the next build.
+Release: `1.0.0-candidate.6`. Status: validated and installed in the Video Producer
+Agent on 2026-11-25 (Skill and Agent instructions). Product Knowledge is maintained in
+the Agent's Collections, which are newer than `product-collections.zip`; do not
+re-upload that archive over them.
 
 This additive build layer leaves the developer toolkit's source directories and
 existing instructions unchanged. Only generated runtime copies are adapted.

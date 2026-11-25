@@ -9,9 +9,17 @@ prepare_page.py. Card JSON accepts headline <=100, subtitle <=180, footer <=120
 and up to 3 blocks (title <=36, body <=100 characters), plus duration/demo.
 For a storyboard use `layout: scenes` and the shared `video-scenes.html` template.
 Scenes have ordered `start`/`end` times and one of `title`, `kpi`, `steps`, `screen`
-or `cta` kinds. A screen scene may use a local `assets/` image or video as an
-authorized capture; it must be reviewed for private data and timing. Bounds do
-not guarantee fit. Keep disclosures, official logos, local fonts and proper clear space.
+or `cta` kinds. A screen scene may use a local `assets/` image or video (MP4,
+WebM or MOV) as an authorized capture; it must be reviewed for private data and
+timing. A screen video plays from its start for the scene's duration; trim it to
+the scene first. The scene geometry follows the episode format (16:9, 9:16 with
+the shared Shorts safe zone, or 1:1); `content.json` `format` may be omitted.
+The header shows the brand logo (brand `editorial.logo_variant`) and one
+disclosure line: the scene `disclosure`, else the content `disclosure`, else the
+brand book `editorial.disclosure`. Give real product captures an accurate scene
+disclosure, for example "Product UI recorded 2026-11-24 with demo data."; keep
+the "not product UI" disclosure for illustrations and redrawn interfaces.
+Bounds do not guarantee fit. Keep disclosures, official logos, local fonts and proper clear space.
 Review actual phone-sized frames for line breaks, contrast and clipping.
 
 Shared geometry lives in runtime/formats/shorts/safe-zone.json, not brand settings.

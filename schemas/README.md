@@ -16,7 +16,7 @@ Python runtime performs critical gates and filesystem/timing checks without depe
   NOT a claim about a live ElevenLabs endpoint. Alignment arrays must have the same
   length and monotonic, nonoverlapping character spans. Zero-duration characters are
   permitted; resulting words must have positive duration. Whitespace separates words.
-- `scenes.schema.json`: ordered multi-scene storyboard contract for the shared
+- `scenes.schema.json` (optional content/scene `disclosure`): ordered multi-scene storyboard contract for the shared
   title, KPI, steps, screen and CTA renderer. Runtime checks additionally bind
   episode-owned capture assets under `inputs/`.
 

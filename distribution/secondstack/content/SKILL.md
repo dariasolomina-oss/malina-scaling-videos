@@ -1,6 +1,6 @@
 ---
 name: video-production-toolkit
-description: Produce source-grounded English product videos using packaged templates, brand assets and guarded preview/final tools, then prepare YouTube copy after acceptance.
+description: Produce source-grounded English product videos using packaged templates, brand assets and guarded preview/final tools, then prepare YouTube copy on request after acceptance.
 ---
 
 # Video production toolkit
@@ -8,7 +8,7 @@ description: Produce source-grounded English product videos using packaged templ
 Resolve this installed skill's actual directory as SKILL_ROOT. Run
 `python3 "$SKILL_ROOT/verify.py"` before use. Read references/workflow.md, then
 references/research.md and references/format.md for the current episode. Use
-references/youtube.md after final delivery acceptance; references/runtime.md lists
+references/youtube.md after final delivery acceptance when the author asks for YouTube copy; references/runtime.md lists
 commands, requirements and limitations.
 
 Production library: `SKILL_ROOT/runtime/`. Keep that tree read-only. Work on a copy

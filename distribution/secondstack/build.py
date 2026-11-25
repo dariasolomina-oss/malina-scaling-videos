@@ -8,7 +8,7 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '1.0.0-candidate.5'
+VERSION = '1.0.0-candidate.6'
 PRODUCTS = {'lakesentry': 'LakeSentry', 'antares': 'Antares', 'secondstack': 'SecondStack', 'alchemist': 'Alchemist'}
 
 
@@ -89,7 +89,8 @@ logos with clear space; do not redraw, recolor or retype the lockup. Prefer ligh
 calm technical layouts. No neon, glow, gradient text or panic imagery. Review actual
 frames at phone size. Platform geometry comes from runtime/formats/shorts/.
 
-Universal templates are editorial cards, not verified product UI. Keep disclosures.
+Universal templates are editorial cards and the shared scene template builds
+multi-scene storyboards; neither is verified product UI. Keep disclosures.
 Real walkthroughs need authorized dated capture and approved scripts. Do not infer
 product features, prices or savings from an illustration. No background music by
 default; sound effects require a suitable approved plan and license checks. Voice
@@ -102,6 +103,13 @@ sound files may be present; presence is not permission to override current styli
         else:
             visual = (src/'style-guide.md').read_text()
         write(dest/'style-guide.md', visual)
+        sfx_sources = dest/'assets/sfx/SOURCES.md'
+        if sfx_sources.is_file():
+            # The runtime style guide is condensed; point to the historical rules instead.
+            write(sfx_sources, sfx_sources.read_text().replace(
+                'Rules for use (levels, which sounds are banned) are in `../../style-guide.md` §6.',
+                'These historical files are not approved for new videos; follow the Agent '
+                'instructions. Historical level rules: `references/lakesentry-history/style-guide.md` §6.'))
         write(dest/'templates/README.md', '''# Editorial templates
 Use the universal landscape, vertical and square layouts for a single editorial
 card. For an approved multi-scene storyboard, use the shared

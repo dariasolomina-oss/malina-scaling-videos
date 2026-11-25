@@ -37,7 +37,3 @@ assume a product lacks documentation from an older package summary. A registered
 read status records the registry author's prior check, not this run's reading or
 live feature verification. Read relevant current sources and retain route,
 permission, configuration, validation and pricing limitations before claims.
-
-LakeSentry has broader documented coverage. Antares/Alchemist registries have
-important documentation gaps; SecondStack's recorded index reading does not prove
-feature behavior. Obtain sources for the chosen topic rather than fabricate parity.

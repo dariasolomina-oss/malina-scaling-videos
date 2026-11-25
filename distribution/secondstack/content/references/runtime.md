@@ -41,9 +41,12 @@ python3 engine/scripts/pipeline.py render --episode "$EP" --fps 30
 The runtime supports horizontal, vertical and square universal card layouts and the shared
 `templates/video-scenes.html` storyboard layout. Use `content.json` with
 `layout: scenes` for ordered title, KPI, steps, screen and CTA scenes. A screen
-scene may reference a local authorized capture under `assets/`; review its frames
-and timing separately because real-time capture has different resume behavior
-from the deterministic HTML renderer.
+scene may reference a local authorized capture under `assets/` (image or
+MP4/WebM/MOV video copied from the episode `inputs/` as `assets/episode/...`);
+the renderer seeks the video frame by frame, so review its frames and timing.
+The scene geometry follows the episode format, including the Shorts safe zone
+for vertical episodes. Use scene `disclosure` for real captures; the brand
+book disclosure is the default.
 
 The guarded runtime can generate a separate SRT with `make_srt.py`; it does not
 burn captions into the rendered MP4. Use an approved external caption-rendering
