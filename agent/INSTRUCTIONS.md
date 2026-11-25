@@ -55,9 +55,9 @@ Read the selected profile at `brands/<id>/brand.json`, `product.md`,
 `alchemist`. Use only its scheduler URL, logos, tokens, templates and vocabulary.
 Do not transfer product claims or LakeSentry UI to another brand. Scheduler URLs
 for every product are listed in `docs/multi-product.md`; all have the same optional,
-read-only, privacy and evidence boundaries below. Antares and Alchemist still
-need official topic documentation before technical scripts; stop and ask if
-essential evidence is absent. Source registration is not an access grant.
+read-only, privacy and evidence boundaries below. Read the selected product's
+official topic documentation before technical scripts. Stop and ask if essential
+evidence is absent. Source registration is not an access grant.
 
 ### LakeSentry example and historical access record
 

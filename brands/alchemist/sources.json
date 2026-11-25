@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "product": "Alchemist",
-  "reviewed_at": "2026-11-03",
-  "documentation_root": null,
+  "reviewed_at": "2026-11-05",
+  "documentation_root": "https://docs.getalchemist.io/",
   "policy": "Read current topic-specific official documentation before script. Brandkit and scheduler are not feature evidence.",
   "sources": [
     {
@@ -33,6 +33,93 @@
       ],
       "verification_scope": "Optional editorial context. Access by Video Producer is untested; source registration grants no access.",
       "privacy": "No internal post bodies, personal data or login URLs/tokens copied into Git."
+    },
+    {
+      "id": "S03",
+      "title": "Alchemist official website",
+      "url": "https://getalchemist.io/",
+      "kind": "marketing",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "verification_scope": "Product positioning, toolkit overview and publisher-linked live demo. The site’s examples do not establish current license terms, conversion coverage or customer outcomes."
+    },
+    {
+      "id": "S04",
+      "title": "Alchemist — About",
+      "url": "https://docs.getalchemist.io/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "What is Alchemist?",
+        "The Key Features"
+      ],
+      "verification_scope": "Documentation root and overview of static analysis, syntax-tree representation, dependencies and rule/template-based conversion."
+    },
+    {
+      "id": "S05",
+      "title": "Alchemist Analyzer Tutorial",
+      "url": "https://docs.getalchemist.io/quick_start.html",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "Run Analyzer",
+        "View the Results",
+        "Prepare Source Files"
+      ],
+      "verification_scope": "Documented local analyzer setup, source preparation and analysis results. Confirm current licensing and installation steps before recording."
+    },
+    {
+      "id": "S06",
+      "title": "Analyzing Files with Alchemist",
+      "url": "https://docs.getalchemist.io/usage/analyzing.html",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "Analyzing a Single File or Folder",
+        "Analyzing Huge Source Trees in Batches",
+        "Troubleshooting"
+      ],
+      "verification_scope": "File and folder analysis, large estates and reports. Check supported inputs and whether any source was skipped."
+    },
+    {
+      "id": "S07",
+      "title": "Converting Files with Alchemist",
+      "url": "https://docs.getalchemist.io/usage/converting/index.html",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "Converting a Single File or Folder",
+        "Working with AST",
+        "Troubleshooting"
+      ],
+      "verification_scope": "Documented target-dialect selection and generated code. Match target and input type to the supported route and validate results."
+    },
+    {
+      "id": "S08",
+      "title": "SAS Code to Spark Conversion Nuances",
+      "url": "https://docs.getalchemist.io/usage/converting/nuance/sas_spark.html",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": [
+        "BEST format",
+        "INPUT function with $w. informat",
+        "Order By"
+      ],
+      "verification_scope": "Documented behavior differences for formatting, ordering and other SAS-to-Spark cases. Review warnings and validate the relevant workload."
+    },
+    {
+      "id": "S09",
+      "title": "Alchemist live demo",
+      "url": "https://live.getalchemist.io/",
+      "kind": "public_demo_entry_point",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "verification_scope": "Public link from S03. Confirm the demo opens and offers the relevant example before publication. Demo behavior and permissions have not been verified."
     }
   ]
 }

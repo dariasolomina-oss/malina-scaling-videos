@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
   "product": "Antares",
-  "reviewed_at": "2026-11-03",
-  "documentation_root": null,
+  "reviewed_at": "2026-11-05",
+  "documentation_root": "https://docs.getantares.io/",
   "policy": "Read current topic-specific official documentation before script. Brandkit and scheduler are not feature evidence.",
   "sources": [
     {
@@ -40,8 +40,131 @@
       "url": "https://getantares.io/",
       "kind": "marketing",
       "status": "read",
-      "checked_at": "2026-11-03",
-      "verification_scope": "Discovery and conflict identification only, not proof of results."
+      "checked_at": "2026-11-05",
+      "verification_scope": "Public positioning, advertised route availability and claim conflicts. Confirm technical scope in topic documentation and current route availability with the product owner when sources differ."
+    },
+    {
+      "id": "S04",
+      "title": "Antares Documentation",
+      "url": "https://docs.getantares.io/",
+      "kind": "documentation_index",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["Start here", "Main workflows", "Reference"],
+      "verification_scope": "Public documentation entry point for discovery. Use topic pages for feature claims."
+    },
+    {
+      "id": "S05",
+      "title": "What is Antares?",
+      "url": "https://docs.getantares.io/getting-started/what-is-antares/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["Core workflows", "Who uses Antares", "Product areas", "Boundaries"],
+      "verification_scope": "Documented Tableau migration workflow, audience and product boundaries. No live workspace verification."
+    },
+    {
+      "id": "S06",
+      "title": "Quick Start",
+      "url": "https://docs.getantares.io/getting-started/quick-start/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["Analyze one workbook", "Assess a Tableau environment", "Convert a workbook"],
+      "verification_scope": "Documented entry points for single-workbook analysis, connected Tableau analysis and separate conversion jobs."
+    },
+    {
+      "id": "S07",
+      "title": "Analyzer Overview",
+      "url": "https://docs.getantares.io/analyzer/overview/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["Analysis Sources", "Report Surfaces", "Analyzer and Converter"],
+      "verification_scope": "Documented analysis inputs and reporting. Analysis yields findings and migration guidance."
+    },
+    {
+      "id": "S08",
+      "title": "Migration Scoring",
+      "url": "https://docs.getantares.io/analyzer/migration-scoring/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["What we score", "Blockers vs. warnings", "Tableau scoring", "Power BI scoring"],
+      "verification_scope": "Workbook complexity and target-specific migration risk. A score does not establish project duration or conversion availability."
+    },
+    {
+      "id": "S09",
+      "title": "Report Capabilities & Data Access",
+      "url": "https://docs.getantares.io/concepts/data-access-and-capabilities/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["Capability matrix", "Why sections may be hidden", "Analysis vs. deployment access"],
+      "verification_scope": "Report sections depend on source and permissions. Tableau Cloud usage needs Admin Insights and Tableau Server usage needs Repository access."
+    },
+    {
+      "id": "S10",
+      "title": "Converter Overview",
+      "url": "https://docs.getantares.io/converter/overview/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["Hybrid conversion approach", "How a conversion runs", "Target BI platforms", "Outputs", "Review path"],
+      "verification_scope": "Processing pipeline, translation of supported workbook logic and target-specific output. Confirm the actual output and review requirements for each route."
+    },
+    {
+      "id": "S11",
+      "title": "Review Conversion Outputs",
+      "url": "https://docs.getantares.io/converter/review-conversion-outputs/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["Conversion Results", "Power BI outputs", "Fabric deployment", "Databricks AI/BI outputs"],
+      "verification_scope": "Power BI project artifacts and validation, Databricks AI/BI guidance, and output-dependent deployment. No conversion job was run."
+    },
+    {
+      "id": "S12",
+      "title": "Deploy Power BI Output to Fabric",
+      "url": "https://docs.getantares.io/converter/deploy-to-fabric/",
+      "kind": "official_product_documentation",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "sections_read": ["Before you deploy", "When deployment is available", "After deployment"],
+      "verification_scope": "Public indexed documentation. Deployment depends on eligible Power BI output, a Fabric connection, workspace access and tenant/capacity requirements."
+    },
+    {
+      "id": "S13",
+      "title": "Antares Pricing",
+      "url": "https://getantares.io/pricing/",
+      "kind": "marketing",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "verification_scope": "The public offer lists free analysis and separately paid conversion. Recheck current terms for publication. Pricing examples do not establish savings or customer outcomes."
+    },
+    {
+      "id": "S14",
+      "title": "Antares Analyzer workbook upload",
+      "url": "https://try.getantares.io/upload",
+      "kind": "public_analyzer_entry_point",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [
+        {
+          "date": "2026-11-05",
+          "outcome": "User-supplied public link returned HTTP 200. The form and upload workflow were not exercised."
+        }
+      ],
+      "verification_scope": "Suggested public CTA for the free Analyzer. Confirm the form opens before publication. Use S13 for the free-analysis claim."
+    },
+    {
+      "id": "S15",
+      "title": "Antares Converter",
+      "url": "https://getantares.io/converter/",
+      "kind": "marketing",
+      "status": "read",
+      "checked_at": "2026-11-05",
+      "verification_scope": "Public description of target dashboard generation and advertised migration routes. Check output details against S10 and S11 and omit effort or savings percentages."
     }
   ]
 }

@@ -1,12 +1,28 @@
 # Alchemist — product source registry
 
-Reviewed 2026-11-03. Output language: `en`.
+Reviewed 2026-11-05. Output language is `en`.
 
-Brandkit positioning: legacy SAS estates to modern Spark. This is not product documentation or evidence of feature behavior.
+Alchemist is a SAS modernization toolkit. It analyzes code and dependencies and
+translates supported workloads into code for a selected target, including
+PySpark for documented Spark routes. Analysis, code conversion and broader
+migration automation are separate workflows. [S03, S04]
+
+## Topic-to-document map
+
+| Topic | Read this source | Scope to preserve |
+|---|---|---|
+| Product overview and supported approach | [S03 — Alchemist](https://getalchemist.io/), [S04 — Alchemist Docs](https://docs.getalchemist.io/) | Describe static analysis and conversion using a structured representation of the code. Verify the input and target before naming a supported route. |
+| Run the Analyzer and read results | [S05 — Analyzer Tutorial](https://docs.getalchemist.io/quick_start.html), [S06 — Analyzing Files](https://docs.getalchemist.io/usage/analyzing.html) | Use authorized source-code examples. Check which inputs were included or skipped and what the report actually shows. |
+| Convert SAS code and inspect output | [S07 — Converting Files](https://docs.getalchemist.io/usage/converting/index.html), [S08 — SAS Code to Spark](https://docs.getalchemist.io/usage/converting/nuance/sas_spark.html) | Distinguish generated code from validated behavior. Review warnings and check results on the target, especially for SAS-specific formatting and ordering. |
+| Public demo CTA | [S09 — Try Alchemist Live](https://live.getalchemist.io/) | The official site links to the demo. Confirm the public flow and example before using the CTA in a video. |
 
 ## Evidence boundaries
 
-No official product website or documentation URL was supplied or discovered on this brandkit. Obtain current official topic documentation before feature scripts. The copied SVG is extracted unchanged from the supplied page, not redrawn; separate trademark redistribution terms were not found. Use only to refer to Alchemist, not as an endorsement.
+Public pages document capabilities and limitations. Confirm the exact version,
+license, target runtime and configuration before claims about coverage or data
+handling. Check whether any optional AI assistance is configured. The source
+registry does not establish the result of a customer migration or live demo.
+Use the unmodified brand artwork only to identify Alchemist.
 
 The machine-readable [sources.json](sources.json) records what was actually read.
 The brandkit [S01] governs presentation, not feature truth. Read current official
