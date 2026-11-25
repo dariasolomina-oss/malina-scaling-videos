@@ -1,6 +1,6 @@
-# Video Producer — User Guide v4.5
+# Video Producer — User Guide v4.6
 
-Updated November 25, 2026. Replaces User Guide v4.4.
+Updated November 25, 2026. Replaces User Guide v4.5.
 
 ## What the agent uses
 
@@ -71,8 +71,10 @@ Every scene is labelled honestly on screen: a real recording or screenshot shows
 
 ## 7. Preview, final and YouTube copy
 
+- Rendering takes time: roughly 10 seconds per second of video for the preview and about twice as long for the final. For videos longer than a minute the agent tells you the estimate first.
 - Preview: a playable MP4 at 30 fps for the full duration. Watch and listen to all of it, ideally on a phone, and give specific feedback with timecodes.
 - Final: after you accept the preview, the agent prepares the final MP4 at 60 fps without changing content. Accept the final separately.
+- Cover: with the preview you get a branded cover image from the title scene (1280×720 for YouTube, 1080×1920 for Shorts, 1080×1080 for LinkedIn). Ask for a different moment if you prefer.
 - After final acceptance the agent asks whether you want a YouTube title and description. If you do, it sends title options and a ready-to-paste description as text. You upload and publish the video yourself; the agent does not upload or publish anything.
 
 ## 8. Continuing later
@@ -81,4 +83,4 @@ Ask for a short English handoff note (stage, open issues, next action) when you 
 
 ## Verification note
 
-This guide describes Agent profile version 17 with toolkit 1.0.0-candidate.7. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit, an approved sound library and the animatic route are not yet installed.
+This guide describes Agent profile version 18 with toolkit 1.0.0-candidate.8. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit, an approved sound library and the animatic route are not yet installed.

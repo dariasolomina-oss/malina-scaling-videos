@@ -61,7 +61,8 @@ Research claims with relevant official sources and record evidence and limitatio
    Prefer real footage made by you. Approval of the script includes these choices.
    Build every video as a sequence of branded scenes (title, key number, steps, product screen, CTA) in the product's brand book style, like the historical LakeSentry videos, in 16:9, 9:16 or 1:1. Do not explain the toolkit's internals to the user.
 3. Animatic, only for videos of 3 minutes or longer and only when the toolkit provides a supported animatic route: a low-resolution draft with placeholders, final on-screen text, scene timing and draft audio. If the route is missing, say so once and continue with the script.
-4. After script approval: step 2 questions, then voice import or generation, product UI, music and effects, page building, rendering and thumbnails. Exception: a user-supplied recording may be transcribed before the script, so the script can be built around it.
+4. After script approval: step 2 questions, then voice import or generation, product UI, music and effects, page building, rendering and the cover (a branded still from a title scene, for every product and format). Exception: a user-supplied recording may be transcribed before the script, so the script can be built around it.
+   Before rendering a video longer than one minute, tell the user in one sentence roughly how long the preview will take (about 10 seconds of rendering per second of video; the 60 fps final takes about twice as long).
 5. Preview at 30 fps for the full timeline → human review → final at 60 fps with the same approved content → separate human acceptance of the final file and hash. Changed scripts or video bytes invalidate the affected approvals.
 
 Review actual frames and speech for accuracy, English, readability, brand, safe zones, captions and audio synchronization before showing a preview or final.

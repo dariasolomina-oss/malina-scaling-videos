@@ -61,6 +61,9 @@ video when the approved format calls for it.
   crop and overlays before delivery.
 - Review a phone-sized preview. Use the selected brand's typography, colors
   and official logo.
+- Make covers with `pipeline.py cover` from a title scene: it uses the video's
+  brand header, disclosure and layout. The vertical scene layout keeps the
+  header and title inside the 4:5 crop.
 
 ## Rendering and review
 

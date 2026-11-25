@@ -318,10 +318,69 @@ def render(root, fps=30, chunk_frames=240, resume=False, final60=False):
         audio='silent' if cfg['voice'] == 'none' else 'loudnorm target -14 LUFS; measurement not certified')
 
 
+COVER_SIZES = {'horizontal': (1280, 720), 'vertical': (1080, 1920), 'square': (1080, 1080)}
+
+
+def default_cover_time(content):
+    """Middle of the first title scene (fully faded in), else 1 s or the middle of the video."""
+    for scene in content.get('scenes', []) if content.get('layout') == 'scenes' else []:
+        if scene.get('kind') == 'title':
+            return round((scene['start'] + scene['end']) / 2, 3)
+    return round(min(1.0, content['duration'] / 2), 3)
+
+
+def cover(root, at=None):
+    """Render a branded cover still from the built video page (same brand, scene and format).
+
+    Horizontal: 1280x720 YouTube cover. Vertical: 1080x1920 (keep text inside the centered
+    4:5 crop). Square: 1080x1080. Needs a current build after script approval; it does not
+    change approvals. Review the cover like any other deliverable.
+    """
+    state = episode.require_production(root, 'render')
+    root = Path(root)
+    key = checked_build(root, state)
+    content = read(episode.safe_path(root, 'source/content.json'))
+    t = default_cover_time(content) if at is None else at
+    if isinstance(t, bool) or not isinstance(t, (int, float)) or not math.isfinite(t) or not 0 <= t <= content['duration']:
+        raise ValueError('cover time must be within the video duration')
+    cfg = state['pipeline']
+    width, height = FORMAT_VIEWPORTS[cfg['format']]
+    cache = episode.safe_path(root, f'work/cover-{key}')
+    if cache.exists():
+        shutil.rmtree(cache)
+    cache.mkdir(parents=True)
+    env = dict(os.environ, W=str(width), H=str(height), HTML_ROOT=str((root/'source').resolve()))
+    env.pop('ALPHA', None)
+    try:
+        subprocess.run(['node', str(REPO/'engine/render/render.js'), str((root/'source/index.html').resolve()),
+            str(cache.resolve()), '--test', f'{t}'], check=True, env=env)
+        stills = sorted(cache.glob('t_*.jpg'))
+        if len(stills) != 1:
+            raise ValueError('renderer produced no cover still')
+        out_w, out_h = COVER_SIZES[cfg['format']]
+        out = episode.safe_path(root, 'media/cover.jpg')
+        preview = episode.safe_path(root, 'media/cover-preview-320.jpg')
+        out.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', str(stills[0]), '-vf',
+            f'scale={out_w}:{out_h}:flags=lanczos', '-q:v', '2', str(out)], check=True)
+        subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', str(out), '-vf', 'scale=320:-2',
+            str(preview)], check=True)
+        current = episode.require_production(root, 'render')
+        if checked_build(root, current) != key:
+            raise ValueError('production inputs changed during cover rendering')
+        current = episode.load(root)
+        current['history'].append(dict(event='pipeline_cover', at=episode.now(), time=t,
+            input_hash=key, cover_hash=episode.digest(out)))
+        save(root, current)
+    finally:
+        shutil.rmtree(cache, ignore_errors=True)
+    return dict(cover=str(out), preview=str(preview), size=[out_w, out_h], time=t)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
-    for name in ('init', 'build', 'voice', 'render'):
+    for name in ('init', 'build', 'voice', 'render', 'cover'):
         p = sub.add_parser(name)
         p.add_argument('--episode', required=True, type=Path)
         if name == 'init':
@@ -342,13 +401,15 @@ def main(argv=None):
             p.add_argument('--final60', action='store_true')
             p.add_argument('--chunk-frames', type=int, default=240)
             p.add_argument('--resume', action='store_true')
+        if name == 'cover':
+            p.add_argument('--at', type=float, help='seconds into the video (default: first title scene)')
     args = vars(parser.parse_args(argv))
     command = args.pop('command')
     root = args.pop('episode')
     if command == 'init':
         args['episode_id'] = args.pop('id')
     try:
-        result = {'init': init, 'build': build, 'voice': import_voice, 'render': render}[command](root, **args)
+        result = {'init': init, 'build': build, 'voice': import_voice, 'render': render, 'cover': cover}[command](root, **args)
     except subprocess.CalledProcessError as error:
         parser.exit(error.returncode if error.returncode > 0 else 1, f'error: subprocess failed: {error}\n')
     except (ValueError, OSError, KeyError, TypeError, AttributeError) as error:

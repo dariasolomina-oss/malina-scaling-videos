@@ -21,7 +21,8 @@
    missing trusted scene support before promising a requested visual.
 6. Inspect control frames, then render the full timeline at 30 fps. Review actual
    output for facts, English, readability, clipping, brand, safe zones and audio.
-   Deliver preview bytes/hash and wait for explicit acceptance.
+   Deliver preview bytes/hash and wait for explicit acceptance. Render the cover
+   with pipeline.py cover and review it with the preview.
 7. Preserve preview bytes and evidence, record that real decision, then render
    --final60. New bytes do not inherit preview acceptance; review/deliver and obtain
    separate acceptance of the final file/hash.

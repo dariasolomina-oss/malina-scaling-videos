@@ -90,6 +90,45 @@ class PipelineTests(unittest.TestCase):
                 self.assertEqual((self.root/'source/script.md').read_bytes(), (self.root/'script.md').read_bytes())
                 self.assertTrue((self.root/'source/brand.json').exists())
 
+    def test_cover_requires_build_and_uses_cover_sizes(self):
+        self.create()
+        with patch.object(pipeline.subprocess, 'run') as run:
+            with self.assertRaisesRegex(ValueError, 'script approval'):
+                pipeline.cover(self.root)
+            run.assert_not_called()
+        self.approve_script()
+        with patch.object(pipeline.subprocess, 'run') as run:
+            with self.assertRaisesRegex(ValueError, 'build missing'):
+                pipeline.cover(self.root)
+            run.assert_not_called()
+        pipeline.build(self.root)
+        calls = []
+        def fake(command, **kwargs):
+            calls.append((command, kwargs.get('env', {})))
+            if command[0] == 'node':
+                out = Path(command[3]); out.mkdir(parents=True, exist_ok=True)
+                (out/f't_{float(command[5]):.2f}.jpg').write_bytes(b'still')
+            else:
+                Path(command[-1]).write_bytes(b'cover')
+            return subprocess.CompletedProcess(command, 0)
+        with patch.object(pipeline.subprocess, 'run', side_effect=fake):
+            result = pipeline.cover(self.root)
+        self.assertEqual(result['size'], [1280, 720])
+        self.assertEqual((calls[0][1]['W'], calls[0][1]['H']), ('1920', '1080'))
+        self.assertIn('scale=1280:720:flags=lanczos', calls[1][0])
+        self.assertTrue((self.root/'media/cover.jpg').is_file())
+        self.assertEqual(episode.load(self.root)['history'][-1]['event'], 'pipeline_cover')
+        self.assertFalse(list((self.root/'work').glob('cover-*')) if (self.root/'work').exists() else [])
+        with self.assertRaisesRegex(ValueError, 'within the video duration'):
+            pipeline.cover(self.root, at=99)
+
+    def test_default_cover_time_uses_title_scene(self):
+        content = {'layout': 'scenes', 'duration': 8, 'scenes': [
+            {'id': 'k', 'kind': 'kpi', 'start': 0, 'end': 2},
+            {'id': 't', 'kind': 'title', 'start': 2, 'end': 4}]}
+        self.assertEqual(pipeline.default_cover_time(content), 3)
+        self.assertEqual(pipeline.default_cover_time({'duration': 1}), 0.5)
+
     def test_square_render_uses_square_viewport(self):
         self.root = self.base/'square'
         self.create(format='square')

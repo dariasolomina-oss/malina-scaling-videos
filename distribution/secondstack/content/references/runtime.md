@@ -52,6 +52,20 @@ The guarded runtime can generate a separate SRT with `make_srt.py`; it does not
 burn captions into the rendered MP4. Use an approved external caption-rendering
 route for burned-in captions, or deliver the checked SRT when that route is absent.
 
+Cover for every brand and format, from the current build (default: the middle of
+the first title scene; `--at SECONDS` picks another moment):
+
+```sh
+python3 engine/scripts/pipeline.py cover --episode "$EP" [--at 1.0]
+```
+
+It writes `media/cover.jpg` (16:9 → 1280x720, 9:16 → 1080x1920, 1:1 → 1080x1080)
+and a 320 px preview. Approvals are unchanged; review the cover with the preview.
+The LakeSentry `thumbnail.js` templates are historical references only.
+
+Render time: the browser renderer takes roughly 6–12 s per second of video at
+30 fps and about twice as long at 60 fps. Estimate before long renders.
+
 After review, preserved preview bytes/hash and explicit preview acceptance:
 
 ```sh
