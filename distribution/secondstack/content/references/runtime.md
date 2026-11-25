@@ -45,6 +45,10 @@ scene may reference a local authorized capture under `assets/`; review its frame
 and timing separately because real-time capture has different resume behavior
 from the deterministic HTML renderer.
 
+The guarded runtime can generate a separate SRT with `make_srt.py`; it does not
+burn captions into the rendered MP4. Use an approved external caption-rendering
+route for burned-in captions, or deliver the checked SRT when that route is absent.
+
 After review, preserved preview bytes/hash and explicit preview acceptance:
 
 ```sh
