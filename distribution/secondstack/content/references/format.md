@@ -74,8 +74,8 @@ ratio as its own layout before approval.
 Use finite window.DURATION and pure seekable render(t) in absolute seconds.
 Express `T` event times in global seconds, independent of frame rate and chunks.
 Avoid wall-clock animation, unseeded randomness and network resources. Review the
-entire timeline at both preview30 and final60, including motion, caption timing
-and audio sync.
+entire timeline in the animatic before any render, then the final60, including
+motion, caption timing and audio sync.
 Raw renderer video is silent H.264; guarded pipeline handles selected audio.
 Caption/transcription/codec checks do not prove correct English speech.
 

@@ -1,6 +1,6 @@
 ---
 name: video-production-toolkit
-description: Produce source-grounded English product videos using packaged templates, brand assets and guarded preview/final tools, then prepare YouTube copy on request after acceptance.
+description: Produce source-grounded English product videos using packaged templates, brand assets and guarded animatic and final render tools, then prepare YouTube copy on request after acceptance.
 ---
 
 # Video production toolkit

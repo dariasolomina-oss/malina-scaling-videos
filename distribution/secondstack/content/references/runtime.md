@@ -66,11 +66,43 @@ The LakeSentry `thumbnail.js` templates are historical references only.
 Render time: the browser renderer takes roughly 6–12 s per second of video at
 30 fps and about twice as long at 60 fps. Estimate before long renders.
 
-After review, preserved preview bytes/hash and explicit preview acceptance:
+## Animatic (required before any render)
+
+After `pipeline.py build`:
 
 ```sh
+python3 engine/scripts/pipeline.py animatic --episode "$EP"
+```
+
+It writes `animatic/` (a static player site: the built pages drawn live in the
+browser, the voice track, a scene list with stills) and
+`media/animatic-sheet.jpg` (one still per scene). It takes about a second per
+scene; nothing is encoded. Publish it as a private site for review, for example
+site `vp-<episode-id>` (lowercase letters, digits and hyphens only), redeploying
+the same name for each new version with `if_version`:
+
+```sh
+tar -C "$EP/animatic" -czf /tmp/animatic.tgz . && curl -sS --fail-with-body \
+  -H "Authorization: Bearer $SECONDSTACK_SITES_TOKEN" -H "Content-Type: application/gzip" \
+  --data-binary @/tmp/animatic.tgz \
+  "$SECONDSTACK_SITES_API_URL/deploy?site=vp-<episode-id>&visibility=private"
+```
+
+The site belongs to the person you work for; private means only they can open it,
+and they can share it from the site page. Never publish to an existing site you did
+not create for this episode. If the
+site cannot be published, send the contact sheet and the `animatic/` folder as
+a ZIP (open it with a local web server). After the human approves this exact
+animatic:
+
+```sh
+python3 engine/scripts/episode.py approve "$EP" animatic --human "<name>" --confirm
 python3 engine/scripts/pipeline.py render --episode "$EP" --final60
 ```
+
+Every render, 30 or 60 fps, requires the animatic approval for the current build
+inputs. A rebuild with changed inputs or a changed script needs a new animatic and
+a new approval.
 
 Final bytes require separate acceptance. Audio import uses pipeline.py voice after
 script approval with actual MP3/word timings or authorized connector response.
@@ -80,14 +112,12 @@ duration and timing. Use --help for actual supported options.
 ## Resume an interrupted render
 
 Repeat the same guarded render command with `--resume`. Use the same episode,
-build, frame rate and `--chunk-frames` value (default 240). For an interrupted
-preview, for example:
+build, frame rate and `--chunk-frames` value (default 240), for example:
 
 ```sh
-python3 engine/scripts/pipeline.py render --episode "$EP" --fps 30 --resume
+python3 engine/scripts/pipeline.py render --episode "$EP" --final60 --resume
 ```
-
-For an interrupted final, repeat `--final60` with `--resume`. Keep the cache and
+ Keep the cache and
 approved inputs available. The renderer skips verified chunks and recreates
 missing or corrupt ones. If inputs or settings change, follow the applicable
 review gate and start a fresh render.

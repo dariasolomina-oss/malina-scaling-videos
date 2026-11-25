@@ -202,7 +202,7 @@ def inputs(root, state):
             raise ValueError('word timings exceed episode duration')
         files['timings.json'] = episode.digest(episode.safe_path(root, 'timings.json'))
     binding = dict(script_hash=state['script_hash'], revision=state['revision'],
-        config={k: v for k, v in cfg.items() if k not in ('build', 'review_input_hash')}, files=files,
+        config={k: v for k, v in cfg.items() if k not in ('build', 'review_input_hash', 'animatic')}, files=files,
         brand=tree_hash(Path(cfg['brand'])),
         engine={str(p.relative_to(REPO)): episode.digest(p) for p in
                 [Path(__file__), Path(episode.__file__), Path(prepare_page.__file__),
@@ -270,10 +270,10 @@ def render(root, fps=30, chunk_frames=240, resume=False, final60=False):
     if fps not in (30, 60) or chunk_frames < 1:
         raise ValueError('fps must be 30/60 and chunk-frames positive')
     key = checked_build(root, state)
-    if fps == 60:
-        episode.require_production(root, 'package')
-        if state['pipeline'].get('review_input_hash') != key:
-            raise ValueError('final60 requires video approval for these exact build inputs')
+    # Any render needs the human-approved animatic of exactly these build inputs.
+    if not episode.approved(state, 'animatic') or state['approvals']['animatic'].get('input_hash') != key:
+        raise ValueError('render requires animatic approval for these exact build inputs; '
+                         'run pipeline.py animatic and record approval with episode.py approve animatic')
     # No subprocess, mkdir or output installation above this line (except episode.load invalidation).
     cache = episode.safe_path(root, f'work/render-{key}-{fps}-{chunk_frames}')
     cache.mkdir(parents=True, exist_ok=True)
@@ -377,10 +377,109 @@ def cover(root, at=None):
     return dict(cover=str(out), preview=str(preview), size=[out_w, out_h], time=t)
 
 
+FORMAT_LABELS = {'horizontal': '16:9', 'vertical': '9:16', 'square': '1:1'}
+ANIMATIC_MAX_STILLS = 60
+
+
+def animatic_points(content):
+    """One review still per scene (middle of the scene), else evenly spaced stills."""
+    duration = content['duration']
+    if content.get('layout') == 'scenes' and content.get('scenes'):
+        points = [dict(start=s['start'], end=s['end'], label=s['title'],
+                       at=round((s['start'] + s['end']) / 2, 3)) for s in content['scenes']]
+        if len(points) <= ANIMATIC_MAX_STILLS:
+            return points
+    count = max(1, min(ANIMATIC_MAX_STILLS, math.ceil(duration / 10)))
+    step = duration / count
+    return [dict(start=round(i*step, 3), end=round(min(duration, (i+1)*step), 3),
+                 label=f'Part {i+1}', at=round(min(duration, (i+0.5)*step), 3)) for i in range(count)]
+
+
+def animatic(root):
+    """Build the review animatic from the current build: a browser player of the real
+    pages with the voice track, plus one still per scene and a contact sheet.
+
+    Nothing is encoded to video, so it takes minutes, not a render. The result in
+    `animatic/` is a static site to publish for review; the contact sheet is
+    `media/animatic-sheet.jpg`. Any render requires `episode.py approve animatic` for
+    exactly this build.
+    """
+    state = episode.require_production(root, 'render')
+    root = Path(root)
+    key = checked_build(root, state)
+    content = read(episode.safe_path(root, 'source/content.json'))
+    cfg = state['pipeline']
+    width, height = FORMAT_VIEWPORTS[cfg['format']]
+    points = animatic_points(content)
+    work = episode.work_dir(root)
+    try:
+        site = work/'animatic'
+        shutil.copytree(root/'source', site/'source')
+        shutil.copyfile(REPO/'templates/animatic-player.html', site/'index.html')
+        stills = work/'stills'
+        env = dict(os.environ, W=str(width), H=str(height), HTML_ROOT=str((root/'source').resolve()))
+        env.pop('ALPHA', None)
+        subprocess.run(['node', str(REPO/'engine/render/render.js'), str((root/'source/index.html').resolve()),
+            str(stills.resolve()), '--test', *[f"{p['at']}" for p in points]], check=True, env=env)
+        (site/'frames').mkdir()
+        thumbs = []
+        for i, point in enumerate(points, 1):
+            still = stills/f"t_{point['at']:.2f}.jpg"
+            if not still.is_file():
+                raise ValueError('renderer produced no animatic still')
+            name = f'frames/{i:03d}.jpg'
+            subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', str(still), '-vf',
+                'scale=480:-2:flags=lanczos', '-q:v', '4', str(site/name)], check=True)
+            thumbs.append(name)
+        columns = 4 if cfg['format'] == 'horizontal' else 6
+        rows = math.ceil(len(thumbs) / columns)
+        sheet = work/'sheet.jpg'
+        subprocess.run(['ffmpeg', '-y', '-v', 'error', '-framerate', '1', '-start_number', '1', '-i',
+            str(site/'frames/%03d.jpg'), '-vf', f'tile={columns}x{rows}:padding=8:margin=8:color=0xd8dbe0',
+            '-frames:v', '1', '-q:v', '3', str(sheet)], check=True)
+        shutil.copyfile(sheet, site/'sheet.jpg')
+        audio = None
+        if cfg['voice'] != 'none':
+            source_audio = episode.safe_path(root, cfg['audio'])
+            subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', str(source_audio), '-vn', '-c:a',
+                'libmp3lame', '-b:a', '128k', str(site/'audio.mp3')], check=True)
+            audio = 'audio.mp3'
+        title = content.get('headline') or state['title']
+        revision = state['revision']
+        episode.write_json(site/'animatic.json', dict(title=title, version=revision,
+            duration=content['duration'], viewport=[width, height], format=cfg['format'],
+            format_label=FORMAT_LABELS[cfg['format']], audio=audio,
+            scenes=[dict(start=p['start'], end=p['end'], label=p['label'], thumb=t)
+                    for p, t in zip(points, thumbs)]))
+        episode.write_json(site/'_spot.json', dict(title=title + ' (animatic)',
+            description='Draft animatic for review', tags=['animatic', 'video']))
+        current = episode.require_production(root, 'render')
+        if checked_build(root, current) != key:
+            raise ValueError('production inputs changed while building the animatic')
+        target = episode.safe_path(root, 'animatic')
+        if target.exists():
+            shutil.rmtree(target)
+        os.replace(site, target)
+        media_sheet = episode.safe_path(root, 'media/animatic-sheet.jpg')
+        media_sheet.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(target/'sheet.jpg', media_sheet)
+        current = episode.load(root)
+        # A new animatic always needs a new human approval.
+        current['approvals'].pop('animatic', None)
+        current['pipeline']['animatic'] = dict(input_hash=key, tree=checksum(tree_hash(target)))
+        current['history'].append(dict(event='pipeline_animatic', at=episode.now(), input_hash=key,
+            stills=len(points)))
+        save(root, current)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+    return dict(site=str(target), sheet=str(media_sheet), scenes=len(points),
+        next='publish the site for review, then record approval with episode.py approve animatic')
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
-    for name in ('init', 'build', 'voice', 'render', 'cover'):
+    for name in ('init', 'build', 'voice', 'animatic', 'render', 'cover'):
         p = sub.add_parser(name)
         p.add_argument('--episode', required=True, type=Path)
         if name == 'init':
@@ -409,7 +508,7 @@ def main(argv=None):
     if command == 'init':
         args['episode_id'] = args.pop('id')
     try:
-        result = {'init': init, 'build': build, 'voice': import_voice, 'render': render, 'cover': cover}[command](root, **args)
+        result = {'init': init, 'build': build, 'voice': import_voice, 'animatic': animatic, 'render': render, 'cover': cover}[command](root, **args)
     except subprocess.CalledProcessError as error:
         parser.exit(error.returncode if error.returncode > 0 else 1, f'error: subprocess failed: {error}\n')
     except (ValueError, OSError, KeyError, TypeError, AttributeError) as error:

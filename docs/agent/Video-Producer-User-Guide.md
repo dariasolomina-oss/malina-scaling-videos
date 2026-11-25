@@ -1,4 +1,4 @@
-# Video Producer — User Guide v4.6
+# Video Producer — User Guide v4.7
 
 Updated November 25, 2026. Replaces User Guide v4.5.
 
@@ -43,9 +43,9 @@ Reply in plain language:
 
 > Shorten scene 2 and drop the claim about savings.
 
-When you are happy, answer the agent's question "Any more changes, or shall we render?" with "render", "yes" or similar. That approves the exact version shown; the agent records the version and hash. A changed script needs a new approval.
+When you are happy with the script, say "yes" or similar. That approves the exact version shown. A changed script needs a new approval.
 
-For videos of **3 minutes or longer**, an **animatic** follows the script once the toolkit supports it: a low-resolution draft with placeholders, final on-screen text, timing and draft audio, so you can check the story visually before production.
+Before anything is rendered, every video gets an **animatic**: a link to a private page where the whole video plays in your browser with its scenes, on-screen text, timing and voice, plus one picture per scene. It is ready in minutes. Comment on it as you like; the agent updates it and sends a new link. Nothing is rendered until you approve the animatic, for example "looks good, render".
 
 ## 3. Voice
 
@@ -55,7 +55,7 @@ For videos of **3 minutes or longer**, an **animatic** follows the script once t
 
 ## 4. Background music and sound effects
 
-After you approve the script, the agent asks whether you want background audio. By default there is none. If you want it, the agent generates music and effects for the video; listen to them in the preview. You can always supply your own audio if you have the right to use it.
+After you approve the script, the agent asks whether you want background audio. By default there is none. If you want it, the agent generates music and effects for the video; listen to them in the animatic. You can always supply your own audio if you have the right to use it.
 
 ## 5. Your own sources
 
@@ -69,12 +69,11 @@ It asks you for a recording or screenshots only when something specific blocks i
 
 Every scene is labelled honestly on screen: a real recording or screenshot shows its capture date and "demo data"; an illustration says it is not product UI.
 
-## 7. Preview, final and YouTube copy
+## 7. Final video and YouTube copy
 
-- Rendering takes time: roughly 10 seconds per second of video for the preview and about twice as long for the final. For videos longer than a minute the agent tells you the estimate first.
-- Preview: a playable MP4 at 30 fps for the full duration. Watch and listen to all of it, ideally on a phone, and give specific feedback with timecodes.
-- Final: after you accept the preview, the agent prepares the final MP4 at 60 fps without changing content. Accept the final separately.
-- Cover: with the preview you get a branded cover image from the title scene (1280×720 for YouTube, 1080×1920 for Shorts, 1080×1080 for LinkedIn). Ask for a different moment if you prefer.
+- After you approve the animatic, the agent renders the final MP4 at 60 fps straight away, with exactly the approved content. Rendering takes about 20 seconds per second of video; for videos longer than a minute the agent tells you the estimate first.
+- Watch and listen to the final, ideally on a phone, and accept it or give specific feedback with timecodes. Changes go back through a new animatic.
+- Cover: with the final you get a branded cover image from the title scene (1280×720 for YouTube, 1080×1920 for Shorts, 1080×1080 for LinkedIn). Ask for a different moment if you prefer.
 - After final acceptance the agent asks whether you want a YouTube title and description. If you do, it sends title options and a ready-to-paste description as text. You upload and publish the video yourself; the agent does not upload or publish anything.
 
 ## 8. Continuing later
@@ -83,4 +82,4 @@ Ask for a short English handoff note (stage, open issues, next action) when you 
 
 ## Verification note
 
-This guide describes Agent profile version 18 with toolkit 1.0.0-candidate.8. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit, an approved sound library and the animatic route are not yet installed.
+This guide describes Agent profile version 19 with toolkit 1.0.0-candidate.9. The animatic player was checked in test runs with and without a voice, not yet in a live run of the Agent. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit and an approved sound library are not yet installed.

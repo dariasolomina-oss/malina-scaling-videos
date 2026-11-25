@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Animatic</title>
+<link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:#101114;color:#eceef2;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;display:flex;flex-direction:column}
+header{display:flex;align-items:baseline;gap:12px;padding:12px 18px;border-bottom:1px solid #26282e}
+header h1{font-size:16px;margin:0;font-weight:600}
+header .tag{font-size:12px;color:#ffb648;border:1px solid #6b5020;border-radius:999px;padding:1px 9px}
+header .meta{color:#9aa0ab;font-size:12px;margin-left:auto}
+main{flex:1;display:flex;min-height:0}
+#stageWrap{flex:1;display:flex;flex-direction:column;min-width:0;padding:14px}
+#stage{flex:1;position:relative;overflow:hidden;min-height:0}
+#frameBox{position:absolute;left:50%;top:50%;transform-origin:0 0;box-shadow:0 10px 40px #0008;background:#fff}
+#frameBox iframe{border:0;display:block}
+#bar{display:flex;align-items:center;gap:10px;padding-top:12px}
+button{background:#22252c;color:#eceef2;border:1px solid #343843;border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+button:hover{background:#2b2f38}
+#play{min-width:76px}
+#seek{flex:1;accent-color:#5b8cff}
+#time{font-variant-numeric:tabular-nums;color:#c4c9d2;min-width:110px;text-align:right}
+#hint{color:#7d838f;font-size:12px;padding-top:6px}
+aside{width:300px;border-left:1px solid #26282e;overflow:auto;padding:10px}
+aside h2{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#9aa0ab;margin:6px 6px 10px}
+.scene{display:flex;gap:10px;align-items:center;padding:6px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.scene:hover{background:#1b1d22}
+.scene.on{border-color:#5b8cff;background:#18203a}
+.scene img{width:96px;border-radius:4px;background:#222;flex:none}
+.scene .t{font-size:12px;color:#9aa0ab;font-variant-numeric:tabular-nums}
+.scene .n{font-size:13px}
+@media (max-width:820px){main{flex-direction:column}aside{width:auto;border-left:0;border-top:1px solid #26282e;max-height:35vh}}
+</style>
+</head>
+<body>
+<header><h1 id="title">Animatic</h1><span class="tag">Draft for review: not the final render</span><span class="meta" id="meta"></span></header>
+<main>
+  <div id="stageWrap">
+    <div id="stage"><div id="frameBox"><iframe id="frame" title="Video frame" src="source/index.html"></iframe></div></div>
+    <div id="bar">
+      <button id="play">Play</button>
+      <input id="seek" type="range" min="0" step="0.01" value="0" aria-label="Position">
+      <span id="time">0:00 / 0:00</span>
+      <button id="speed" title="Playback speed">1x</button>
+    </div>
+    <div id="hint">Space plays and pauses. Left and right arrows jump 5 seconds. S changes the speed. Click a scene to jump to it.</div>
+  </div>
+  <aside><h2>Scenes</h2><div id="scenes"></div></aside>
+</main>
+<audio id="audio" preload="auto"></audio>
+<script>
+(async()=>{
+const info=await (await fetch('animatic.json',{cache:'no-store'})).json();
+const $=id=>document.getElementById(id);
+const frame=$('frame'),box=$('frameBox'),stage=$('stage'),audio=$('audio'),seek=$('seek');
+const [W,H]=info.viewport,D=info.duration;
+document.title=info.title+' · animatic';$('title').textContent=info.title;
+$('meta').textContent=`${info.format_label} · ${fmt(D)} · version ${info.version}`;
+frame.width=W;frame.height=H;seek.max=String(D);
+function fmt(s){s=Math.max(0,s);const m=Math.floor(s/60),r=Math.floor(s%60);return m+':'+String(r).padStart(2,'0');}
+function fit(){const r=stage.getBoundingClientRect();const k=Math.min(r.width/W,r.height/H);box.style.transform=`scale(${k}) translate(-50%,-50%)`;box.style.width=W+'px';box.style.height=H+'px';}
+addEventListener('resize',fit);fit();
+await new Promise(r=>{if(frame.contentWindow&&frame.contentWindow.render&&frame.contentDocument.readyState==='complete')r();else frame.addEventListener('load',r,{once:true});});
+const win=frame.contentWindow;
+if(typeof win.render!=='function'){$('hint').textContent='This page cannot be previewed.';return;}
+const hasAudio=!!info.audio;if(hasAudio)audio.src=info.audio;
+let playing=false,clock=0,last=0,rate=1,busy=false,want=0;
+const speeds=[1,1.5,2];
+function now(){return hasAudio?audio.currentTime:clock;}
+async function draw(t){want=t;if(busy)return;busy=true;try{while(true){const x=want;await win.render(x);if(x===want)break;}}finally{busy=false;}}
+function update(t){seek.value=String(t);$('time').textContent=fmt(t)+' / '+fmt(D);
+  for(const el of document.querySelectorAll('.scene')){const on=t>=+el.dataset.start&&t<+el.dataset.end;el.classList.toggle('on',on);}}
+function setTime(t){t=Math.min(D,Math.max(0,t));if(hasAudio)audio.currentTime=t;clock=t;update(t);draw(t);}
+function loop(ts){if(!playing)return;if(!hasAudio){clock+=(ts-last)/1000*rate;last=ts;}
+  const t=now();if(t>=D){pause();setTime(D);return;}update(t);draw(t);requestAnimationFrame(loop);}
+function play(){if(now()>=D)setTime(0);playing=true;$('play').textContent='Pause';last=performance.now();if(hasAudio){audio.playbackRate=rate;audio.play().catch(()=>{});}requestAnimationFrame(loop);}
+function pause(){playing=false;$('play').textContent='Play';if(hasAudio)audio.pause();}
+$('play').onclick=()=>playing?pause():play();
+seek.oninput=()=>setTime(+seek.value);
+$('speed').onclick=()=>{rate=speeds[(speeds.indexOf(rate)+1)%speeds.length];$('speed').textContent=rate+'x';if(hasAudio)audio.playbackRate=rate;};
+addEventListener('keydown',e=>{if(e.target===seek&&e.key.startsWith('Arrow'))e.preventDefault();
+  if(e.code==='Space'){e.preventDefault();playing?pause():play();}
+  else if(e.key==='ArrowRight')setTime(now()+5);else if(e.key==='ArrowLeft')setTime(now()-5);
+  else if(e.key==='s'||e.key==='S')$('speed').click();});
+const list=$('scenes');
+for(const s of info.scenes){const el=document.createElement('div');el.className='scene';el.dataset.start=s.start;el.dataset.end=s.end;
+  const img=document.createElement('img');img.src=s.thumb;img.alt='';img.loading='lazy';
+  const txt=document.createElement('div');const tt=document.createElement('div');tt.className='t';tt.textContent=fmt(s.start)+'–'+fmt(s.end);
+  const nn=document.createElement('div');nn.className='n';nn.textContent=s.label;txt.append(tt,nn);el.append(img,txt);
+  el.onclick=()=>setTime(s.start+0.01);list.append(el);}
+setTime(0);
+})().catch(e=>{document.getElementById('hint').textContent='Could not load the animatic: '+e.message;});
+</script>
+</body>
+</html>

@@ -19,13 +19,18 @@
    shared multi-scene template. Screen scenes require an authorized local capture;
    the template does not turn an unverified mockup into product evidence. Report
    missing trusted scene support before promising a requested visual.
-6. Inspect control frames, then render the full timeline at 30 fps. Review actual
-   output for facts, English, readability, clipping, brand, safe zones and audio.
-   Deliver preview bytes/hash and wait for explicit acceptance. Render the cover
-   with pipeline.py cover and review it with the preview.
-7. Preserve preview bytes and evidence, record that real decision, then render
-   --final60. New bytes do not inherit preview acceptance; review/deliver and obtain
-   separate acceptance of the final file/hash.
+6. Animatic before any render, for every video: pipeline.py animatic builds a
+   browser player of the real pages with the voice track, one still per scene and
+   a contact sheet, in minutes. Check the stills yourself, publish `animatic/` as
+   a private Spot site (see runtime.md), send the link and the contact sheet, and
+   wait for an explicit human approval of this animatic. Record it with
+   episode.py approve animatic. Any change after that needs a rebuild, a new
+   animatic and a new approval; the renderer refuses otherwise.
+7. After animatic approval render the final directly with --final60 (no 30 fps
+   preview unless the user asks for one). Review the actual output for facts,
+   English, readability, clipping, brand, safe zones and audio. Render the cover
+   with pipeline.py cover. Deliver the final and obtain separate acceptance of
+   the final file (episode.py approve video).
 8. Verify delivery filenames, sizes and checksums against the accepted bytes.
    Attach the actual files in chat and record transfer failures and limits.
    After final acceptance ask whether the author wants YouTube copy; follow

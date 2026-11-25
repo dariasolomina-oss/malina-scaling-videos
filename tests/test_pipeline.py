@@ -37,6 +37,22 @@ class PipelineTests(unittest.TestCase):
         pipeline.build(self.root)  # real prepare_page + Node CSS, no browser
 
     @staticmethod
+    def fake_animatic_run(command, **kwargs):
+        # Stand-ins for the browser and ffmpeg: NOT browser evidence.
+        if command[0] == 'node':
+            out = Path(command[3]); out.mkdir(parents=True, exist_ok=True)
+            for t in command[5:]:
+                (out/f't_{float(t):.2f}.jpg').write_bytes(b'still')
+        else:
+            Path(command[-1]).write_bytes(b'image')
+        return subprocess.CompletedProcess(command, 0)
+
+    def approve_animatic(self):
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_animatic_run):
+            pipeline.animatic(self.root)
+        episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+
+    @staticmethod
     def fake_node(command, **kwargs):
         if command[0] != 'node' or not command[1].endswith('render.js'):
             raise AssertionError(command)
@@ -135,6 +151,7 @@ class PipelineTests(unittest.TestCase):
         self.approve_script()
         pipeline.build(self.root)
         self.assertEqual(json.loads((self.root/'source/build.json').read_text())['viewport'], [1080, 1080])
+        self.approve_animatic()
         with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_node) as run:
             pipeline.render(self.root)
             command = run.call_args.args[0]
@@ -209,30 +226,79 @@ class PipelineTests(unittest.TestCase):
                 pipeline.render(self.root)
             run.assert_not_called()
 
-    def test_mock_node_draft_final_and_new_approval_required(self):
+    def test_render_requires_approved_animatic_then_final(self):
         self.ready()
         with patch.object(pipeline.subprocess, 'run') as run:
-            with self.assertRaisesRegex(ValueError, 'video approval'):
+            for kwargs in ({}, {'final60': True}):
+                with self.assertRaisesRegex(ValueError, 'animatic approval'):
+                    pipeline.render(self.root, **kwargs)
+            run.assert_not_called()
+        with self.assertRaisesRegex(ValueError, 'build the animatic'):
+            episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_animatic_run):
+            result = pipeline.animatic(self.root)
+        self.assertTrue((self.root/'animatic/index.html').is_file())
+        self.assertTrue((self.root/'animatic/source/index.html').is_file())
+        self.assertTrue((self.root/'media/animatic-sheet.jpg').is_file())
+        info = json.loads((self.root/'animatic/animatic.json').read_text())
+        self.assertEqual(info['viewport'], [1920, 1080])
+        self.assertIsNone(info['audio'])
+        self.assertEqual(len(info['scenes']), result['scenes'])
+        self.assertEqual(episode.load(self.root)['status'], 'render')
+        with patch.object(pipeline.subprocess, 'run') as run:
+            with self.assertRaisesRegex(ValueError, 'animatic approval'):
                 pipeline.render(self.root, final60=True)
             run.assert_not_called()
+        episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+        state = episode.load(self.root)
+        self.assertEqual(state['status'], 'render')
+        # Straight to the 60 fps final: no preview render needed.
         with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_node) as run:
-            result = pipeline.render(self.root, chunk_frames=15, resume=True)
+            pipeline.render(self.root, final60=True, chunk_frames=15, resume=True)
             command = run.call_args.args[0]
+            self.assertEqual(command[command.index('--fps')+1], '60')
             self.assertIn('--resume', command)
-            self.assertEqual(command[command.index('--fps')+1], '30')
-            self.assertEqual(command[command.index('--chunk-frames')+1], '15')
-            self.assertEqual(result['audio'], 'silent')
-        self.assertEqual(episode.load(self.root)['status'], 'review')
-        episode.approve(self.root, 'video', 'TEST FIXTURE', True)
-        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_node):
-            pipeline.render(self.root, final60=True)
         state = episode.load(self.root)
         self.assertEqual(state['status'], 'review')
-        self.assertNotIn('video', state['approvals'])
         self.assertEqual(state['history'][-1]['fps'], 60)
+        episode.approve(self.root, 'video', 'TEST FIXTURE', True)
+        self.assertEqual(episode.load(self.root)['status'], 'video_approved')
+
+    def test_changed_inputs_need_new_animatic_approval(self):
+        self.ready()
+        self.approve_animatic()
+        data = pipeline.read(self.root/'content.json')
+        data['headline'] = 'Changed headline'
+        episode.write_json(self.root/'content.json', data)
+        pipeline.build(self.root)
+        with patch.object(pipeline.subprocess, 'run') as run:
+            with self.assertRaisesRegex(ValueError, 'animatic approval'):
+                pipeline.render(self.root, final60=True)
+            run.assert_not_called()
+        # The old animatic no longer matches the build and cannot be approved.
+        with self.assertRaisesRegex(ValueError, 'out of date'):
+            episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+        self.approve_animatic()
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_node):
+            pipeline.render(self.root, final60=True)
+        # A changed script drops every approval, the animatic one included.
+        (self.root/'script.md').write_text('Changed script.\n', encoding='utf-8')
+        self.assertEqual(episode.load(self.root)['approvals'], {})
+
+    def test_animatic_points_per_scene_or_evenly_spaced(self):
+        content = {'layout': 'scenes', 'duration': 8, 'scenes': [
+            {'id': 'a', 'kind': 'title', 'title': 'Intro', 'start': 0, 'end': 2},
+            {'id': 'b', 'kind': 'kpi', 'title': 'Number', 'start': 2, 'end': 8}]}
+        self.assertEqual([p['at'] for p in pipeline.animatic_points(content)], [1, 5])
+        self.assertEqual(pipeline.animatic_points(content)[1]['label'], 'Number')
+        long = pipeline.animatic_points({'duration': 480})
+        self.assertEqual(len(long), 48)
+        self.assertEqual(long[-1]['end'], 480)
+        self.assertLessEqual(len(pipeline.animatic_points({'duration': 3600})), pipeline.ANIMATIC_MAX_STILLS)
 
     def test_node_failure_is_not_masked_or_installed(self):
         self.ready()
+        self.approve_animatic()
         with patch.object(pipeline.subprocess, 'run', side_effect=subprocess.CalledProcessError(17, ['node'])):
             with self.assertRaises(subprocess.CalledProcessError) as caught:
                 pipeline.render(self.root)
@@ -299,6 +365,8 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue((self.root/'inputs/voiceover.mp3').is_file())
         self.assertEqual(pipeline.read(self.root/'timings.json')['source'], 'elevenlabs')
         pipeline.build(self.root)
+        self.approve_animatic()
+        self.assertEqual(json.loads((self.root/'animatic/animatic.json').read_text())['audio'], 'audio.mp3')
         real_run = subprocess.run
 
         def node_stub(command, **kwargs):

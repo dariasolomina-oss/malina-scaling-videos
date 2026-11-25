@@ -107,13 +107,23 @@ def require_production(root, action):
 
 def approve(root, kind, human, confirm=False):
     state = load(root)
-    if kind not in ('script', 'video') or not confirm or not human.strip():
+    if kind not in ('script', 'animatic', 'video') or not confirm or not human.strip():
         raise ValueError('explicit --confirm and named human required')
-    if state['status'] != ('script' if kind == 'script' else 'review'):
+    if state['status'] != {'script': 'script', 'animatic': 'render', 'video': 'review'}[kind]:
         raise ValueError('approval not allowed in current status')
     if not safe_path(root, state['script_path']).read_text(encoding='utf-8').strip():
         raise ValueError('empty script')
     a = dict(human=human.strip(), confirmed=True, at=now(), script_hash=state['script_hash'], revision=state['revision'])
+    if kind == 'animatic':
+        require_production(root, 'render')
+        made = state.get('pipeline', {}).get('animatic')
+        built = state.get('pipeline', {}).get('build')
+        if not made or not built or not safe_path(root, 'animatic/index.html').is_file():
+            raise ValueError('build the animatic before approving it')
+        if made['input_hash'] != hashlib.sha256(json.dumps(built, sort_keys=True, allow_nan=False).encode()).hexdigest():
+            raise ValueError('animatic is out of date; rebuild it from the current build')
+        a['input_hash'] = made['input_hash']
+        a['animatic_tree'] = made['tree']
     if kind == 'video':
         require_production(root, 'render')
         path = safe_path(root, state['video_path'])
@@ -121,7 +131,8 @@ def approve(root, kind, human, confirm=False):
             raise ValueError('nonempty review video required')
         a['video_hash'] = digest(path)
     state['approvals'][kind] = a
-    state['status'] = kind + '_approved'
+    if kind != 'animatic':  # the animatic approval keeps the episode in 'render'
+        state['status'] = kind + '_approved'
     state['history'].append(dict(event='human_approval', kind=kind, **a))
     write_json(Path(root)/'episode.yaml', state)
     return state
@@ -232,7 +243,7 @@ def main():
         if cmd == 'create':
             p.add_argument('--id', required=True); p.add_argument('--title', required=True); p.add_argument('--language', default='en', choices=('en',))
         if cmd == 'approve':
-            p.add_argument('kind', choices=['script', 'video']); p.add_argument('--human', required=True); p.add_argument('--confirm', action='store_true')
+            p.add_argument('kind', choices=['script', 'animatic', 'video']); p.add_argument('--human', required=True); p.add_argument('--confirm', action='store_true')
         if cmd == 'transition':
             p.add_argument('target', choices=STATUSES)
         if cmd in ('version', 'restore'):

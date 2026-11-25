@@ -53,5 +53,5 @@ approval. Present current SHA-256/revision externally with the script review req
 
 - Script review: pending explicit human decision on current hash/revision.
 - Production blocked until that decision is recorded.
-- Delivery plan: full-timeline preview30 → timecoded review → human video approval
-  → same-content final60 (different artifact hash) → separate delivery acceptance.
+- Delivery plan: animatic (browser player, every scene) → human animatic approval
+  → final60 render of the same build → separate delivery acceptance.
