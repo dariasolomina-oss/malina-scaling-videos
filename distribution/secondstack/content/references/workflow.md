@@ -11,6 +11,7 @@
    Present revision and SHA-256; wait for the actual explicit human decision. Only
    then record it through episode.py approve. A name/confirm flag is not identity.
 4. After approval, import selected authorized English audio and timings, if any.
+   A supplied recording may be transcribed before the script as research.
    Verify actual speech and alignment. Never replace supplied narration without
    permission. No-voice is an explicit intake choice, not an integration fallback.
 5. Populate content.json from approved copy and use pipeline.py build. Use the
@@ -26,8 +27,8 @@
    separate acceptance of the final file/hash.
 8. Verify delivery filenames, sizes and checksums against the accepted bytes.
    Attach the actual files in chat and record transfer failures and limits.
-   Follow youtube.md after final acceptance unless declined or essential evidence
-   is missing.
+   After final acceptance ask whether the author wants YouTube copy; follow
+   youtube.md only on a yes. Never upload or publish.
 
 Freeze inputs and use one writer. Script edits invalidate script/video approvals;
 video edits invalidate video acceptance. Guards/hashes are not IAM or signatures.

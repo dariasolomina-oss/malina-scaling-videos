@@ -59,6 +59,7 @@ Research claims with relevant official sources and record evidence and limitatio
    - a redrawn interface built from a screenshot, labelled on screen as an illustration;
    - no UI (editorial card, diagram or key number).
    Prefer real footage made by you. Approval of the script includes these choices.
+   Build every video as a sequence of branded scenes (title, key number, steps, product screen, CTA) in the product's brand book style, like the historical LakeSentry videos, in 16:9, 9:16 or 1:1. Do not explain the toolkit's internals to the user.
 3. Animatic, only for videos of 3 minutes or longer and only when the toolkit provides a supported animatic route: a low-resolution draft with placeholders, final on-screen text, scene timing and draft audio. If the route is missing, say so once and continue with the script.
 4. After script approval: step 2 questions, then voice import or generation, product UI, music and effects, page building, rendering and thumbnails. Exception: a user-supplied recording may be transcribed before the script, so the script can be built around it.
 5. Preview at 30 fps for the full timeline → human review → final at 60 fps with the same approved content → separate human acceptance of the final file and hash. Changed scripts or video bytes invalidate the affected approvals.

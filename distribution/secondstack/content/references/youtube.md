@@ -4,8 +4,9 @@ Use the current accepted video/script, actual review notes, episode RESEARCH.md
 and Collection/official evidence. No local product brief is required. Recheck
 volatile claims and preserve mockup/sample disclosures.
 
-After final acceptance, generate English metadata (`en`) unless the author declines
-or an essential input is missing. Infer search intent from the viewer's problem
+After final acceptance, ask whether the author wants a YouTube title and
+description. Generate English metadata (`en`) only on a yes, unless an essential
+input is missing. Infer search intent from the viewer's problem
 and what the video demonstrates. Choose one primary phrase and a few relevant
 secondary terms. Use them naturally. Avoid invented search metrics, keyword
 stuffing, ranking promises and unsupported capabilities or savings. Keyword
@@ -38,5 +39,5 @@ validation as applicable. Reuse valid acceptance for the same exact bytes.
 Deliver the title options, ready-to-paste description, primary keyword and brief
 rationale in chat. Attach `publish/youtube.md`, keep `publish/youtube.json` as
 provenance and identify the accepted video version/hash. Ask for editorial review
-of the copy. Upload requires a separately authorized destination/account and a
-confirmed result. Covers and SRT are separate deliverables.
+of the copy. The author uploads and publishes the video; never upload or publish
+to YouTube or any other platform. Covers and SRT are separate deliverables.
