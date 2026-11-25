@@ -9,6 +9,7 @@
     "muted": "#525252",
     "border": "#E5E5E5",
     "primary": "#2563EB",
+    "on_primary": "#FFFFFF",
     "accent": "#2563EB"
   },
   "fonts": {

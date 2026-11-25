@@ -9,6 +9,7 @@
     "format": {"enum": ["responsive", "horizontal", "vertical", "square"]},
     "demo": {"type": "boolean"},
     "duration": {"type": "number", "exclusiveMinimum": 0, "maximum": 3600},
+    "disclosure": {"type": "string", "maxLength": 120},
     "scenes": {
       "type": "array", "minItems": 1,
       "items": {"$ref": "#/$defs/scene"}
@@ -31,6 +32,7 @@
         "button": {"type": "string", "maxLength": 80},
         "src": {"type": "string", "pattern": "^assets/[^\\\\]*$"},
         "alt": {"type": "string", "maxLength": 160},
+        "disclosure": {"type": "string", "maxLength": 120},
         "steps": {
           "type": "array", "minItems": 1, "maxItems": 6,
           "items": {"type": "object", "required": ["title", "body"], "properties": {"title": {"type": "string", "maxLength": 60}, "body": {"type": "string", "maxLength": 140}}, "additionalProperties": false}

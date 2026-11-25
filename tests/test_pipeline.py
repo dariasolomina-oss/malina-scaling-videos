@@ -121,7 +121,22 @@ class PipelineTests(unittest.TestCase):
         source = (self.root/'source/index.html').read_text()
         self.assertIn("scene.kind==='screen'", source)
         self.assertEqual((self.root/'source/assets/episode/capture.mp4').read_bytes(), b'fixture capture, not a real video')
-        self.assertEqual(json.loads((self.root/'source/build.json').read_text())['template'], 'video-scenes.html')
+        build = json.loads((self.root/'source/build.json').read_text())
+        self.assertEqual(build['template'], 'video-scenes.html')
+        # Episode format drives scene geometry: vertical scenes get the Shorts safe zone.
+        self.assertEqual(build['viewport'], [1080, 1920])
+        self.assertEqual(build['format_policy']['id'], 'shorts')
+        self.assertIn('--shorts-top', source)
+
+    def test_multi_scene_format_must_match_episode(self):
+        self.create(format='vertical')
+        self.approve_script()
+        content = pipeline.read(self.root/'content.json')
+        content.update({'layout': 'scenes', 'format': 'square', 'scenes': [
+            {'id': 'intro', 'kind': 'title', 'start': 0, 'end': 1, 'title': 'Problem'}]})
+        episode.write_json(self.root/'content.json', content)
+        with self.assertRaisesRegex(ValueError, 'format must match'):
+            pipeline.build(self.root)
 
     def test_content_source_and_config_changes_block_before_node(self):
         self.ready()
