@@ -2,6 +2,7 @@
   "schema_version": 1,
   "product": "Antares",
   "reviewed_at": "2026-11-05",
+  "sources_extended_at": "2026-11-24",
   "documentation_root": "https://docs.getantares.io/",
   "policy": "Read current topic-specific official documentation before script. Brandkit and scheduler are not feature evidence.",
   "sources": [
@@ -165,6 +166,158 @@
       "status": "read",
       "checked_at": "2026-11-05",
       "verification_scope": "Public description of target dashboard generation and advertised migration routes. Check output details against S10 and S11 and omit effort or savings percentages."
+    },
+    {
+      "id": "S16",
+      "title": "Antares web application",
+      "url": "https://app.getantares.io/",
+      "kind": "product_application",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "requires_sign_in": true,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "HTTP 200; redirected to /login. Sign-in by emailed link or password; account creation offered. Observed version v0.17.0. No sign-in performed; no product screens read."}],
+      "verification_scope": "Real product UI for authorized, dated screen capture with a demo account and demo data only, after script approval. Not feature evidence by itself: confirm on-screen claims in topic documentation. Stop if real customer data could appear.",
+      "privacy": "Do not store login links, tokens, cookies or credentials in shared resources; delete browser session state after capture."
+    },
+    {
+      "id": "S17",
+      "title": "Migration Workflow",
+      "url": "https://docs.getantares.io/concepts/migration-workflow/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S18",
+      "title": "Upload a Workbook",
+      "url": "https://docs.getantares.io/getting-started/upload-workbook/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S19",
+      "title": "Connect Tableau",
+      "url": "https://docs.getantares.io/getting-started/connect-tableau/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S20",
+      "title": "Create an Analysis",
+      "url": "https://docs.getantares.io/analyzer/create-analysis/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S21",
+      "title": "Review Analysis Results",
+      "url": "https://docs.getantares.io/analyzer/review-analysis-results/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S22",
+      "title": "Workbook Details",
+      "url": "https://docs.getantares.io/analyzer/workbook-details/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S23",
+      "title": "Private Network Access",
+      "url": "https://docs.getantares.io/concepts/private-network-access/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S24",
+      "title": "Tableau Connections",
+      "url": "https://docs.getantares.io/connections/tableau-connections/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S25",
+      "title": "Create a Conversion",
+      "url": "https://docs.getantares.io/converter/create-conversion/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S26",
+      "title": "LLM Endpoints",
+      "url": "https://docs.getantares.io/converter/llm-endpoints/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S27",
+      "title": "Fabric Connections",
+      "url": "https://docs.getantares.io/connections/fabric-connections/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S28",
+      "title": "CLI and Programmatic Access",
+      "url": "https://docs.getantares.io/api/cli-and-programmatic-access/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S29",
+      "title": "Common Issues",
+      "url": "https://docs.getantares.io/troubleshooting/common-issues/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
+    },
+    {
+      "id": "S30",
+      "title": "FAQ",
+      "url": "https://docs.getantares.io/troubleshooting/faq/",
+      "kind": "official_product_documentation",
+      "status": "discovered-unread",
+      "checked_at": null,
+      "access_checks": [{"actor": "Personal Assistant", "date": "2026-11-24", "outcome": "Listed in docs sitemap-0.xml; HTTP 200. Content not read; title is the URL slug, not the page heading."}],
+      "verification_scope": "Not yet read. Read the page and record sections before using it for a claim."
     }
   ]
 }
