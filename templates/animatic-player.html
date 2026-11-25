@@ -58,20 +58,27 @@ const info=await (await fetch('animatic.json',{cache:'no-store'})).json();
 const $=id=>document.getElementById(id);
 const frame=$('frame'),box=$('frameBox'),stage=$('stage'),audio=$('audio'),seek=$('seek');
 const [W,H]=info.viewport,D=info.duration;
-document.title=info.title+' · animatic';$('title').textContent=info.title;
-$('meta').textContent=`${info.format_label} · ${fmt(D)} · version ${info.version}`;
-frame.width=W;frame.height=H;seek.max=String(D);
+document.title=info.title+' \u00b7 animatic';$('title').textContent=info.title;
+$('meta').textContent=`${info.format_label} \u00b7 ${fmt(D)} \u00b7 version ${info.version}`;
+frame.width=W;frame.height=H;seek.max=String(D);document.documentElement.style.setProperty('--ar',W+'/'+H);
 function fmt(s){s=Math.max(0,s);const m=Math.floor(s/60),r=Math.floor(s%60);return m+':'+String(r).padStart(2,'0');}
 function fit(){const r=stage.getBoundingClientRect();const k=Math.min(r.width/W,r.height/H);box.style.transform=`scale(${k}) translate(-50%,-50%)`;box.style.width=W+'px';box.style.height=H+'px';}
 addEventListener('resize',fit);fit();
-await new Promise(r=>{if(frame.contentWindow&&frame.contentWindow.render&&frame.contentDocument.readyState==='complete')r();else frame.addEventListener('load',r,{once:true});});
-const win=frame.contentWindow;
-if(typeof win.render!=='function'){$('hint').textContent='This page cannot be previewed.';return;}
+// The video page runs in its own frame and is driven by messages.
+let seq=0;const waiting=new Map();
+addEventListener('message',e=>{const m=e.data;if(!m||e.source!==frame.contentWindow)return;
+  if(m.animatic==='ready'&&waiting.has('ready')){waiting.get('ready')();waiting.delete('ready');}
+  if(m.animatic==='done'&&waiting.has(m.id)){waiting.get(m.id)(m.error);waiting.delete(m.id);}});
+await new Promise((resolve,reject)=>{waiting.set('ready',resolve);let n=0;
+  const ping=()=>{if(!waiting.has('ready'))return;if(++n>150){reject(new Error('the video page did not start'));return;}
+    try{frame.contentWindow.postMessage({animatic:'ping'},'*');}catch{}setTimeout(ping,100);};ping();});
+function renderAt(t){return new Promise((resolve,reject)=>{const id=++seq;waiting.set(id,err=>err?reject(new Error(err)):resolve());
+  frame.contentWindow.postMessage({animatic:'render',t,id},'*');});}
 const hasAudio=!!info.audio;if(hasAudio)audio.src=info.audio;
 let playing=false,clock=0,last=0,rate=1,busy=false,want=0;
 const speeds=[1,1.5,2];
 function now(){return hasAudio?audio.currentTime:clock;}
-async function draw(t){want=t;if(busy)return;busy=true;try{while(true){const x=want;await win.render(x);if(x===want)break;}}finally{busy=false;}}
+async function draw(t){want=t;if(busy)return;busy=true;try{while(true){const x=want;await renderAt(x);if(x===want)break;}}catch(e){$('hint').textContent='Could not draw this moment: '+e.message;}finally{busy=false;}}
 function update(t){seek.value=String(t);$('time').textContent=fmt(t)+' / '+fmt(D);
   for(const el of document.querySelectorAll('.scene')){const on=t>=+el.dataset.start&&t<+el.dataset.end;el.classList.toggle('on',on);}}
 function setTime(t){t=Math.min(D,Math.max(0,t));if(hasAudio)audio.currentTime=t;clock=t;update(t);draw(t);}
@@ -89,7 +96,7 @@ addEventListener('keydown',e=>{if(e.target===seek&&e.key.startsWith('Arrow'))e.p
 const list=$('scenes');
 for(const s of info.scenes){const el=document.createElement('div');el.className='scene';el.dataset.start=s.start;el.dataset.end=s.end;
   const img=document.createElement('img');img.src=s.thumb;img.alt='';img.loading='lazy';
-  const txt=document.createElement('div');const tt=document.createElement('div');tt.className='t';tt.textContent=fmt(s.start)+'–'+fmt(s.end);
+  const txt=document.createElement('div');const tt=document.createElement('div');tt.className='t';tt.textContent=fmt(s.start)+'\u2013'+fmt(s.end);
   const nn=document.createElement('div');nn.className='n';nn.textContent=s.label;txt.append(tt,nn);el.append(img,txt);
   el.onclick=()=>setTime(s.start+0.01);list.append(el);}
 setTime(0);

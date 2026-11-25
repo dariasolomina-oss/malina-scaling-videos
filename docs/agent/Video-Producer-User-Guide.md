@@ -45,7 +45,7 @@ Reply in plain language:
 
 When you are happy with the script, say "yes" or similar. That approves the exact version shown. A changed script needs a new approval.
 
-Before anything is rendered, every video gets an **animatic**: a link to a private page where the whole video plays in your browser with its scenes, on-screen text, timing and voice, plus one picture per scene. It is ready in minutes. Comment on it as you like; the agent updates it and sends a new link. Nothing is rendered until you approve the animatic, for example "looks good, render".
+Before anything is rendered, every video gets an **animatic**, ready in minutes: a draft video in the chat with a picture every two seconds and the voice, so you can check the story, texts and timing, plus one picture per scene. A link to a private page lets you also see the motion of any moment. Comment on it as you like; the agent updates it and sends a new link. Nothing is rendered until you approve the animatic, for example "looks good, render".
 
 ## 3. Voice
 
@@ -82,4 +82,4 @@ Ask for a short English handoff note (stage, open issues, next action) when you 
 
 ## Verification note
 
-This guide describes Agent profile version 19 with toolkit 1.0.0-candidate.9. The animatic player was checked in test runs with and without a voice, not yet in a live run of the Agent. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit and an approved sound library are not yet installed.
+This guide describes Agent profile version 19 with toolkit 1.0.0-candidate.9. The animatic was checked in test runs with and without a voice and for an 8-minute video, not yet in a live run of the Agent. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit and an approved sound library are not yet installed.

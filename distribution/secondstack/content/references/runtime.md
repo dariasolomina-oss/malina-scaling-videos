@@ -74,10 +74,12 @@ After `pipeline.py build`:
 python3 engine/scripts/pipeline.py animatic --episode "$EP"
 ```
 
-It writes `animatic/` (a static player site: the built pages drawn live in the
-browser, the voice track, a scene list with stills) and
-`media/animatic-sheet.jpg` (one still per scene). It takes about a second per
-scene; nothing is encoded. Publish it as a private site for review, for example
+It writes `media/animatic.mp4` (960 px, a frame drawn from the middle of every
+2 s interval, at most 300 frames, with the voice; about 6 MB and under two
+minutes for 8 minutes of video), `media/animatic-sheet.jpg` (one frame per scene)
+and `animatic/` (a static player site: the built pages drawn live in the browser
+with the voice track and a scene list). Send the MP4 and the sheet as chat
+attachments; the chat's inline HTML limit (128 KB) is too small for an animatic. Publish it as a private site for review, for example
 site `vp-<episode-id>` (lowercase letters, digits and hyphens only), redeploying
 the same name for each new version with `if_version`:
 

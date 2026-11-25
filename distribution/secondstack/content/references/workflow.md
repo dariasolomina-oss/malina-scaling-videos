@@ -19,11 +19,13 @@
    shared multi-scene template. Screen scenes require an authorized local capture;
    the template does not turn an unverified mockup into product evidence. Report
    missing trusted scene support before promising a requested visual.
-6. Animatic before any render, for every video: pipeline.py animatic builds a
-   browser player of the real pages with the voice track, one still per scene and
-   a contact sheet, in minutes. Check the stills yourself, publish `animatic/` as
-   a private Spot site (see runtime.md), send the link and the contact sheet, and
-   wait for an explicit human approval of this animatic. Record it with
+6. Animatic before any render, for every video: pipeline.py animatic builds, in
+   minutes, `media/animatic.mp4` (a frame every 2 s with the voice, for the chat),
+   `media/animatic-sheet.jpg` (one frame per scene) and `animatic/` (an
+   interactive browser player of the real pages). Check the frames yourself, send
+   the video and the sheet in chat, publish `animatic/` as a private Spot site
+   (see runtime.md) and give its link, then wait for an explicit human approval
+   of this animatic. Record it with
    episode.py approve animatic. Any change after that needs a rebuild, a new
    animatic and a new approval; the renderer refuses otherwise.
 7. After animatic approval render the final directly with --final60 (no 30 fps

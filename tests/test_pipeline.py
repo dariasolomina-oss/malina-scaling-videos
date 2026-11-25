@@ -240,6 +240,8 @@ class PipelineTests(unittest.TestCase):
         self.assertTrue((self.root/'animatic/index.html').is_file())
         self.assertTrue((self.root/'animatic/source/index.html').is_file())
         self.assertTrue((self.root/'media/animatic-sheet.jpg').is_file())
+        self.assertTrue((self.root/'media/animatic.mp4').is_file())
+        self.assertIn('frame_step', result)
         info = json.loads((self.root/'animatic/animatic.json').read_text())
         self.assertEqual(info['viewport'], [1920, 1080])
         self.assertIsNone(info['audio'])
@@ -295,6 +297,13 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(len(long), 48)
         self.assertEqual(long[-1]['end'], 480)
         self.assertLessEqual(len(pipeline.animatic_points({'duration': 3600})), pipeline.ANIMATIC_MAX_STILLS)
+        times, step = pipeline.animatic_timeline(480)
+        self.assertEqual((len(times), step, times[1]), (240, 2.0, 2.0))
+        times, step = pipeline.animatic_timeline(3600)
+        self.assertLessEqual(len(times), pipeline.ANIMATIC_MAX_FRAMES)
+        self.assertEqual(pipeline.animatic_timeline(1)[0], [0])
+        self.assertEqual(pipeline.animatic_sample(12, 2, 480), 13)
+        self.assertEqual(pipeline.animatic_sample(0, 2, 1), 0.999)
 
     def test_node_failure_is_not_masked_or_installed(self):
         self.ready()

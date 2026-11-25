@@ -379,6 +379,16 @@ def cover(root, at=None):
 
 FORMAT_LABELS = {'horizontal': '16:9', 'vertical': '9:16', 'square': '1:1'}
 ANIMATIC_MAX_STILLS = 60
+ANIMATIC_STEP = 2.0  # seconds between frames of the chat animatic video
+ANIMATIC_MAX_FRAMES = 300
+ANIMATIC_BRIDGE = (
+    "<script>/* animatic bridge: lets the player draw any moment of this page */"
+    "addEventListener('message',async e=>{const m=e.data;if(!m||e.source!==parent)return;"
+    "if(m.animatic==='ping'){if(document.readyState==='complete'&&typeof window.render==='function')"
+    "parent.postMessage({animatic:'ready'},'*');}"
+    "else if(m.animatic==='render'){let error=null;try{await window.render(m.t);}"
+    "catch(x){error=String(x&&x.message||x);}parent.postMessage({animatic:'done',id:m.id,error},'*');}});"
+    "</script>")
 
 
 def animatic_points(content):
@@ -393,6 +403,18 @@ def animatic_points(content):
     step = duration / count
     return [dict(start=round(i*step, 3), end=round(min(duration, (i+1)*step), 3),
                  label=f'Part {i+1}', at=round(min(duration, (i+0.5)*step), 3)) for i in range(count)]
+
+
+def animatic_timeline(duration):
+    """Frame times of the chat animatic video: one frame every ANIMATIC_STEP seconds."""
+    step = max(ANIMATIC_STEP, duration / ANIMATIC_MAX_FRAMES)
+    count = max(1, math.ceil(duration / step))
+    return [round(i * step, 3) for i in range(count)], step
+
+
+def animatic_sample(start, step, duration):
+    """Draw each frame from the middle of its interval, away from scene fades."""
+    return round(min(start + step / 2, duration * 0.999), 3)
 
 
 def animatic(root):
@@ -416,11 +438,18 @@ def animatic(root):
         site = work/'animatic'
         shutil.copytree(root/'source', site/'source')
         shutil.copyfile(REPO/'templates/animatic-player.html', site/'index.html')
+        page = site/'source/index.html'
+        text = page.read_text(encoding='utf-8')
+        page.write_text(text.replace('</body>', ANIMATIC_BRIDGE + '</body>', 1) if '</body>' in text
+                        else text + ANIMATIC_BRIDGE, encoding='utf-8')
         stills = work/'stills'
         env = dict(os.environ, W=str(width), H=str(height), HTML_ROOT=str((root/'source').resolve()))
         env.pop('ALPHA', None)
+        times, step = animatic_timeline(content['duration'])
+        samples = [animatic_sample(t, step, content['duration']) for t in times]
+        wanted = sorted({p['at'] for p in points} | set(samples))
         subprocess.run(['node', str(REPO/'engine/render/render.js'), str((root/'source/index.html').resolve()),
-            str(stills.resolve()), '--test', *[f"{p['at']}" for p in points]], check=True, env=env)
+            str(stills.resolve()), '--test', *[f"{t}" for t in wanted]], check=True, env=env)
         (site/'frames').mkdir()
         thumbs = []
         for i, point in enumerate(points, 1):
@@ -446,11 +475,36 @@ def animatic(root):
             audio = 'audio.mp3'
         title = content.get('headline') or state['title']
         revision = state['revision']
-        episode.write_json(site/'animatic.json', dict(title=title, version=revision,
+        info = dict(title=title, version=revision,
             duration=content['duration'], viewport=[width, height], format=cfg['format'],
             format_label=FORMAT_LABELS[cfg['format']], audio=audio,
             scenes=[dict(start=p['start'], end=p['end'], label=p['label'], thumb=t)
-                    for p, t in zip(points, thumbs)]))
+                    for p, t in zip(points, thumbs)])
+        episode.write_json(site/'animatic.json', info)
+        # Animatic video for the chat: timed frames plus the voice, small and quick to make.
+        # It is a draft, not a render: no motion between frames.
+        listing = work/'frames.txt'
+        lines = []
+        for i, t in enumerate(times):
+            still = stills/f"t_{samples[i]:.2f}.jpg"
+            if not still.is_file():
+                raise ValueError('renderer produced no animatic still')
+            end = times[i+1] if i + 1 < len(times) else content['duration']
+            lines += [f"file '{still.resolve()}'", f'duration {max(0.04, end - t):.3f}']
+        lines.append(f"file '{(stills/f't_{samples[-1]:.2f}.jpg').resolve()}'")
+        listing.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+        scale = 'scale=960:-2' if width >= height else 'scale=-2:960'
+        command = ['ffmpeg', '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', str(listing)]
+        if cfg['voice'] != 'none':
+            command += ['-i', str(episode.safe_path(root, cfg['audio'])), '-map', '0:v:0', '-map', '1:a:0',
+                        '-c:a', 'aac', '-b:a', '96k']
+        clip = work/'animatic.mp4'
+        command += ['-vf', f'{scale}:flags=lanczos,fps=10,format=yuv420p', '-c:v', 'libx264',
+                    '-preset', 'veryfast', '-tune', 'stillimage', '-crf', '30',
+                    '-t', str(content['duration']), '-movflags', '+faststart', str(clip)]
+        subprocess.run(command, check=True)
+        if not clip.is_file() or clip.stat().st_size == 0:
+            raise ValueError('no animatic video produced')
         episode.write_json(site/'_spot.json', dict(title=title + ' (animatic)',
             description='Draft animatic for review', tags=['animatic', 'video']))
         current = episode.require_production(root, 'render')
@@ -463,6 +517,8 @@ def animatic(root):
         media_sheet = episode.safe_path(root, 'media/animatic-sheet.jpg')
         media_sheet.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(target/'sheet.jpg', media_sheet)
+        media_clip = episode.safe_path(root, 'media/animatic.mp4')
+        shutil.copyfile(clip, media_clip)
         current = episode.load(root)
         # A new animatic always needs a new human approval.
         current['approvals'].pop('animatic', None)
@@ -473,7 +529,9 @@ def animatic(root):
     finally:
         shutil.rmtree(work, ignore_errors=True)
     return dict(site=str(target), sheet=str(media_sheet), scenes=len(points),
-        next='publish the site for review, then record approval with episode.py approve animatic')
+        video=str(media_clip), frame_step=step,
+        next='send the animatic video and the contact sheet in chat, publish the site for the '
+             'interactive player, then record approval with episode.py approve animatic')
 
 
 def main(argv=None):
