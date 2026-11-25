@@ -20,7 +20,9 @@ async function openBrowser(options = {}) {
   } }};
 }
 async function serveHTML(html) {
-  html = path.resolve(html);
+  // Compare canonical paths: macOS commonly exposes /var/folders through a
+  // symlink to /private/var/folders, and mixed forms falsely fail the root check.
+  html = fs.realpathSync(path.resolve(html));
   if (!process.env.CDP_URL) return {url: pathToFileURL(html).href, close: async () => {}};
   const root = fs.realpathSync(process.env.HTML_ROOT || path.dirname(html));
   if (path.relative(root, html).startsWith('..')) throw new Error('HTML must be inside HTML_ROOT');
