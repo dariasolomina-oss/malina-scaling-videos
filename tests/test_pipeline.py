@@ -287,6 +287,52 @@ class PipelineTests(unittest.TestCase):
         (self.root/'script.md').write_text('Changed script.\n', encoding='utf-8')
         self.assertEqual(episode.load(self.root)['approvals'], {})
 
+    def custom_episode(self, page):
+        self.create()
+        self.approve_script()
+        animation = self.root/'inputs/animation'
+        animation.mkdir(parents=True)
+        (animation/'index.html').write_text(page, encoding='utf-8')
+        episode.write_json(self.root/'content.json', {'demo': True, 'layout': 'custom',
+            'format': 'horizontal', 'duration': 1,
+            'scenes': [{'id': 'story', 'title': 'Story', 'start': 0, 'end': 1}]})
+
+    def test_custom_animation_build_includes_brand_and_library(self):
+        self.custom_episode('<!doctype html><html><head><title>t</title></head><body>'
+            '<script src="lib/characters/people.js"></script><div id="s"></div><script>'
+            'window.DURATION=1;window.render=t=>{document.getElementById("s").innerHTML='
+            'PEOPLE.draw("hero","stand")};</script></body></html>')
+        pipeline.build(self.root)
+        source = self.root/'source'
+        html = (source/'index.html').read_text()
+        self.assertIn('window.PAGE_VIEWPORT=[1920, 1080]', html)
+        self.assertIn('generated-brand-css', html)
+        self.assertTrue((source/'lib/characters/people.js').is_file())
+        self.assertTrue((source/'assets/logo').is_dir())
+        self.assertEqual(json.loads((source/'build.json').read_text())['layout'], 'custom')
+        self.assertEqual([p['label'] for p in pipeline.animatic_points(pipeline.read(source/'content.json'))], ['Story'])
+        # Changing the animation invalidates the build like any other input.
+        (self.root/'inputs/animation/extra.js').write_text('window.x=1;')
+        with self.assertRaisesRegex(ValueError, 'inputs changed'):
+            pipeline.cover(self.root)
+
+    def test_custom_animation_rejects_network_and_missing_files(self):
+        self.custom_episode('<html><head></head><body><script>fetch("x")</script></body></html>')
+        with self.assertRaisesRegex(ValueError, 'network'):
+            pipeline.build(self.root)
+        (self.root/'inputs/animation/index.html').write_text(
+            '<html><head><link href="https://fonts.example/a.css" rel="stylesheet"></head></html>')
+        with self.assertRaisesRegex(ValueError, 'remote resources'):
+            pipeline.build(self.root)
+        (self.root/'inputs/animation/index.html').write_text(
+            '<html><head></head><body><img src="missing.png"></body></html>')
+        with self.assertRaisesRegex(ValueError, 'Missing file'):
+            pipeline.build(self.root)
+        (self.root/'inputs/animation/index.html').write_text('<html><head></head></html>')
+        (self.root/'inputs/animation/lib').mkdir()
+        with self.assertRaisesRegex(ValueError, 'reserved'):
+            pipeline.build(self.root)
+
     def test_animatic_points_per_scene_or_evenly_spaced(self):
         content = {'layout': 'scenes', 'duration': 8, 'scenes': [
             {'id': 'a', 'kind': 'title', 'title': 'Intro', 'start': 0, 'end': 2},

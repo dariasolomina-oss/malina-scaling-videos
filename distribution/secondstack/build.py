@@ -8,7 +8,7 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '1.0.0-candidate.9'
+VERSION = '1.0.0-candidate.10'
 PRODUCTS = {'lakesentry': 'LakeSentry', 'antares': 'Antares', 'secondstack': 'SecondStack', 'alchemist': 'Alchemist'}
 
 
@@ -66,6 +66,7 @@ def build(output):
                 dest.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(p, dest)
     shutil.copytree(source/'templates', runtime/'templates')
+    shutil.copytree(source/'library', runtime/'library')
     for slug, name in PRODUCTS.items():
         src = source/'brands'/slug
         dest = runtime/'brands'/slug

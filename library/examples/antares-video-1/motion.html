@@ -1,0 +1,552 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Antares video 1 motion</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{--b:#2563eb;--ink:#0a0a0a;--n9:#171717;--n7:#404040;--n6:#525252;--n5:#737373;--n4:#a1a1a1;--n3:#d4d4d4;--n2:#e5e5e5;--n1:#f5f5f5;--red:#bf000f;--redbg:#fef2f2;--amb:#fcbb00;--ambt:#b75000;--ok:#00c758;
+  --hv:'Helvetica Neue',Helvetica,Arial,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#fff}
+#stage{position:absolute;inset:0;overflow:hidden;font-family:var(--hv);color:var(--n9);background:#fff}
+#stage.ink{background:var(--ink);color:#fff}
+.c{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.row{display:flex;align-items:center;justify-content:center}
+.col{display:flex;flex-direction:column;align-items:center;justify-content:center}
+.h{font-weight:700;letter-spacing:-.045em;line-height:.95}
+.lab{font-size:56px;font-weight:700;letter-spacing:-.03em}
+.sub{font-size:44px;color:var(--n6);letter-spacing:-.01em}
+.ink .sub{color:rgba(255,255,255,.7)}
+.mono{font-family:var(--mono)}
+
+.wb{position:relative;border-radius:22px;background:#fff;border:4px solid var(--n2);overflow:hidden;flex:none}
+.wb .bar{position:absolute;left:10%;right:10%;top:9%;height:9%;border-radius:6px;background:var(--n1)}
+.wb .p{position:absolute;border-radius:8px;background:var(--n1)}
+.wb.blue{border-color:var(--b)}.wb.blue .p,.wb.blue .bar{background:#dbe6fd}
+.wb.red{border-color:var(--red)}.wb.amb{border-color:var(--amb)}
+.wb.ghost{border-style:dashed;border-color:var(--n3)}.wb.ghost .p,.wb.ghost .bar{background:#fafafa}
+.dot{position:absolute;border-radius:50%}
+.chip{display:inline-flex;align-items:center;gap:22px;height:120px;padding:0 48px;border-radius:999px;background:var(--n1);font-size:52px;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
+.chip.on{background:var(--b);color:#fff}
+.chip.out{background:#fff;border:4px solid var(--n2)}
+.cur{position:absolute;width:96px;height:112px}
+.ring{position:absolute;border:8px solid var(--b);border-radius:28px}
+.big{font-size:300px;font-weight:700;letter-spacing:-.06em;line-height:.9}
+.strike{position:absolute;left:-4%;right:-4%;top:50%;height:16px;margin-top:-8px;background:var(--red);border-radius:8px}
+.pill{display:inline-flex;align-items:center;height:96px;padding:0 40px;border-radius:999px;font-size:48px;font-weight:700}
+.icon{display:block}
+.card{background:#fff;border:4px solid var(--n2);border-radius:36px}
+.ink .card{background:#171717;border-color:#2a2a2a}
+.grid{display:grid}
+.x{position:absolute;left:24px;bottom:16px;font-size:20px;color:var(--n6)}
+.hl{background:linear-gradient(#2563eb,#2563eb) no-repeat 0 0/0% 100%;border-radius:12px;padding:0 10px;margin:0 -6px}
+.layer{position:absolute;inset:0;overflow:hidden;background:#fff;color:var(--n9);transform-origin:50% 50%}
+.layer.ink{background:var(--ink);color:#fff}
+.pop{position:absolute;z-index:5}
+.pc{will-change:transform}.pc .wb{transition:none}
+.pc.on .wb{border-color:#2563eb;border-width:8px}.pc.seen .wb{border-color:#9db8f7}.pc.seen .wb .p,.pc.seen .wb .bar,.pc.on .wb .p,.pc.on .wb .bar{background:#dbe6fd}
+.rip{position:absolute;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;border:10px solid #2563eb;pointer-events:none}
+.ink .x{color:rgba(255,255,255,.7)}
+</style></head><body>
+<div id="stage"><div class="layer" id="L0"></div><div class="layer" id="L1"></div></div>
+<script src="antares-icons.js"></script>
+<script>
+const MOCK = [
+  "data:,",
+  "data:,",
+  "data:,",
+  "data:,",
+  "data:,",
+  "data:,",
+  "data:,",
+  "data:,",
+  "data:,",
+  "data:,"
+];
+const CHAT_ICON = "data:,";
+const P = (d, s = 120, c = "currentColor", w = 2) => `<svg class="icon" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const IC = {
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  people: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20v-1a6.5 6.5 0 0 1 13 0v1"/><circle cx="17" cy="9" r="2.8"/><path d="M16 14.2a5 5 0 0 1 6 4.8v1"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M5 21v-1a7 7 0 0 1 14 0v1"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/>',
+  dice: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="16" cy="16" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="16" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="16" r="1.2" fill="currentColor"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  db: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  wall: '<rect x="2" y="5" width="20" height="14" rx="1"/><path d="M2 12h20M8 5v7M16 5v7M12 12v7M5 12v7M19 12v7"/>',
+  warn: '<path d="m21.7 18-8-14a2 2 0 0 0-3.4 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.7-3"/><path d="M12 9v4M12 17h.01"/>',
+  archive: '<rect x="2" y="3" width="20" height="5" rx="1"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M10 12h4"/>',
+  pencil: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  bolt: '<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
+  truck: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>',
+  down: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
+  calx: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 14l6 6M15 14l-6 6"/>',
+  door: '<path d="M3 21h18M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><circle cx="14.5" cy="12" r=".8" fill="currentColor"/>',
+  chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  hammer: '<path d="m15 12-8.5 8.5a2.1 2.1 0 0 1-3-3L12 9"/><path d="M17.6 6.4 20 4l.5 3.5L22 9l-4 4-2.5-2.5"/><path d="m9 6 4-4 4 4-4 4z"/>',
+  sign: '<path d="M3 17c3-3 4 2 6-1s2-6 5-3 2 4 7 1"/><path d="M3 21h18"/>',
+  list: '<path d="M9 6h12M9 12h12M9 18h12"/><path d="m3 6 1 1 2-2M3 12l1 1 2-2M3 18l1 1 2-2"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>'
+};
+const icx = (n, s, c, w) => P(IC[n], s, c, w);
+const CURSOR = (x, y) => `<svg class="cur" style="left:${x}px;top:${y}px" viewBox="0 0 26 30"><path d="M3 2v22l6-5.5 4 9 3.5-1.6-4-8.8H21z" fill="#0a0a0a" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+function WB(w, h, v = "", extra = "") {
+  return `<div class="wb ${v}" style="width:${w}px;height:${h}px">${extra}<div class="bar"></div>
+  <div class="p" style="left:10%;top:24%;width:38%;height:30%"></div><div class="p" style="left:52%;top:24%;width:38%;height:30%"></div><div class="p" style="left:10%;top:58%;width:80%;height:30%"></div></div>`;
+}
+const DOT = (c, s = 34, r = 18, t = 18) => `<div class="dot" style="background:${c};width:${s}px;height:${s}px;right:${r}px;top:${t}px"></div>`;
+function wall(cols, rows, w, h, gap, fn = () => "") {
+  let s = "";
+  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+    const i = r * cols + c;
+    const o = fn(i) || {};
+    s += `<div style="opacity:${o.a ?? 1}">${WB(w, h, o.v || "", o.d || "")}</div>`;
+  }
+  return `<div class="grid" style="grid-template-columns:repeat(${cols},${w}px);gap:${gap}px">${s}</div>`;
+}
+const R = (i) => i * 7919 % 100 / 100;
+const X = '<div class="x">Example data — not a customer environment</div>';
+const WM = (w, c) => `<div style="width:${w}px;color:${c}">${LOGO.replace('height="31"', 'width="100%"')}</div>`;
+const meter = (v, max, label, col = "#2563eb", size = 620) => {
+  const a = Math.min(1, v / max), R0 = size * 0.42, cx = size / 2, cy = size * 0.56, L = Math.PI * R0;
+  return `<div class="col" style="width:${size}px"><svg width="${size}" height="${size * 0.62}" viewBox="0 0 ${size} ${size * 0.62}"><path d="M${cx - R0} ${cy} A${R0} ${R0} 0 0 1 ${cx + R0} ${cy}" fill="none" stroke="#f0f0f0" stroke-width="56" stroke-linecap="round"/>
+  <path d="M${cx - R0} ${cy} A${R0} ${R0} 0 0 1 ${cx + R0} ${cy}" fill="none" stroke="${col}" stroke-width="56" stroke-linecap="round" stroke-dasharray="${L}" stroke-dashoffset="${L * (1 - a)}"/>
+  <text x="${cx}" y="${cy - 20}" text-anchor="middle" font-family="Helvetica Neue,Arial" font-weight="700" font-size="${size * 0.2}" letter-spacing="-6" fill="#171717">${v}</text></svg><div class="lab" style="margin-top:-6px">${label}</div></div>`;
+};
+const S = [];
+const add = (t, name, html, ink, o = {}) => S.push([t, name, html, !!ink, o]);
+add(0, "Opening: Tableau estate", `<div class="open" style="position:absolute;inset:0">
+  <canvas id="floor" width="1920" height="1080" style="position:absolute;inset:0"></canvas>
+  <div id="o1" style="position:absolute;left:960px;top:60px;transform:translateX(-50%);display:flex;gap:24px;opacity:0;white-space:nowrap"><div class="pill" style="background:#171717;color:#fff;font-size:60px;height:110px">Tableau</div><div class="pill" style="background:#fef2f2;color:#bf000f;font-size:60px;height:110px">${icx("clock", 60, "#bf000f", 2.4)}&nbsp;Licence renews · 31 Mar</div></div>
+  <div id="o2" style="position:absolute;left:960px;top:70px;transform:translateX(-50%);opacity:0" class="pill"><span style="background:#171717;color:#fff;border-radius:999px;padding:22px 48px;font-size:64px">Tableau · 412 workbooks</span></div>
+  <div id="o2b" style="position:absolute;left:960px;top:900px;transform:translateX(-50%);opacity:0;display:flex;align-items:center;gap:30px;font-size:64px;font-weight:700"><span>Tableau</span>${icx("arrow", 90, "#2563eb", 2.6)}<span style="color:#2563eb">New platform</span></div>
+  <div id="msg" style="position:absolute;left:140px;top:250px;width:1640px;opacity:0"><div class="card" style="padding:56px 64px;display:flex;gap:46px;align-items:flex-start;border-radius:44px">
+    <div style="position:relative;flex:none"><img src="${CHAT_ICON}" style="width:170px;height:170px;display:block"><div id="badge" style="position:absolute;right:-18px;top:-18px;width:84px;height:84px;border-radius:50%;background:#bf000f;color:#fff;font-size:52px;font-weight:700;display:grid;place-items:center;opacity:0">2</div></div>
+    <div style="flex:1"><div style="display:flex;align-items:baseline;gap:24px"><span style="font-size:44px;font-weight:700;color:#737373">New message</span><span style="font-size:44px;color:#a1a1a1">#bi-migration</span><span style="margin-left:auto;font-size:40px;color:#a1a1a1">now</span></div>
+    <div style="font-size:60px;font-weight:700;margin-top:18px">Dana Reyes</div>
+    <div style="font-size:84px;font-weight:700;letter-spacing:-.035em;line-height:1.12;margin-top:10px"><span class="hl" id="hl1">How long</span> will the migration take, and <span class="hl" id="hl2">how many people</span> do you need?</div></div></div></div>
+  <div id="unk" style="position:absolute;left:960px;top:540px;transform:translate(-50%,-50%);display:flex;gap:70px;opacity:0">
+    <div class="card" style="width:700px;height:760px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#171717;border-color:#171717;color:#fff"><svg width="280" height="280" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line id="hh" x1="12" y1="12" x2="12" y2="7.5"/><line id="mh" x1="12" y1="12" x2="12" y2="5"/></svg><div class="qm" style="color:#2563eb;font-size:240px;font-weight:700;line-height:1">?</div><div style="font-size:72px;font-weight:700">How long?</div></div>
+    <div class="card" style="width:700px;height:760px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#171717;border-color:#171717;color:#fff">${icx("people", 280, "#fff", 1.6)}<div class="qm" style="color:#2563eb;font-size:240px;font-weight:700;line-height:1">?</div><div style="font-size:72px;font-weight:700">How many people?</div></div></div>
+</div>`, 0, { fam: "open", anim: (L, lt, t) => {
+  openingFrame(L, t);
+} });
+const PILE = () => {
+  let h = "";
+  for (let i = 0; i < 91; i++) {
+    const r = R(i * 3 + 1), q = R(i * 5 + 2);
+    h += `<div class="pc" style="transform:translate(${(r - 0.5) * 26}px,${(q - 0.5) * 22}px) rotate(${(r + q - 1) * 5}deg)">${WB(150, 104)}</div>`;
+  }
+  return `<div class="c pile"><div class="grid" style="grid-template-columns:repeat(13,150px);gap:24px 22px;transform:scale(.98)">${h}</div></div>`;
+};
+add(12.6, "Workbook by workbook", PILE(), 0, { fam: "pile", pile: true });
+add(15.7, "Owners who left", PILE() + `<div class="pop" style="left:1060px;top:170px"><div class="card" style="padding:44px 56px;display:flex;gap:40px;align-items:center;border-radius:40px">${icx("user", 170, "#a1a1a1", 1.6)}<div><div class="mono" style="font-size:48px">k.larsen</div><div class="pill" style="background:#fef2f2;color:#bf000f;margin-top:16px">${icx("door", 52, "#bf000f", 2.2)}&nbsp;left 2023</div></div></div></div>`, 0, { fam: "pile", pile: true });
+add(18.2, "Full of formulas", PILE() + `<div class="pop" style="left:300px;top:560px"><div class="card" style="padding:50px 60px;border-radius:40px"><div class="mono" style="font-size:52px;line-height:1.55">{FIXED [Region] : SUM([Sales])}<br>WINDOW_AVG(SUM([Units]),-2,0)<br><span style="color:#a1a1a1">IF [Param 5] = 'ALL' THEN…</span></div></div></div>`, 0, { fam: "pile", pile: true });
+add(21.6, "…and guess", `<div class="c"><div class="row" style="gap:80px">${icx("dice", 520, "#171717", 1.3)}<div class="big" style="font-size:420px;color:var(--n4)">?</div></div></div>`);
+add(22.8, "Weeks later: a spreadsheet", `<div class="c"><div class="grid" style="grid-template-columns:repeat(5,330px);gap:10px">${[...Array(20)].map((_, i) => `<div style="height:190px;border-radius:14px;background:${i < 5 ? "#171717" : "#f5f5f5"};display:grid;place-items:center;font-size:${i < 5 ? 46 : 110}px;font-weight:700;color:${i < 5 ? "#fff" : "#a1a1a1"}">${i < 5 ? ["Workbook", "Owner", "Used?", "Effort", "People"][i] : "?"}</div>`).join("")}</div></div>`);
+add(25, "Still a guess", `<div class="c"><div class="row" style="gap:40px">${["~3 wks?", "~1 wk?", "?"].map((v) => `<div style="width:540px;height:420px;border-radius:30px;background:#f5f5f5;display:grid;place-items:center;font-size:130px;font-weight:700;letter-spacing:-.04em;color:#737373;font-style:italic">${v}</div>`).join("")}</div></div>`);
+add(28.8, "Antares Analyzer", `<div class="c"><div class="col" style="gap:30px">${WM(1100, "#fff")}<div class="h" style="font-size:150px">Analyzer</div></div></div>`, 1);
+add(30.6, "Free · one workbook", `<div class="c"><div class="row" style="gap:80px">
+  <div style="width:1180px;border-radius:28px;overflow:hidden;background:#fff;border:4px solid #2a2a2a">
+    <div style="height:70px;background:#f5f5f5;display:flex;align-items:center;gap:14px;padding:0 26px"><i style="width:18px;height:18px;border-radius:50%;background:#d4d4d4;display:block"></i><i style="width:18px;height:18px;border-radius:50%;background:#d4d4d4;display:block"></i><i style="width:18px;height:18px;border-radius:50%;background:#d4d4d4;display:block"></i><span style="margin-left:24px;height:42px;border-radius:21px;background:#fff;padding:0 24px;display:flex;align-items:center;font-size:24px;color:#525252">try.getantares.io</span></div>
+    <div id="vv" style="position:relative;width:1172px;height:659px;overflow:hidden;background:#f7f8fa">${MOCK.map((m, k) => `<img src="${m}" style="position:absolute;left:0;top:0;width:100%;height:100%;display:block;opacity:0;transform-origin:50% 40%">`).join("")}</div></div>
+  <div class="col" style="gap:30px;align-items:flex-start"><div class="pill" style="background:#2563eb;color:#fff;font-size:72px;height:130px;padding:0 56px">Free</div><div class="pill" style="background:#171717;color:#fff;font-size:56px">No sign-up</div></div></div></div>`, 1, { anim: (L, lt) => {
+  const im = [...L.querySelectorAll("#vv img")];
+  const per = 0.66, st = 0.35;
+  const k = Math.max(0, Math.min(im.length - 1, Math.floor((lt - st) / per)));
+  const p = clamp((lt - st - k * per) / per);
+  im.forEach((m, j) => {
+    if (j === k) {
+      const e = emph(clamp(p / 0.35));
+      m.style.opacity = lt < st ? 0 : 1;
+      m.style.zIndex = 2;
+      m.style.transform = `translateY(${(60 * (1 - e)).toFixed(1)}px) scale(${(1 + 0.08 * p).toFixed(4)})`;
+    } else if (j === k - 1 && p < 0.35) {
+      m.style.opacity = 1;
+      m.style.zIndex = 1;
+      m.style.transform = `scale(${1.08.toFixed(3)})`;
+    } else {
+      m.style.opacity = 0;
+    }
+  });
+} });
+add(37.3, "Whole environment", `<div class="c" style="transform:scale(1.04)">${wall(9, 5, 230, 160, 26)}</div>`);
+add(42.6, "Reads every workbook", `<div class="c">${wall(9, 5, 230, 160, 26, (i) => ({ v: i % 9 < 5 ? "blue" : "" }))}<div style="position:absolute;left:1140px;top:0;bottom:0;width:14px;background:var(--b)"></div></div>`);
+add(45.3, "→ readiness report", `<div class="c"><div class="row" style="gap:70px">${["412", "1,174", "137"].map((v, i) => `<div class="card" style="width:520px;height:640px;display:flex;flex-direction:column;justify-content:flex-end;padding:50px"><div class="h" style="font-size:170px;color:${i === 2 ? "#a1a1a1" : "#171717"}">${v}</div><div style="height:26px;border-radius:13px;background:${["#2563eb", "#2563eb", "#d4d4d4"][i]};width:${[90, 100, 55][i]}%;margin-top:40px"></div></div>`).join("")}</div>${X}</div>`);
+add(47.4, "Not a project plan", `<div class="c"><div style="position:relative">${icx("list", 560, "#d4d4d4", 1.4)}<div style="position:absolute;inset:0;display:grid;place-items:center">${icx("x", 620, "#bf000f", 1.4)}</div></div></div>`);
+add(50.9, "What you have", `<div class="c">${wall(9, 5, 230, 160, 26)}<div style="position:absolute;inset:0;display:grid;place-items:center"><div class="big" style="background:#fff;padding:20px 60px;border-radius:40px;font-size:340px">412</div></div>${X}</div>`);
+add(52.3, "What people use", `<div class="c">${wall(9, 5, 230, 160, 26, (i) => ({ v: R(i) < 0.33 ? "ghost" : "", a: R(i) < 0.33 ? 0.6 : 1 }))}${X}</div>`);
+add(53.7, "What will be hard", `<div class="c">${wall(9, 5, 230, 160, 26, (i) => {
+  const r = R(i);
+  if (r < 0.33) return { v: "ghost", a: 0.5 };
+  if (r > 0.93) return { v: "red", d: DOT("#bf000f") };
+  if (r > 0.62) return { v: "amb", d: DOT("#fcbb00") };
+  return {};
+})}${X}</div>`);
+add(57.5, "Evidence, not gut feel", `<div class="c"><div class="row" style="gap:40px">${["412", "137", "23"].map((v, i) => `<div style="width:540px;height:420px;border-radius:30px;background:${["#eaf1fe", "#f5f5f5", "#fef2f2"][i]};display:grid;place-items:center;font-size:170px;font-weight:700;letter-spacing:-.05em;color:${["#2563eb", "#525252", "#bf000f"][i]}">${v}</div>`).join("")}</div>${X}</div>`);
+add(59.8, "Setup is short", `<div class="c"><div class="row" style="gap:36px"><div class="chip out">${icx("file", 64, "#171717", 2)}Upload file</div><div class="chip on">Tableau Cloud</div><div class="chip out">Tableau Server</div></div>${CURSOR(1010, 610)}</div>`);
+add(63.4, "Read access + usage", `<div class="c"><div class="col" style="gap:50px;align-items:stretch;width:1400px">
+  <div class="card" style="height:170px;display:flex;align-items:center;padding:0 60px;font-size:64px;font-weight:700;gap:30px">${icx("eye", 80, "#2563eb", 2)}Read access</div>
+  <div class="card" style="height:170px;display:flex;align-items:center;padding:0 60px;font-size:64px;font-weight:700;gap:30px">${icx("people", 80, "#2563eb", 2)}Usage data<div style="margin-left:auto;width:180px;height:96px;border-radius:48px;background:var(--b);position:relative"><div style="position:absolute;right:10px;top:10px;width:76px;height:76px;border-radius:50%;background:#fff"></div></div></div></div></div>`);
+add(67.7, "Pre-check", `<div class="c"><div class="col" style="gap:22px;align-items:stretch;width:1500px">${["Connection", "Workbooks", "Downloads", "Users", "Usage"].map((l, i) => `<div style="height:140px;border-radius:30px;background:${i < 4 ? "#f5f5f5" : "#fff"};border:4px solid ${i < 4 ? "#f5f5f5" : "#e5e5e5"};display:flex;align-items:center;gap:40px;padding:0 50px;font-size:62px;font-weight:700">${i < 4 ? `<div style="width:84px;height:84px;border-radius:50%;background:var(--ok);display:grid;place-items:center">${icx("check", 56, "#fff", 3)}</div>` : `<div style="width:84px;height:84px;border-radius:50%;border:8px solid #d4d4d4"></div>`}${l}</div>`).join("")}</div></div>`, 0, { stagger: 0.68 });
+add(71.5, "No surprises", `<div class="c"><div class="pill" style="background:#e9fbf0;color:#008138;font-size:120px;height:240px;padding:0 100px;gap:40px">${icx("check", 130, "#008138", 3)}&nbsp;Passed</div></div>`);
+add(74.2, "Pick the target", `<div class="c"><div class="row" style="gap:36px"><div class="chip on" style="height:160px;font-size:68px;padding:0 70px">Power BI</div><div class="chip out" style="height:160px;font-size:68px;padding:0 70px">Databricks</div><div class="chip out" style="height:160px;font-size:68px;padding:0 70px">Sigma</div></div>${CURSOR(560, 620)}</div>`);
+add(77.8, "Overview", `<div class="c"><div class="row" style="gap:40px">${WB(560, 400, "blue")}<div class="big" style="font-size:280px">412</div></div>${X}</div>`);
+add(82.6, "Dashboard count", `<div class="c"><div class="row" style="gap:70px"><div style="display:grid;grid-template-columns:repeat(3,200px);gap:20px">${[...Array(9)].map(() => `<div style="height:140px;border-radius:16px;background:#eaf1fe;border:4px solid #2563eb"></div>`).join("")}</div><div class="col" style="align-items:flex-start"><div class="big">1,174</div><div class="sub" style="font-size:60px">dashboards</div></div></div>${X}</div>`);
+add(84, "Not the old slide", `<div class="c"><div class="card" style="width:1200px;height:720px;background:#f5f5f5;display:grid;place-items:center;position:relative"><div style="position:absolute;left:50px;top:40px;font-size:44px;color:#737373">2024 · all-hands</div><div style="position:relative"><div class="big nocount" style="color:#737373">~300</div><div class="strike"></div></div></div></div>`);
+add(87.2, "The real count", `<div class="c"><div class="row" style="gap:120px"><div class="col"><div class="big" style="font-size:240px">412</div><div class="sub" style="font-size:60px">workbooks</div></div><div class="col"><div class="big" style="font-size:240px;color:var(--b)">1,174</div><div class="sub" style="font-size:60px">dashboards</div></div></div>${X}</div>`);
+add(91.1, "Across projects", `<div class="c"><div class="row" style="gap:46px;align-items:flex-end;height:820px">${[96, 88, 71, 64, 54, 39].map((v, i) => `<div class="col" style="gap:20px;justify-content:flex-end"><div style="width:220px;height:${v * 6.6}px;border-radius:24px;background:${i === 0 ? "#2563eb" : "#dbe6fd"}"></div><div style="font-size:44px;font-weight:700">${["Finance", "Sales", "Ops", "Marketing", "Archive", "HR"][i]}</div></div>`).join("")}</div>${X}</div>`);
+add(93.2, "Usage", `<div class="c"><div class="row" style="gap:60px">${icx("eye", 420, "#2563eb", 1.4)}<div class="col" style="gap:20px;align-items:flex-start">${[100, 62, 30, 6].map((w) => `<div style="height:90px;width:${w * 7}px;min-width:40px;border-radius:45px;background:${w > 20 ? "#2563eb" : "#d4d4d4"}"></div>`).join("")}</div></div></div>`);
+add(97.4, "Last opened", `<div class="c"><div class="row" style="gap:40px;align-items:flex-end;height:840px">${[[161, "30d"], [58, "90d"], [56, "180d"], [137, "180d+"]].map(([v, l], i) => `<div class="col" style="gap:24px;justify-content:flex-end"><div style="font-size:84px;font-weight:700;letter-spacing:-.04em;color:${i === 3 ? "#171717" : "#a1a1a1"}">${v}</div><div style="width:340px;height:${v * 3.6}px;border-radius:30px;background:${i === 3 ? "#171717" : "#eaeaea"}"></div><div style="font-size:52px;font-weight:700;color:#525252">${l}</div></div>`).join("")}</div>${X}</div>`);
+add(100.4, "Who is active", `<div class="c"><div class="grid" style="grid-template-columns:repeat(12,120px);gap:18px">${[...Array(48)].map((_, i) => icx("user", 120, i < 16 ? "#2563eb" : "#d4d4d4", 2)).join("")}</div>${X}</div>`);
+add(101.9, "Views over time", `<div class="c"><svg width="1700" height="760" viewBox="0 0 1700 760"><polyline points="0,620 140,600 280,640 420,540 560,520 700,560 840,420 980,440 1120,330 1260,350 1400,220 1540,240 1700,120" fill="none" stroke="#2563eb" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/></svg>${X}</div>`);
+add(103.7, "Sort by views", `<div class="c"><div class="col" style="gap:20px;align-items:stretch;width:1640px">${[["Q3_2022_campaign", 0], ["Sales_overview (copy)", 0], ["Regional_KPIs_old", 0], ["Pipeline_by_region", "4,120"]].map(([n, v]) => `<div style="height:170px;border-radius:30px;background:${v === 0 ? "#fef2f2" : "#f5f5f5"};display:flex;align-items:center;padding:0 56px;gap:30px"><span class="mono" style="font-size:54px">${n}</span><span style="margin-left:auto;font-size:96px;font-weight:700;letter-spacing:-.04em;color:${v === 0 ? "#bf000f" : "#171717"}">${v}</span></div>`).join("")}</div>${X}</div>`);
+add(111, "Projects that ended", `<div class="c"><div class="row" style="gap:90px">${WB(620, 440, "ghost")}${icx("calx", 420, "#a1a1a1", 1.4)}</div></div>`);
+add(113.4, "Copies of copies", `<div class="c"><div style="position:relative;width:900px;height:640px">${[0, 1, 2].map((k) => `<div style="position:absolute;left:${k * 120}px;top:${k * 90}px;opacity:${1 - k * 0.25}">${WB(620, 440, "ghost")}</div>`).join("")}</div></div>`);
+add(114.5, "Untouched for a year", `<div class="c"><div class="row" style="gap:90px">${WB(620, 440, "ghost")}<div class="col"><div class="big" style="font-size:260px;color:#a1a1a1">0</div><div class="sub" style="font-size:60px">views · 12 mo</div></div></div></div>`);
+add(117, "One less to rebuild", `<div class="c"><div class="row" style="gap:80px"><div class="col"><div class="big" style="font-size:240px;color:#a1a1a1;position:relative">412<div class="strike"></div></div></div>${icx("arrow", 180, "#171717", 2.4)}<div class="big" style="font-size:240px;color:var(--b)">275</div></div>
+  <div class="row" style="position:absolute;bottom:90px;gap:60px">${["hammer", "check", "sign"].map((n) => icx(n, 110, "#a1a1a1", 1.8)).join("")}</div>${X}</div>`);
+add(122.5, "Caution: no usage data", `<div class="c"><div style="width:1500px;height:760px;border:8px dashed var(--amb);border-radius:40px;display:grid;place-items:center"><div class="col" style="gap:20px">${icx("warn", 260, "#b75000", 1.6)}<div class="lab" style="color:var(--ambt);font-size:84px">No usage data</div></div></div></div>`);
+add(126, "Sections hidden", `<div class="c"><div class="row" style="gap:40px">${[1, 0, 0].map((v) => `<div style="width:540px;height:620px;border-radius:36px;${v ? "background:#f5f5f5" : "border:6px dashed #e5e5e5;opacity:.5"}"></div>`).join("")}</div></div>`);
+add(129.3, "No data ≠ no users", `<div class="c"><div class="row" style="gap:60px"><div style="width:520px;height:520px;border:8px dashed var(--amb);border-radius:40px;display:grid;place-items:center;font-size:200px;font-weight:700;color:var(--ambt)">?</div><div class="big" style="font-size:240px">≠</div>${icx("people", 520, "#2563eb", 1.4)}</div></div>`);
+add(132, "Fix access first", `<div class="c"><div class="row" style="gap:80px"><div style="position:relative">${icx("archive", 460, "#a1a1a1", 1.3)}<div class="strike" style="top:55%"></div></div>${icx("lock", 460, "#b75000", 1.6)}</div></div>`);
+add(135.2, "Two scores", `<div class="c"><div class="row" style="gap:80px">${meter("75.7", 100, "Complexity", "#2563eb", 760)}${meter("100", 100, "Difficulty", "#bf000f", 760)}</div>${X}</div>`);
+add(140.5, "Tableau complexity", `<div class="c"><div class="row" style="gap:60px">${meter("75.7", 100, "Complexity", "#2563eb", 900)}<div style="position:relative;width:560px;height:440px">${WB(560, 400, "blue")}<svg style="position:absolute;inset:0" width="560" height="400"><path d="M40 300 C 140 80, 240 380, 330 120 S 480 300, 520 90" fill="none" stroke="#171717" stroke-width="10" stroke-linecap="round"/></svg></div></div>${X}</div>`);
+add(146.4, "Migration difficulty", `<div class="c"><div class="row" style="gap:60px">${meter("100", 100, "Difficulty", "#bf000f", 900)}<div class="row" style="gap:20px">${WB(260, 190)}${icx("arrow", 120, "#171717", 2.4)}<div style="width:260px;height:190px;border-radius:22px;border:6px dashed #a1a1a1"></div></div></div>${X}</div>`);
+add(150.9, "DAX · LOD · set actions", `<div class="c"><div class="col" style="gap:40px">${["DAX rewrites", "LOD expressions", "Set actions"].map((l, i) => `<div class="chip" style="height:170px;font-size:76px;padding:0 70px;${i === 2 ? "background:#fef2f2;color:#bf000f" : ""}">${l}</div>`).join("")}</div></div>`);
+add(156.4, "Another target, another score", `<div class="c"><div class="row" style="gap:80px"><div class="col" style="gap:30px">${meter("100", 100, "Power BI", "#bf000f", 640)}</div><div class="col" style="gap:30px">${meter("58", 100, "Sigma", "#fcbb00", 640)}</div></div>${X}</div>`);
+add(160.3, "Low → extreme", `<div class="c"><div class="row" style="gap:18px">${[["Low", "#e9fbf0", "#008138"], ["Medium", "#fefbe8", "#a16207"], ["High", "#fff5ed", "#c2410c"], ["Very high", "#fef2f2", "#bf000f"], ["Extreme", "#f8f3ff", "#7e22ce"]].map(([l, b, c]) => `<div style="width:340px;height:640px;border-radius:30px;background:${b};border-top:20px solid ${c};display:flex;align-items:flex-end;justify-content:center;padding-bottom:50px;font-size:56px;font-weight:700;color:${c}">${l}</div>`).join("")}</div></div>`);
+add(165, "With reasons", `<div class="c"><div class="row" style="gap:60px">${meter("100", 100, "", "#bf000f", 620)}<div class="col" style="gap:26px;align-items:flex-start">${[["Set actions", "#bf000f", "#fef2f2"], ["Custom DAX", "#b75000", "#fef3c7"], ["Table calcs", "#b75000", "#fef3c7"]].map(([l, c, b]) => `<div class="chip" style="background:${b};color:${c};height:140px;font-size:64px">${l}</div>`).join("")}</div></div>${X}</div>`);
+add(167.9, "Down to the formula", `<div class="c"><div class="card" style="width:1760px;padding:80px 70px;position:relative"><div class="mono" style="font-size:66px;line-height:1.4">{FIXED [REGION], [ORDER_DATE] :<br>&nbsp;SUM([UNITS])}</div><div class="pill" style="position:absolute;right:50px;top:-50px;background:#fef2f2;color:#bf000f">High</div></div></div>`);
+add(173, "Not days", `<div class="c"><div style="position:relative">${icx("clock", 560, "#d4d4d4", 1.3)}<div class="strike"></div></div></div>`);
+add(175.4, "Compare", `<div class="c"><div class="row" style="gap:16px;align-items:flex-end;height:760px">${[...Array(14)].map((_, i) => `<div class="col" style="gap:14px;justify-content:flex-end">${[...Array(1 + i * 5 % 6)].map(() => `<div style="width:104px;height:64px;border-radius:12px;background:rgba(37,99,235,${(0.1 + i * 0.06).toFixed(2)})"></div>`).join("")}</div>`).join("")}</div></div>`);
+add(177.2, "Waves", `<div class="c"><div class="row" style="gap:60px">${[1, 2, 3].map((w) => `<div class="col" style="gap:30px"><div class="h" style="font-size:110px">Wave ${w}</div><div style="width:480px;height:10px;border-radius:5px;background:var(--b)"></div><div class="grid" style="grid-template-columns:repeat(3,140px);gap:16px">${[...Array(9 - w * 2)].map(() => `<div style="height:90px;border-radius:14px;background:rgba(37,99,235,${0.15 + w * 0.25})"></div>`).join("")}</div></div>`).join("")}</div></div>`);
+add(178.7, "Explain why", `<div class="c"><div class="row" style="gap:60px">${WB(600, 430, "red", DOT("#bf000f", 60, 30, 30))}<div class="chip" style="background:#fef2f2;color:#bf000f;height:170px;font-size:76px;padding:0 70px">Set actions</div></div></div>`);
+add(181.6, "Your team estimates", `<div class="c"><div class="row" style="gap:80px">${icx("people", 520, "#171717", 1.4)}${icx("arrow", 180, "#171717", 2.4)}${icx("clock", 520, "#2563eb", 1.4)}</div></div>`);
+add(185.3, "Every workbook", `<div class="c">${wall(9, 5, 230, 160, 26, (i) => ({ v: "blue", d: `<div style="position:absolute;inset:0;display:grid;place-items:center">${icx("check", 90, "#2563eb", 3)}</div>` }))}</div>`);
+add(187.6, "Two kinds of issue", `<div class="c"><div class="row" style="gap:80px"><div class="card" style="width:760px;height:780px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;border-color:#bf000f">${icx("wall", 360, "#bf000f", 1.4)}<div class="lab" style="color:#bf000f;font-size:96px">Blocker</div></div>
+  <div class="card" style="width:760px;height:780px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;border-color:#fcbb00">${icx("warn", 360, "#b75000", 1.4)}<div class="lab" style="color:#b75000;font-size:96px">Warning</div></div></div></div>`);
+add(191.7, "Blocker: no equivalent", `<div class="c"><div class="row" style="gap:0">${WB(460, 330, "red")}<div style="width:420px;height:12px;background:#d4d4d4"></div><div style="width:60px;height:560px;background:#171717;border-radius:12px"></div><div style="width:420px;height:12px;background:#f5f5f5"></div></div></div>`);
+add(197.5, "Set actions · extensions", `<div class="c"><div class="col" style="gap:40px">${["Set actions", "Custom extensions"].map((l) => `<div class="chip" style="background:#fef2f2;color:#bf000f;height:180px;font-size:84px;padding:0 80px">${icx("wall", 90, "#bf000f", 2)}&nbsp;${l}</div>`).join("")}</div></div>`);
+add(202.6, "Warning: needs review", `<div class="c"><div class="row" style="gap:60px">${WB(560, 400, "amb", DOT("#fcbb00", 60, 30, 30))}${icx("search", 420, "#b75000", 1.4)}</div></div>`);
+add(205.5, "Table calcs → DAX", `<div class="c"><div class="chip" style="background:#fef3c7;color:#b75000;height:200px;font-size:96px;padding:0 90px">${icx("warn", 100, "#b75000", 2)}&nbsp;Table calcs</div></div>`);
+add(208.6, "Hard vs stuck", `<div class="c"><div class="col" style="gap:130px;width:1700px">
+  <div style="position:relative;height:200px;width:100%"><div style="position:absolute;left:0;right:0;top:150px;height:12px;background:#e5e5e5"></div><div style="position:absolute;left:760px;top:110px;width:180px;height:40px;border-radius:40px 40px 0 0;background:#e5e5e5"></div><div style="position:absolute;left:1240px;top:0">${WB(260, 150, "amb")}</div><div class="lab" style="position:absolute;left:0;top:40px">Hard</div></div>
+  <div style="position:relative;height:200px;width:100%"><div style="position:absolute;left:0;right:0;top:150px;height:12px;background:#e5e5e5"></div><div style="position:absolute;left:1000px;top:-60px;width:44px;height:220px;background:#171717;border-radius:8px"></div><div style="position:absolute;left:730px;top:0">${WB(260, 150, "red")}</div><div class="lab" style="position:absolute;left:0;top:40px">Stuck</div></div></div></div>`);
+add(213, "Blockers → senior people", `<div class="c"><div class="row" style="gap:80px">${icx("wall", 460, "#bf000f", 1.3)}${icx("arrow", 160, "#171717", 2.4)}${icx("user", 460, "#171717", 1.4)}</div></div>`);
+add(217.3, "Warnings → review time", `<div class="c"><div class="row" style="gap:80px">${icx("warn", 460, "#b75000", 1.3)}${icx("arrow", 160, "#171717", 2.4)}${icx("list", 460, "#171717", 1.4)}</div></div>`);
+const LANES = [["Archive", "archive", 121], ["Investigate", "search", 38], ["Redesign", "pencil", 23], ["Convert", "bolt", 142], ["Migrate", "truck", 88]];
+const lanes = (hi) => `<div class="c"><div class="row" style="gap:24px;align-items:stretch;height:900px">${LANES.map(([l, n, v], i) => {
+  const on = hi === -1 || hi === i;
+  return `<div style="width:350px;border-radius:36px;background:${hi === i ? "#2563eb" : "#f5f5f5"};color:${hi === i ? "#fff" : "#171717"};opacity:${on ? 1 : 0.35};display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:60px 0 50px">${icx(n, 170, hi === i ? "#fff" : "#171717", 1.6)}<div class="h" style="font-size:150px">${v}</div><div style="font-size:52px;font-weight:700">${l}</div></div>`;
+}).join("")}</div>${X}</div>`;
+add(220.8, "The output that matters", `<div class="c">${wall(9, 5, 230, 160, 26, (i) => {
+  const r = R(i);
+  return r < 0.3 ? { v: "ghost" } : r > 0.94 ? { v: "red" } : { v: "blue" };
+})}</div>`);
+add(223.4, "One call per workbook", lanes(-1), 0, { fam: "lanes", first: true });
+add(227.2, "Archive", lanes(0), 0, { fam: "lanes" });
+add(232.1, "Investigate", lanes(1), 0, { fam: "lanes" });
+add(236.5, "Redesign", lanes(2), 0, { fam: "lanes" });
+add(241.3, "Convert", lanes(3), 0, { fam: "lanes" });
+add(249, "Migrate", lanes(4), 0, { fam: "lanes" });
+add(255.3, "Download Excel", `<div class="c"><div class="chip out" style="height:220px;font-size:96px;padding:0 100px;gap:40px">${icx("down", 110, "#171717", 2.4)}Download Excel</div>${CURSOR(1180, 640)}</div>`);
+add(258.8, "Your plan starts", `<div class="c"><div class="grid" style="grid-template-columns:repeat(4,420px);gap:10px">${["Workbook", "Views", "Tier", "Call", "Pipeline", "4,120", "Very high", "Migrate", "Exec_weekly", "6,894", "High", "Convert", "KPIs_old", "0", "Very high", "Archive"].map((v, i) => `<div style="height:180px;border-radius:14px;background:${i < 4 ? "#171717" : i % 4 === 3 ? "#eaf1fe" : "#f5f5f5"};display:grid;place-items:center;font-size:${i < 4 ? 50 : 58}px;font-weight:700;color:${i < 4 ? "#fff" : i % 4 === 3 ? "#1d4ed8" : "#171717"}">${v}</div>`).join("")}</div>${X}</div>`);
+add(262.6, "Three questions", `<div class="c"><div class="row" style="gap:70px">${[1, 2, 3].map(() => `<div style="width:460px;height:460px;border-radius:50%;background:#f5f5f5;display:grid;place-items:center;font-size:280px;font-weight:700;color:#2563eb">?</div>`).join("")}</div></div>`);
+add(265, "Your data? No.", `<div class="c"><div class="row" style="gap:120px"><div class="col" style="gap:30px">${WB(600, 430, "blue")}<div class="lab">Structure</div></div><div class="col" style="gap:30px;opacity:.5;position:relative">${icx("db", 430, "#525252", 1.4)}<div style="position:absolute;top:120px">${icx("lock", 220, "#171717", 2)}</div><div class="lab">Data</div></div></div></div>`);
+add(273.4, "Reads only", `<div class="c"><div class="row" style="gap:80px">${icx("eye", 460, "#2563eb", 1.4)}<div class="col" style="gap:30px">${["Publish", "Edit", "Delete"].map((l) => `<div class="chip" style="position:relative;height:130px;font-size:64px;color:#a1a1a1">${l}<div class="strike" style="height:10px;margin-top:-5px"></div></div>`).join("")}</div></div></div>`);
+add(278.6, "Closed network", `<div class="c"><div style="width:1500px;height:820px;border:10px dashed #a1a1a1;border-radius:60px;display:flex;align-items:center;justify-content:center;gap:90px;position:relative">${WB(440, 320)}${icx("arrow", 140, "#2563eb", 2.4)}<div style="width:440px;height:320px;border-radius:40px;background:#171717;display:grid;place-items:center">${WM(320, "#fff")}</div>
+  <div style="position:absolute;right:-260px;top:340px;opacity:.6">${icx("cloud", 180, "#a1a1a1", 1.6)}</div></div></div>`);
+add(284.8, "Power BI too", `<div class="c"><div class="row" style="gap:60px">${[".pbix", ".zip", "Fabric"].map((l, i) => `<div class="col" style="gap:20px">${icx(i < 2 ? "file" : "cloud", 380, "#2563eb", 1.3)}<div class="lab mono" style="font-family:${i < 2 ? "var(--mono)" : "var(--hv)"}">${l}</div></div>`).join("")}</div></div>`);
+add(293.3, "Back to Friday", `<div class="c"><div class="row" style="gap:70px">${["clock", "people"].map((n) => `<div class="card" style="width:760px;height:820px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px">${icx(n, 300, "#fff", 1.6)}<div style="width:200px;height:200px;border-radius:50%;background:var(--b);display:grid;place-items:center">${icx("check", 140, "#fff", 3)}</div></div>`).join("")}</div></div>`, 1);
+add(297, "The Friday answer", `<div class="c"><div class="grid" style="grid-template-columns:repeat(2,840px);gap:30px">${[["1,174", "dashboards", "#fff"], ["137", "nobody opens", "rgba(255,255,255,.55)"], ["248", "straightforward", "#fff"], ["23", "blocked", "#ff6b6b"]].map(([v, l, c]) => `<div class="card" style="height:440px;display:flex;flex-direction:column;justify-content:center;padding:0 70px"><div class="h" style="font-size:220px;color:${c}">${v}</div><div class="sub" style="font-size:58px;margin-top:10px">${l}</div></div>`).join("")}</div>${X}</div>`, 1);
+add(305.3, "Your team’s estimate", `<div class="c"><div class="row" style="gap:80px">${icx("people", 460, "#fff", 1.4)}${icx("check", 300, "#2563eb", 3)}</div></div>`, 1);
+add(308.8, "Try it", `<div class="c"><div class="h" style="font-size:190px;color:var(--b)">try.getantares.io</div></div>`);
+add(313.2, "Drop the one that worries you", `<div class="c"><div style="width:1300px;height:820px;border:10px dashed #a1a1a1;border-radius:60px;display:grid;place-items:center">${WB(640, 460, "blue")}</div></div>`);
+add(316.7, "Its report, free", `<div class="c"><div class="row" style="gap:80px">${meter("62.4", 100, "Complexity", "#2563eb", 720)}${meter("48", 100, "Difficulty", "#fcbb00", 720)}</div>${X}</div>`);
+add(318.9, "End card", `<div class="c"><div class="col" style="gap:60px">${WM(900, "#fff")}<div class="pill" style="background:var(--b);color:#fff;font-size:84px;height:170px;padding:0 80px">➡️ try.getantares.io</div></div></div>`, 1);
+function openingFrame(L, t) {
+  const cv = L.querySelector("#floor"), g = cv.getContext("2d");
+  g.clearRect(0, 0, 1920, 1080);
+  const pull = emph(seg(t, 0.35, 3.4)), tilt = emph(seg(t, 1.5, 3.6)) * 62 * (1 - emph(seg(t, 11.6, 12.55))), drift = t * 0.55;
+  const D = lerp(1.25, 26, pull), f = 1500, cx = 960, cy = lerp(560, 460, emph(seg(t, 1.5, 3.6)) * (1 - emph(seg(t, 11.6, 12.55))));
+  const th = tilt * Math.PI / 180, ct = Math.cos(th), st = Math.sin(th);
+  const proj = (x, y) => {
+    const yy = y * ct, zz = y * st;
+    const d = D + zz;
+    return d <= 0.2 ? null : [cx + f * x / d, cy + f * yy / d, d];
+  };
+  const W = 1, H = 0.7, GX = 1.25, GY = 0.95, N = 26;
+  const dim = 1 - 0.55 * seg(t, 3.7, 4.2) * (1 - seg(t, 12, 12.5));
+  for (let r = N; r >= -N; r--) for (let c = -N; c <= N; c++) {
+    const x0 = c * GX - W / 2, y0 = r * GY - H / 2 + (tilt > 1 ? -(drift % GY) : 0);
+    const p = [proj(x0, y0), proj(x0 + W, y0), proj(x0 + W, y0 + H), proj(x0, y0 + H)];
+    if (p.some((q) => !q)) continue;
+    if (p.every((q) => q[0] < -50 || q[0] > 1970) || p.every((q) => q[1] < -50 || q[1] > 1130)) continue;
+    const isHero = r === 0 && c === 0;
+    const wv = Math.exp(-Math.pow(r * 0.35 - c * 0.15 - (t - 2.2) * 5.5, 2) / 2.2) * seg(t, 2, 2.6);
+    let fill = isHero ? "#2563eb" : wv > 0.08 ? `rgba(37,99,235,${(0.12 + 0.5 * wv).toFixed(3)})` : "#f1f1f1";
+    if (isHero && t > 3.6) fill = "#2563eb";
+    g.globalAlpha = isHero ? 1 : dim;
+    g.beginPath();
+    g.moveTo(p[0][0], p[0][1]);
+    for (let k = 1; k < 4; k++) g.lineTo(p[k][0], p[k][1]);
+    g.closePath();
+    g.fillStyle = fill;
+    g.fill();
+    if (isHero && D < 6) {
+      const ins = (ax, ay, bw, bh) => {
+        const a = proj(x0 + ax * W, y0 + ay * H), b = proj(x0 + (ax + bw) * W, y0 + (ay + bh) * H);
+        if (a && b) {
+          g.fillStyle = "rgba(255,255,255,.28)";
+          g.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]);
+        }
+      };
+      ins(0.1, 0.1, 0.8, 0.1);
+      ins(0.1, 0.3, 0.38, 0.3);
+      ins(0.52, 0.3, 0.38, 0.3);
+      ins(0.1, 0.66, 0.8, 0.24);
+    }
+  }
+  g.globalAlpha = 1;
+  const set = (id, o, tr) => {
+    const e = L.querySelector(id);
+    e.style.opacity = o.toFixed(3);
+    if (tr != null) e.style.transform = tr;
+  };
+  set("#o1", Math.min(seg(t, 0.15, 0.45), 1 - seg(t, 1.3, 1.6)), `translateX(-50%) translateY(${(30 * (1 - emph(seg(t, 0.15, 0.5)))).toFixed(1)}px)`);
+  set("#o2", Math.min(seg(t, 2.2, 2.6), 1 - seg(t, 3.55, 3.8)), `translateX(-50%) scale(${(0.9 + 0.1 * outBack(seg(t, 2.2, 2.6))).toFixed(3)})`);
+  set("#o2b", Math.min(seg(t, 2.5, 2.9), 1 - seg(t, 3.55, 3.8)), `translateX(-50%)`);
+  const mIn = emph(seg(t, 3.8, 4.25)), mOut = emph(seg(t, 9.45, 9.75));
+  set("#msg", Math.min(seg(t, 3.8, 3.95), 1 - mOut), `translateY(${(-420 * (1 - mIn) - 600 * mOut).toFixed(1)}px) translateX(${(t > 4.22 && t < 4.5 ? Math.sin((t - 4.22) * 60) * 6 * (1 - (t - 4.22) / 0.28) : 0).toFixed(1)}px)`);
+  const bd = L.querySelector("#badge");
+  const be = clamp((t - 4.75) / 0.3);
+  bd.style.opacity = be > 0 ? 1 : 0;
+  bd.style.transform = `scale(${outBack(be).toFixed(3)})`;
+  [["#hl1", 6.3], ["#hl2", 8.3]].forEach(([id, a]) => {
+    const el = L.querySelector(id);
+    const q = emph(clamp((t - a) / 0.35));
+    el.style.backgroundSize = `${(q * 100).toFixed(1)}% 100%`;
+    el.style.color = q > 0.5 ? "#fff" : "#171717";
+  });
+  const uIn = outBack(clamp((t - 9.7) / 0.5)), uOut = emph(seg(t, 12.15, 12.55));
+  set("#unk", Math.min(seg(t, 9.7, 9.9), 1 - uOut), `translate(-50%,-50%) scale(${(0.8 + 0.2 * uIn - 0.1 * uOut).toFixed(3)})`);
+  const m = L.querySelector("#mh"), h = L.querySelector("#hh");
+  m.setAttribute("transform", `rotate(${t * 720 % 360} 12 12)`);
+  h.setAttribute("transform", `rotate(${t * 60 % 360} 12 12)`);
+  L.querySelectorAll(".qm").forEach((q, k) => {
+    q.style.transform = `translateY(${(-Math.abs(Math.sin(t * 4 + k * 1.3)) * 36).toFixed(1)}px)`;
+  });
+}
+const lerp = (a, b, e) => a + (b - a) * e;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const outExpo = (x) => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+const outBack = (x) => {
+  const c = 1.55;
+  return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2);
+};
+const emph = (x) => {
+  x = clamp(x);
+  return 1 - Math.pow(1 - x, 4);
+};
+window.DURATION = 323;
+window.BEATS = S.map((s) => [s[0] + 1, s[1]]);
+const fam = (i) => S[i] && S[i][4].fam;
+function fit(L) {
+  const c = L.querySelector(".c");
+  if (!c) return;
+  L.querySelectorAll(".c .x").forEach((x) => L.appendChild(x));
+  if (c.querySelectorAll(".wb").length > 20) return;
+  let l = 1e9, t = 1e9, r = -1e9, b = -1e9;
+  for (const ch of c.children) {
+    const q = ch.getBoundingClientRect();
+    if (!q.width) continue;
+    l = Math.min(l, q.left);
+    t = Math.min(t, q.top);
+    r = Math.max(r, q.right);
+    b = Math.max(b, q.bottom);
+  }
+  const s = Math.min(2.6, 1620 / (r - l), 900 / (b - t));
+  c.style.transformOrigin = "0 0";
+  c.style.transform = `translate(${960 - (l + r) / 2 * s}px,${540 - (t + b) / 2 * s}px) scale(${s})`;
+}
+function prep(L, i) {
+  const o = S[i][4], c = L.querySelector(".c");
+  let units = [];
+  if (c) {
+    const g = c.querySelector(":scope > .grid");
+    if (g) units = [...g.children];
+    else {
+      const top = [...c.children].filter((e) => !e.classList.contains("cur"));
+      units = top.length === 1 && top[0].children.length > 1 && !top[0].classList.contains("card") ? [...top[0].children] : top;
+    }
+  }
+  L._units = units;
+  L._pops = [...L.querySelectorAll(".pop")];
+  L._nums = [...L.querySelectorAll(".big,.h,text")].map((e) => ({ e, txt: e.textContent })).filter((n) => !n.e.classList.contains("nocount") && /^[~]?[\d,.]+$/.test(n.txt.trim()) && n.txt.trim().length < 7);
+  L._paths = [...L.querySelectorAll("svg path,svg polyline")].filter((p) => p.getAttribute("fill") === "none" && !p.closest(".icon")).map((p) => {
+    const len = p.getTotalLength ? p.getTotalLength() : 0;
+    const da = p.getAttribute("stroke-dasharray");
+    const off = +(p.getAttribute("stroke-dashoffset") || 0);
+    return { p, len, da, off };
+  });
+  L._strikes = [...L.querySelectorAll(".strike")];
+  L._cur = L.querySelector(".cur");
+  if (L._cur) {
+    const r = L._cur.getBoundingClientRect();
+    L._rip = document.createElement("div");
+    L._rip.className = "rip";
+    L.appendChild(L._rip);
+    L._cx = r.left + 8;
+    L._cy = r.top + 6;
+  }
+  L._pcs = [...L.querySelectorAll(".pc")];
+}
+function fmt(txt, e) {
+  const t = txt.trim(), pre = t.startsWith("~") ? "~" : "";
+  const n = parseFloat(t.replace(/[~,]/g, ""));
+  const dec = (t.split(".")[1] || "").length;
+  let v = n * e;
+  let s = dec ? v.toFixed(dec) : Math.round(v).toString();
+  if (t.includes(",")) s = Number(s).toLocaleString("en-US", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  return pre + s;
+}
+function animate(L, i, lt, t, enter) {
+  const o = S[i][4], dur = (S[i + 1] ? S[i + 1][0] : DURATION) - S[i][0];
+  const n = L._units.length, step = o.stagger ?? (n > 20 ? Math.min(0.012, 0.9 / n) : Math.min(0.09, 0.6 / Math.max(1, n)));
+  L._units.forEach((u, k) => {
+    if (!enter) {
+      u.style.opacity = 1;
+      u.style.transform = "";
+      return;
+    }
+    const d = n > 20 ? (k % 13 + Math.floor(k / 13)) * step * 1.6 : k * step;
+    const e = clamp((lt - d) / 0.5);
+    const y = o.from === "top" ? -420 * (1 - emph(e)) : 46 * (1 - emph(e));
+    u.style.opacity = clamp(e * 2.2);
+    u.style.transform = `translateY(${y.toFixed(1)}px) scale(${(0.86 + 0.14 * outBack(e)).toFixed(4)})`;
+  });
+  L._pops.forEach((p, k) => {
+    const e = clamp((lt - 0.15) / 0.45);
+    p.style.opacity = clamp(e * 2);
+    p.style.transform = `translateY(${(36 * (1 - emph(e))).toFixed(1)}px) scale(${(0.9 + 0.1 * outBack(e)).toFixed(4)})`;
+  });
+  if (enter) L._nums.forEach((n2) => {
+    n2.e.textContent = fmt(n2.txt, emph(seg(lt, 0.1, 0.9)));
+  });
+  L._paths.forEach((q) => {
+    if (!q.len) return;
+    const e = emph(seg(lt, 0.15, 1));
+    if (q.da) {
+      q.p.setAttribute("stroke-dashoffset", (q.len - (q.len - q.off) * e).toFixed(1));
+    } else {
+      q.p.style.strokeDasharray = q.len;
+      q.p.style.strokeDashoffset = (q.len * (1 - e)).toFixed(1);
+    }
+  });
+  L._strikes.forEach((s) => {
+    s.style.transformOrigin = "0 50%";
+    s.style.transform = `scaleX(${emph(seg(lt, 0.55, 0.85))})`;
+  });
+  if (L._cur) {
+    const e = emph(seg(lt, 0.05, 0.5));
+    L._cur.style.transform = `translate(${(240 * (1 - e)).toFixed(1)}px,${(170 * (1 - e)).toFixed(1)}px)`;
+    const q = seg(lt, 0.52, 1);
+    L._rip.style.left = L._cx + "px";
+    L._rip.style.top = L._cy + "px";
+    L._rip.style.opacity = lt > 0.52 ? (1 - q) * 0.8 : 0;
+    L._rip.style.transform = `scale(${0.2 + q})`;
+  }
+  if (o.pile) {
+    const hop = Math.floor((t - 14.2) / 0.95);
+    const IDX = [46, 33, 59, 20, 72, 40, 61, 27, 52, 15, 66, 37];
+    L._pcs.forEach((p, k) => {
+      const at = IDX.indexOf(k);
+      p.classList.toggle("seen", at >= 0 && at < hop);
+      p.classList.toggle("on", at >= 0 && at === hop && t < 21.6);
+    });
+  }
+  if (o.anim) o.anim(L, lt, t);
+  return 1 + 0.025 * clamp(lt / Math.max(2, dur));
+}
+let built = [null, null];
+function layer(k, i) {
+  const L = document.getElementById("L" + k);
+  if (built[k] !== i) {
+    built[k] = i;
+    L.className = "layer" + (S[i][3] ? " ink" : "");
+    L.style.transform = "none";
+    L.style.opacity = 1;
+    L.style.display = "block";
+    L.innerHTML = S[i][2];
+    L.querySelectorAll(".c").forEach((c) => c.style.transform = "");
+    fit(L);
+    prep(L, i);
+  }
+  return L;
+}
+window.render = function(t) {
+  let i = 0;
+  for (let k = 0; k < S.length; k++) if (S[k][0] <= t) i = k;
+  const lt = t - S[i][0], same = i > 0 && fam(i) && fam(i) === fam(i - 1);
+  const enter = !same;
+  const A = layer(0, i);
+  const drift = animate(A, i, lt, t, enter);
+  const B = document.getElementById("L1");
+  if (!same && i > 0 && lt < 0.42) {
+    const P2 = layer(1, i - 1);
+    const e = emph(lt / 0.42);
+    animate(P2, i - 1, t - S[i - 1][0], t, false);
+    P2.style.display = "block";
+    P2.style.zIndex = 2;
+    P2.style.opacity = (1 - e).toFixed(3);
+    P2.style.transform = `scale(${(1 + 0.12 * e).toFixed(4)})`;
+    A.style.transform = `scale(${(0.94 + 0.06 * e) * drift})`;
+    A.style.opacity = 1;
+    A.style.zIndex = 1;
+  } else {
+    B.style.display = "none";
+    A.style.opacity = 1;
+    A.style.zIndex = 1;
+    A.style.transform = `scale(${drift.toFixed(4)})`;
+  }
+};
+render(+(new URLSearchParams(location.search).get("t") || 0));
+</script>
+<script src="story2.js"></script>
+<script src="story3.js"></script>
+<script src="../characters/people.js"></script>
+<script src="kit.js"></script>
+<script src="sec_overview.js"></script>
+<script src="sec_scores.js"></script>
+<script src="sec_waves.js"></script>
+<script src="sec_decisions.js"></script>
+<script src="sec_ending.js"></script>
+<script src="story.js"></script>
+<script>
+window.CUT = { A: 122.3, D: 12.65, X: 0.6, S0: 134.2 };
+window.srcT = function(t) {
+  const c = CUT;
+  if (t < c.A) return t;
+  if (t < c.A + c.X) {
+    const e = (t - c.A) / c.X;
+    return c.S0 + e * (c.A + c.X + c.D - c.S0);
+  }
+  return t + c.D;
+};
+(function() {
+  const r0 = window.render;
+  window.render = (t) => r0(srcT(t));
+})();
+</script>
+<script>
+render(+(new URLSearchParams(location.search).get("t") || 0));
+</script>
+</body></html>

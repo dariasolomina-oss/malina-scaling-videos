@@ -19,6 +19,7 @@ import timings
 import voice_elevenlabs
 
 REPO = Path(__file__).resolve().parents[2]
+LIBRARY = REPO/'library'
 FORMAT_TEMPLATES = {
     'horizontal': 'universal-landscape.html',
     'vertical': 'universal-vertical.html',
@@ -188,10 +189,17 @@ def inputs(root, state):
     files = {'content.json': episode.digest(episode.safe_path(root, 'content.json'))}
     episode_assets = scene_assets(root, content)
     files.update({'asset:'+name: episode.digest(path) for name, path in episode_assets.items()})
-    template_name = 'video-scenes.html' if content.get('layout') == 'scenes' else FORMAT_TEMPLATES[cfg['format']]
-    template_path = (REPO/'templates'/template_name if template_name == 'video-scenes.html'
-                     else Path(cfg['brand'])/'templates'/template_name)
-    files['template:'+template_name] = episode.digest(template_path)
+    if content.get('layout') == 'custom':
+        animation = episode.safe_path(root, 'inputs/animation')
+        if not (animation/'index.html').is_file():
+            raise ValueError('custom layout needs inputs/animation/index.html')
+        files.update({'animation:'+k: v for k, v in tree_hash(animation).items()})
+        files.update({'library:'+k: v for k, v in tree_hash(LIBRARY).items()})
+    else:
+        template_name = 'video-scenes.html' if content.get('layout') == 'scenes' else FORMAT_TEMPLATES[cfg['format']]
+        template_path = (REPO/'templates'/template_name if template_name == 'video-scenes.html'
+                         else Path(cfg['brand'])/'templates'/template_name)
+        files['template:'+template_name] = episode.digest(template_path)
     if cfg['voice'] != 'none':
         audio = cfg.get('audio')
         if not audio:
@@ -219,6 +227,8 @@ def build(root):
     binding = inputs(root, state)  # validation before Node/creating working directories
     cfg = state['pipeline']
     content = read(episode.safe_path(root, 'content.json'))
+    if content.get('layout') == 'custom':
+        return build_custom(root, state, binding, content)
     episode_assets = scene_assets(root, content)
     template = 'video-scenes.html' if content.get('layout') == 'scenes' else FORMAT_TEMPLATES[cfg['format']]
     template_path = (REPO/'templates'/template if template == 'video-scenes.html'
@@ -245,6 +255,34 @@ def build(root):
         state = episode.require_production(root, 'render')
         state['pipeline']['build'] = dict(binding=binding, source=tree_hash(source))
         # Rebuilding changed inputs never preserves a video approval.
+        state['approvals'].pop('video', None)
+        state['status'] = 'render'
+        save(root, state)
+    finally:
+        shutil.rmtree(work)
+    return dict(source=str(root/'source/index.html'), input_hash=checksum(binding))
+
+
+def build_custom(root, state, binding, content):
+    """Free-form animation written for this episode (characters, mascots, generated UI,
+    diagrams, recordings): inputs/animation/ plus brand assets and the shared library."""
+    cfg = state['pipeline']
+    if content.get('format', cfg['format']) != cfg['format']:
+        raise ValueError('content format must match the episode format')
+    work = episode.work_dir(root)
+    try:
+        page = work/'page'
+        data = dict(content, format=cfg['format'])
+        prepare_page.prepare_custom(cfg['brand'], episode.safe_path(root, 'inputs/animation'), page, data, LIBRARY)
+        shutil.copyfile(root/'script.md', page/'script.md')
+        if inputs(root, episode.require_production(root, 'render')) != binding:
+            raise ValueError('production inputs changed during build')
+        source = episode.safe_path(root, 'source')
+        if source.exists():
+            shutil.rmtree(source)
+        os.replace(page, source)
+        state = episode.require_production(root, 'render')
+        state['pipeline']['build'] = dict(binding=binding, source=tree_hash(source))
         state['approvals'].pop('video', None)
         state['status'] = 'render'
         save(root, state)
@@ -394,7 +432,7 @@ ANIMATIC_BRIDGE = (
 def animatic_points(content):
     """One review still per scene (middle of the scene), else evenly spaced stills."""
     duration = content['duration']
-    if content.get('layout') == 'scenes' and content.get('scenes'):
+    if content.get('layout') in ('scenes', 'custom') and content.get('scenes'):
         points = [dict(start=s['start'], end=s['end'], label=s['title'],
                        at=round((s['start'] + s['end']) / 2, 3)) for s in content['scenes']]
         if len(points) <= ANIMATIC_MAX_STILLS:

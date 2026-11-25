@@ -1,6 +1,6 @@
-# Video Producer — User Guide v4.7
+# Video Producer — User Guide v4.8
 
-Updated November 25, 2026. Replaces User Guide v4.5.
+Updated November 25, 2026. Replaces User Guide v4.7.
 
 ## What the agent uses
 
@@ -10,7 +10,7 @@ All videos and newly authored deliverables are in **English**, with language rec
 
 ## Current production scope
 
-Every video is built as a sequence of branded scenes in the product's brand book style, like the LakeSentry videos: title, key number, steps, product screen (a screenshot or a screen recording) and call to action. Logo, colours, fonts and the on-screen disclosure come from the brand book. Three formats are available: Shorts 9:16 (laid out inside the Shorts safe zone), YouTube 16:9 and LinkedIn 1:1.
+The visual style is open and follows the product's brand book. The agent can use quick branded scenes (title, key number, steps, product screen, call to action, like the LakeSentry videos) or a custom full-screen animation like Antares Video 1: characters, a product mascot, an interface drawn to look like the product, whiteboards and transitions. Both can be combined in one video. Logo, colours and fonts always come from the brand book.
 
 If you ask for something the toolkit cannot yet produce on brand, the agent tells you once what is missing and what it can do instead. It does not silently replace your request.
 
@@ -37,7 +37,7 @@ Before the script, the agent shows a short brief with the key message, an outlin
 
 ## 2. Review the script
 
-The agent always prepares a text script first: on-screen text, visuals, timing, narration and CTA per scene. For each scene that shows the product, the script also says how the interface will be shown: a screen recording, screenshots, your own recording or screenshots, or a redrawn interface labelled as an illustration.
+The agent always prepares a text script first: on-screen text, visuals, timing, narration and CTA per scene. For each scene that shows the product, the script also says how the interface will be shown: a screen recording, screenshots, your own recording or screenshots, an interface built to look like the product, or animation.
 
 Reply in plain language:
 
@@ -65,9 +65,9 @@ Send a repository link and the agent reads what it needs (read-only). For a priv
 
 The script names how each product scene is shown. After approval the agent records or screenshots the product itself in its browser. If a login is required, it hands you the browser in the chat: log in and give control back.
 
-It asks you for a recording or screenshots only when something specific blocks it, for example a VPN-only environment. A redrawn interface is built only from a real screenshot and is labelled as an illustration. Use demo accounts and demo data only.
+It asks you for a recording or screenshots only when something specific blocks it, for example a VPN-only environment. It can also build an interface that looks like the product, or show the product through animation. Everything shown must match what the product really does; names, people and numbers are invented sample data. Use demo accounts only.
 
-Every scene is labelled honestly on screen: a real recording or screenshot shows its capture date and "demo data"; an illustration says it is not product UI.
+On-screen labels such as "demo data" or "illustration" are optional; ask for them if you want them.
 
 ## 7. Final video and YouTube copy
 
@@ -82,4 +82,4 @@ Ask for a short English handoff note (stage, open issues, next action) when you 
 
 ## Verification note
 
-This guide describes Agent profile version 19 with toolkit 1.0.0-candidate.9. The animatic was checked in test runs with and without a voice and for an 8-minute video, not yet in a live run of the Agent. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit and an approved sound library are not yet installed.
+This guide describes Agent profile version 20 with toolkit 1.0.0-candidate.10. Antares Video 1 was rebuilt through the custom animation route in a test run. The animatic was checked in test runs with and without a voice and for an 8-minute video, not yet in a live run of the Agent. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit and an approved sound library are not yet installed.

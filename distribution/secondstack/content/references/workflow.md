@@ -15,10 +15,11 @@
    Verify actual speech and alignment. Never replace supplied narration without
    permission. No-voice is an explicit intake choice, not an integration fallback.
 5. Populate content.json from approved copy and use pipeline.py build. Use the
-   universal card layout for a single editorial page or `layout: scenes` for the
-   shared multi-scene template. Screen scenes require an authorized local capture;
-   the template does not turn an unverified mockup into product evidence. Report
-   missing trusted scene support before promising a requested visual.
+   universal card layout for a single editorial page, `layout: scenes` for the
+   shared multi-scene template, or `layout: custom` for a full-screen animation you
+   write yourself (characters, mascots, generated product UI; see runtime.md). Screen scenes take
+   a local image or video (a capture or one you generated). Visuals never replace
+   sources for product claims.
 6. Animatic before any render, for every video: pipeline.py animatic builds, in
    minutes, `media/animatic.mp4` (a frame every 2 s with the voice, for the chat),
    `media/animatic-sheet.jpg` (one frame per scene) and `animatic/` (an

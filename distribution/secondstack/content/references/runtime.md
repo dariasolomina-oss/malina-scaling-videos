@@ -52,6 +52,39 @@ The guarded runtime can generate a separate SRT with `make_srt.py`; it does not
 burn captions into the rendered MP4. Use an approved external caption-rendering
 route for burned-in captions, or deliver the checked SRT when that route is absent.
 
+## Custom animation (layout `custom`)
+
+For story videos like Antares Video 1: characters, mascots, an HTML interface that
+looks like the product, whiteboards, embedded recordings, any transitions. Write the
+page yourself in the episode:
+
+- `inputs/animation/index.html` (plus any `.js`, `.css`, images, fonts or video
+  files next to it). It must set `window.DURATION` (seconds, equal to the episode
+  duration) and `window.render = async t => {...}` that draws the frame at absolute
+  time `t` from scratch: no timers, no wall clock, no unseeded randomness, no CSS
+  transitions or animations that run on their own. Media: seek `<video>` elements to
+  the frame time inside `render`.
+- `content.json`: `{"layout": "custom", "format": "horizontal|vertical|square",
+  "duration": N, "scenes": [{"id", "title", "start", "end"}]}`; scenes are optional
+  labels for the animatic and the cover.
+- The build adds brand fonts and colours as CSS variables (`--color-primary`,
+  `--font-headline`, ...), brand files under `assets/` (logos, fonts, mascots when
+  supplied), the shared library under `lib/` (see `runtime/library/README.md`:
+  `lib/characters/people.js`, `lib/antares/...`), `window.PAGE_DATA`,
+  `PAGE_BRAND`, `PAGE_FORMAT`, `PAGE_VIEWPORT` and, for 9:16, `--shorts-*` safe-zone
+  margins. Reserved names in the animation folder: `assets`, `lib`, `brand.json`,
+  `content.json`, `build.json`, `script.md`.
+- Everything must be local: no `fetch`, XHR, WebSocket, dynamic `import()`, remote
+  `src`/`href` or remote CSS `url()`; copy fonts and images into the folder.
+  `<iframe>` is not allowed. The build refuses these and missing local files.
+- Size the stage to `PAGE_VIEWPORT` (1920x1080, 1080x1920 or 1080x1080) with no
+  scrolling. Check stills at several times (`render.js --test`) for clipped or
+  overflowing text before the animatic.
+
+Then `pipeline.py build`, `pipeline.py animatic` and the usual approval and render.
+Antares Video 1 (5:23, about 330 KB of code) builds this way unchanged except for its
+remote font link; its animatic takes about 90 s.
+
 Cover for every brand and format, from the current build (default: the middle of
 the first title scene; `--at SECONDS` picks another moment):
 

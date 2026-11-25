@@ -16,10 +16,10 @@ the scene first. The scene geometry follows the episode format (16:9, 9:16 with
 the shared Shorts safe zone, or 1:1); `content.json` `format` may be omitted.
 The header shows the brand logo (brand `editorial.logo_variant`) and one
 disclosure line: the scene `disclosure`, else the content `disclosure`, else the
-brand book `editorial.disclosure`. Give real product captures an accurate scene
-disclosure, for example "Product UI recorded 2026-11-24 with demo data."; keep
-the "not product UI" disclosure for illustrations and redrawn interfaces.
-Bounds do not guarantee fit. Keep disclosures, official logos, local fonts and proper clear space.
+brand book `editorial.disclosure`. The line is optional: a scene `"disclosure": ""`
+hides it. Use it when the brief or the brand book asks, for example "Product UI
+recorded 2026-11-24 with demo data."
+Bounds do not guarantee fit. Keep official logos, local fonts and proper clear space.
 Review actual phone-sized frames for line breaks, contrast and clipping.
 
 Shared geometry lives in runtime/formats/shorts/safe-zone.json, not brand settings.

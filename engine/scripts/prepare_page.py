@@ -111,6 +111,34 @@ def _validate_scenes(data):
             language_policy.check_prose(step["body"])
 
 
+def _validate_custom(data):
+    """Free-form animation: the episode supplies its own page; scenes are optional labels."""
+    duration = data["duration"]
+    if isinstance(duration, bool) or not isinstance(duration, (int, float)) or not 0 < duration <= 3600:
+        raise ValueError("duration must be finite, positive and <= 3600 seconds")
+    if data["format"] == "responsive":
+        raise ValueError("custom animation requires format horizontal, vertical or square")
+    scenes = data.get("scenes", [])
+    if not isinstance(scenes, list):
+        raise ValueError("scenes must be a list")
+    previous_end = 0.0
+    for scene in scenes:
+        if not isinstance(scene, dict) or set(scene) - {"id", "title", "start", "end"} or \
+                not {"id", "title", "start", "end"} <= set(scene):
+            raise ValueError("Custom scenes take exactly id, title, start and end")
+        if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", str(scene["id"])):
+            raise ValueError("Scene id is invalid")
+        if not isinstance(scene["title"], str) or not 0 < len(scene["title"]) <= 180:
+            raise ValueError("Scene title must be a string of at most 180 characters")
+        start, end = scene["start"], scene["end"]
+        if (isinstance(start, bool) or isinstance(end, bool) or
+                not isinstance(start, (int, float)) or not isinstance(end, (int, float)) or
+                not 0 <= start < end <= duration or start < previous_end):
+            raise ValueError("Scene times must be ordered within duration")
+        previous_end = end
+        language_policy.check_prose(scene["title"])
+
+
 def validate_data(data):
     if not isinstance(data, dict):
         raise ValueError("Content must be a JSON object")
@@ -125,6 +153,9 @@ def validate_data(data):
         raise ValueError("disclosure must be a string of at most 120 characters")
     if "disclosure" in data:
         language_policy.check_prose(data["disclosure"])
+    if result.get("layout") == "custom":
+        _validate_custom(result)
+        return result
     if result.get("layout") == "scenes" or "scenes" in data:
         _validate_scenes(result)
         return result
@@ -324,3 +355,127 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
+
+
+CUSTOM_RESERVED = {"assets", "lib", "brand.json", "content.json", "build.json", "script.md"}
+CUSTOM_CODE = {".html", ".htm", ".js", ".mjs", ".css", ".svg", ".json"}
+VIEWPORTS = {"horizontal": [1920, 1080], "vertical": [1080, 1920], "square": [1080, 1080]}
+
+
+def _check_custom_code(path, text):
+    if re.search(r"(?:\bfetch\s*\(|XMLHttpRequest|WebSocket\s*\(|\bimport\s*\(|@import\b|navigator\.sendBeacon)", text):
+        raise ValueError(f"{path}: network or dynamic loading is not allowed; bundle everything locally")
+    if re.search(r"""(?:src|href)\s*=\s*["']\s*(?:https?:)?//""", text, re.I) or \
+            re.search(r"""url\(\s*["']?\s*(?:https?:)?//""", text, re.I):
+        raise ValueError(f"{path}: remote resources are not allowed; copy them into the animation folder")
+
+
+def prepare_custom(brand, animation, output, data, library=None):
+    """Build an offline root from an episode-authored animation page.
+
+    animation/index.html must define window.DURATION (seconds) and an async or sync
+    window.render(t) that draws the frame at absolute time t, deterministically.
+    The root receives brand assets under assets/, shared libraries under lib/, the
+    brand CSS variables and window.PAGE_DATA / PAGE_BRAND / PAGE_FORMAT /
+    PAGE_VIEWPORT, plus --shorts-* safe-zone variables for vertical videos.
+    """
+    brand_path = Path(brand).resolve()
+    if brand_path.is_dir():
+        brand_path /= "brand.json"
+    brand_root = brand_path.parent
+    config = json.loads(brand_path.read_text(encoding="utf-8"))
+    language_policy.require_en(config.get("output_language", "en"))
+    content = validate_data(data)
+    if content.get("layout") != "custom":
+        raise ValueError("prepare_custom requires layout=custom")
+    animation = Path(animation).resolve()
+    index = animation / "index.html"
+    if not index.is_file() or index.is_symlink():
+        raise ValueError("The animation folder needs an index.html")
+    for item in animation.rglob("*"):
+        if item.is_symlink():
+            raise ValueError("Animation files must not be symlinks")
+    for item in animation.iterdir():
+        if item.name in CUSTOM_RESERVED:
+            raise ValueError(f"Animation folder must not contain reserved name: {item.name}")
+    for item in animation.rglob("*"):
+        if item.is_file() and item.suffix.lower() in CUSTOM_CODE:
+            _check_custom_code(item.relative_to(animation).as_posix(), item.read_text(encoding="utf-8", errors="replace"))
+    html = index.read_text(encoding="utf-8")
+    fmt = content["format"]
+    format_policy = None
+    format_css = ""
+    if fmt == "vertical":
+        format_policy = json.loads(SHORTS_SAFE_ZONE.read_text(encoding="utf-8"))
+        width, height = format_policy["viewport"]
+        rect = format_policy["safe_rect"]
+        pad = format_policy["content_padding"]
+        margins = {"top": rect["top"] + pad, "right": width - rect["right"] + pad,
+                   "bottom": height - rect["bottom"] + pad, "left": rect["left"] + pad}
+        format_css = "\n:root {" + "".join(f"--shorts-{k}: {v}px;" for k, v in margins.items()) + "}\n"
+    css = subprocess.run(["node", str(REPO / "engine/render/brand_css.js"), str(brand_path)],
+                         check=True, capture_output=True, text=True).stdout
+    injection = ('<style id="generated-brand-css">\n' + css + format_css + '</style>\n'
+                 '<script id="prepared-page-data">window.PAGE_DATA=' + safe_json(content)
+                 + ';window.PAGE_BRAND=' + safe_json({"name": config.get("name", ""),
+                                                     "logo": config.get("logo", {}),
+                                                     "colors": config.get("colors", {}),
+                                                     "editorial": config.get("editorial", {})})
+                 + ';window.PAGE_FORMAT=' + safe_json(fmt)
+                 + ';window.PAGE_VIEWPORT=' + safe_json(VIEWPORTS[fmt]) + ';</script>')
+    marker = "<!-- PREPARE_PAGE_HEAD -->"
+    if marker in html:
+        html = html.replace(marker, injection, 1)
+    elif re.search(r"<head[^>]*>", html, re.I):
+        html = re.sub(r"(<head[^>]*>)", lambda m: m[1] + "\n" + injection, html, count=1, flags=re.I)
+    else:
+        raise ValueError("The animation index.html needs a <head>")
+    dest = Path(output).resolve()
+    if dest.exists() and (not dest.is_dir() or any(dest.iterdir())):
+        raise ValueError("Output must be absent or an empty directory")
+    assets = brand_root / "assets"
+    if assets.is_symlink() or any(p.is_symlink() for p in assets.rglob("*")):
+        raise ValueError("Brand assets must not contain symlinks")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="prepare-custom-", dir=dest.parent) as temporary:
+        staged = Path(temporary) / "root"
+        shutil.copytree(animation, staged)
+        shutil.copytree(assets, staged / "assets")
+        if library is not None:
+            library = Path(library).resolve()
+            if any(p.is_symlink() for p in library.rglob("*")):
+                raise ValueError("Library must not contain symlinks")
+            shutil.copytree(library, staged / "lib")
+        (staged / "index.html").write_text(html, encoding="utf-8")
+        ResourceCheckCustom(staged).feed(html)
+        (staged / "brand.json").write_text(json.dumps(config, indent=2) + "\n", encoding="utf-8")
+        (staged / "content.json").write_text(json.dumps(content, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        (staged / "build.json").write_text(json.dumps({"template": "custom", "legacy": False,
+            "layout": "custom", "viewport": VIEWPORTS[fmt], "format_policy": format_policy}, indent=2) + "\n",
+            encoding="utf-8")
+        if dest.exists():
+            dest.rmdir()
+        staged.rename(dest)
+    return dest / "index.html"
+
+
+class ResourceCheckCustom(HTMLParser):
+    """Local files referenced by the custom page must exist inside its root."""
+    def __init__(self, root):
+        super().__init__()
+        self.root = Path(root).resolve()
+
+    def handle_starttag(self, tag, attrs):
+        if tag in {"iframe", "object", "embed", "base"}:
+            raise ValueError(f"Unsupported offline element: {tag}")
+        for key, value in attrs:
+            if key in ("src", "poster") or (tag == "link" and key == "href"):
+                if not value or value.startswith(("data:", "blob:", "#")):
+                    continue
+                url = urlsplit(value)
+                path = PurePosixPath(unquote(url.path))
+                if url.scheme or url.netloc or path.is_absolute() or ".." in path.parts:
+                    raise ValueError(f"Only local relative files are allowed: {value}")
+                target = (self.root / path.as_posix()).resolve()
+                if not target.is_relative_to(self.root) or not target.is_file():
+                    raise ValueError(f"Missing file referenced by the animation: {value}")
