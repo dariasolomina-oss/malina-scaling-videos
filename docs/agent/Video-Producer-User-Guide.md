@@ -1,6 +1,6 @@
-# Video Producer — User Guide v4.4
+# Video Producer — User Guide v4.5
 
-Updated November 25, 2026. Replaces User Guide v4.3.
+Updated November 25, 2026. Replaces User Guide v4.4.
 
 ## What the agent uses
 
@@ -19,6 +19,8 @@ If you ask for something the toolkit cannot yet produce on brand, the agent tell
 Open a direct chat with **Video Producer**, or mention it with `@` where it is available. Use one conversation per video.
 
 The agent asks questions in two short steps. Answer what you know; the rest uses defaults. "Defaults for everything" is a valid answer.
+
+Messages stay short and non-technical. The agent keeps file names, versions and checks in its own records and tells you only what you need to decide or do.
 
 **Before the script**
 1. Product and topic — or ask it to propose topics
@@ -79,4 +81,4 @@ Ask for a short English handoff note (stage, open issues, next action) when you 
 
 ## Verification note
 
-This guide describes Agent profile version 16 with toolkit 1.0.0-candidate.7. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit, an approved sound library and the animatic route are not yet installed.
+This guide describes Agent profile version 17 with toolkit 1.0.0-candidate.7. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit, an approved sound library and the animatic route are not yet installed.
