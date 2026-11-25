@@ -1,7 +1,7 @@
 # SecondStack distribution candidate
 
 Baseline: `951fc06e6ee429498de5a842c196eb2a820ecf2a`.
-Release: `1.0.0-candidate.9`. Status: validated; pending installation in the Video Producer
+Release: `1.0.0-candidate.9`. Status: validated and installed in the Video Producer
 Agent on 2026-11-25 (Skill and Agent instructions). Product Knowledge is maintained in
 the Agent's Collections, which are newer than `product-collections.zip`; do not
 re-upload that archive over them.
