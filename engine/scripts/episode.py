@@ -122,6 +122,12 @@ def approve(root, kind, human, confirm=False):
             raise ValueError('build the animatic before approving it')
         if made['input_hash'] != hashlib.sha256(json.dumps(built, sort_keys=True, allow_nan=False).encode()).hexdigest():
             raise ValueError('animatic is out of date; rebuild it from the current build')
+        layout = made.get('layout')
+        if layout is None:
+            raise ValueError('animatic has no layout check; rebuild it')
+        if layout['open_errors']:
+            raise ValueError(f"animatic has {layout['open_errors']} open layout errors; fix them, or waive "
+                             "intentional ones with pipeline.py waive, and rebuild")
         a['input_hash'] = made['input_hash']
         a['animatic_tree'] = made['tree']
     if kind == 'video':

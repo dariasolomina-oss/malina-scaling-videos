@@ -6,11 +6,13 @@ Use Geist headings, Inter body and Geist Mono technical text. Cyan anchors the p
 
 ## Toolkit scope
 
-The two universal templates are neutral editorial layouts, not reconstructed
-application UI. Disclosures are always visible, including when `demo` is false.
-Use an authorized real capture for a product walkthrough; do not claim these
-layouts are a working product screen. Do not invent metrics, customer evidence,
-savings, pricing or model availability. The example JSON makes no product claims.
+Visual style is open within this brand: template scenes, custom full-screen
+animation, characters, and interfaces built to look like the product. What a
+frame shows the product doing must match the sources; names, people and numbers
+are invented sample data. On-screen disclosures ("demo data", "illustration") are
+optional: use them when the brief or the user asks. Do not invent product
+capabilities, customer evidence, savings, pricing or model availability. The
+example JSON makes no product claims.
 
 Output language is exactly `en`. Semantically review authored text and actual
 speech for English; character checks and audio timing do not detect language.

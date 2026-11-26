@@ -52,6 +52,25 @@ The guarded runtime can generate a separate SRT with `make_srt.py`; it does not
 burn captions into the rendered MP4. Use an approved external caption-rendering
 route for burned-in captions, or deliver the checked SRT when that route is absent.
 
+## Layout check and frame review
+
+`pipeline.py animatic` measures every sampled frame in the browser and writes
+`review/`: `sheets/` (four frames each), `frames/`, `issues/` (frames with boxes
+around findings), `layout.json` and `layout.md`. Errors (block the animatic
+approval): `text_off_frame`, `text_outside_safe_zone` (9:16), `text_clipped`
+(words cut horizontally by a container), `text_overlap`, `text_covered` (a painted
+element on top of the text), `escapes_container` (a text badge crossing its own
+card). Warnings (judged by the reviewer): `shapes_overlap`, `text_too_small`,
+`text_clipped_vertically`, `shape_cut_by_frame`, `escapes_container` without text.
+It measures elements, not pixels inside images or canvas.
+
+Waive an intended error: `pipeline.py waive --episode E --issue <id or key>
+--reason "..."` (survives rebuilds while the text is the same) or `--at 243-247
+--reason "..."` for a transition in motion (at most 20 s). Waivers apply on the
+next animatic build. Then the reviewers follow `references/frame-review.md`.
+
+The layout check adds about 0.7 s per frame (a 5-minute video: about 2 minutes).
+
 ## Custom animation (layout `custom`)
 
 For story videos like Antares Video 1: characters, mascots, an HTML interface that

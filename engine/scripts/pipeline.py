@@ -210,7 +210,7 @@ def inputs(root, state):
             raise ValueError('word timings exceed episode duration')
         files['timings.json'] = episode.digest(episode.safe_path(root, 'timings.json'))
     binding = dict(script_hash=state['script_hash'], revision=state['revision'],
-        config={k: v for k, v in cfg.items() if k not in ('build', 'review_input_hash', 'animatic')}, files=files,
+        config={k: v for k, v in cfg.items() if k not in ('build', 'review_input_hash', 'animatic', 'layout_waivers', 'layout_waiver_spans')}, files=files,
         brand=tree_hash(Path(cfg['brand'])),
         engine={str(p.relative_to(REPO)): episode.digest(p) for p in
                 [Path(__file__), Path(episode.__file__), Path(prepare_page.__file__),
@@ -454,6 +454,136 @@ def animatic_sample(start, step, duration):
     """Draw each frame from the middle of its interval, away from scene fades."""
     return round(min(start + step / 2, duration * 0.999), 3)
 
+REVIEW_SHEET_FRAMES = 4
+
+
+def layout_safe_margins(fmt):
+    """Text margins (top, right, bottom, left) for 9:16: the shared Shorts safe rectangle."""
+    if fmt != 'vertical':
+        return None
+    policy = read(prepare_page.SHORTS_SAFE_ZONE)
+    width, height = policy['viewport']
+    rect = policy['safe_rect']
+    return [rect['top'], width - rect['right'], height - rect['bottom'], rect['left']]
+
+
+def issue_key(issue):
+    """Stable identity of a layout finding across rebuilds, for waivers."""
+    return issue['type'] + ':' + ' '.join(issue['text'].split())[:80]
+
+
+def build_review(work, stills, report, samples, points, fmt, state):
+    """Review pack for the frame reviewer: every sampled frame in sheets of four, marked
+    frames for geometry findings, and the findings as JSON and Markdown."""
+    review = work/'review'
+    (review/'issues').mkdir(parents=True)
+    (review/'frames').mkdir()
+    waivers = state.get('pipeline', {}).get('layout_waivers', {})
+    spans = state.get('pipeline', {}).get('layout_waiver_spans', [])
+    frames = {round(f['t'], 2): f for f in report['frames']}
+    findings = []
+    for t in sorted(frames):
+        frame = frames[t]
+        span = next((w for w in spans if w['start'] <= t <= w['end']), None)
+        for n, issue in enumerate(frame['issues'], 1):
+            key = issue_key(issue)
+            waived = waivers.get(key) or (span and span['reason'])
+            findings.append(dict(id=f'{t:.2f}#{n}', t=t, mark=n, key=key, waived=waived, **issue))
+        if frame['issues']:
+            marked = stills/f'issues_{t:.2f}.jpg'
+            if marked.is_file():
+                shutil.copyfile(marked, review/'issues'/f'{t:07.2f}.jpg')
+    ordered = sorted(set(samples) | {p['at'] for p in points})
+    scale = 'scale=960:-2' if fmt != 'vertical' else 'scale=-2:960'
+    for t in ordered:
+        subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', str(stills/f't_{t:.2f}.jpg'), '-vf',
+            f'{scale}:flags=lanczos', '-q:v', '4', str(review/'frames'/f'{t:07.2f}.jpg')], check=True)
+    sheets = []
+    columns = 2 if fmt != 'vertical' else 4
+    rows = 2 if fmt != 'vertical' else 1
+    for i in range(0, len(ordered), REVIEW_SHEET_FRAMES):
+        group = ordered[i:i + REVIEW_SHEET_FRAMES]
+        name = f'sheets/{len(sheets) + 1:03d}.jpg'
+        (review/'sheets').mkdir(exist_ok=True)
+        listing = work/f'sheet-{len(sheets)}.txt'
+        listing.write_text(''.join(f"file '{(review/'frames'/f'{t:07.2f}.jpg').resolve()}'\n" for t in group),
+                           encoding='utf-8')
+        subprocess.run(['ffmpeg', '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', str(listing),
+            '-vf', f'tile={columns}x{rows}:padding=12:margin=12:color=0x808080', '-frames:v', '1',
+            '-q:v', '3', str(review/name)], check=True)
+        sheets.append(dict(file=name, times=group))
+    errors = [f for f in findings if f['severity'] == 'error']
+    open_errors = [f for f in errors if not f['waived']]
+    summary = dict(frames=len(frames), errors=len(errors), open_errors=len(open_errors),
+                   warnings=len(findings) - len(errors), open_keys=sorted({f['key'] for f in open_errors}))
+    episode.write_json(review/'layout.json', dict(version=1, summary=summary, findings=findings,
+        sheets=sheets, scenes=[dict(title=p['label'], start=p['start'], end=p['end']) for p in points]))
+    lines = ['# Layout check', '',
+             f"{summary['frames']} frames checked: {summary['open_errors']} open errors, "
+             f"{summary['errors'] - summary['open_errors']} waived, {summary['warnings']} warnings.", '']
+    for f in findings:
+        state_text = f" (waived: {f['waived']})" if f['waived'] else ''
+        lines.append(f"- {f['t']:.2f}s mark {f['mark']}: {f['severity']} {f['type']}: \"{f['text']}\"{state_text}; "
+                     f"marked frame issues/{f['t']:07.2f}.jpg")
+    (review/'layout.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+    (review/'README.md').write_text(REVIEW_README, encoding='utf-8')
+    return dict(summary=summary)
+
+
+REVIEW_README = """# Frame review pack
+
+- sheets/NNN.jpg: every animatic frame, four per sheet, in time order; times are in
+  layout.json `sheets`.
+- frames/TTTT.TT.jpg: single frames, named by time in seconds.
+- issues/TTTT.TT.jpg: frames with geometry findings marked (red solid: error, amber:
+  warning; dashed: the other shape involved); numbers match `mark` in layout.json.
+- layout.json / layout.md: the geometry findings.
+
+Review it with the frame reviewer brief in references/frame-review.md.
+"""
+
+
+def waive(root, reason, issue=None, at=None):
+    """Record that a layout finding is intended (for example text that slides in from
+    off-frame). By finding (keyed by type and text, so it survives rebuilds) or by a time
+    span such as `243-247` for a transition in motion. Takes effect on the next animatic."""
+    if not reason or len(reason.strip()) < 8:
+        raise ValueError('give a short reason for the waiver')
+    if (issue is None) == (at is None):
+        raise ValueError('waive either one finding (--issue) or a time span (--at START-END)')
+    root = Path(root)
+    state = episode.require_production(root, 'render')
+    if at is not None:
+        try:
+            start, end = (float(x) for x in str(at).split('-', 1))
+        except ValueError:
+            raise ValueError('time span must look like 243-247 (seconds)') from None
+        if not 0 <= start <= end or end - start > 20:
+            raise ValueError('time span must be ordered and at most 20 seconds; waive transitions one by one')
+        state['pipeline'].setdefault('layout_waiver_spans', []).append(
+            dict(start=start, end=end, reason=reason.strip()))
+        state['approvals'].pop('animatic', None)
+        state['history'].append(dict(event='layout_waiver', at=episode.now(), span=[start, end], reason=reason.strip()))
+        save(root, state)
+        return dict(waived_span=[start, end], next='rebuild the animatic to apply it')
+    report = read(episode.safe_path(root, 'review/layout.json'))
+    match = [f for f in report['findings'] if f['id'] == issue or f['key'] == issue]
+    if not match:
+        raise ValueError('unknown layout finding; use an id or key from review/layout.json')
+    key = match[0]['key']
+    state['pipeline'].setdefault('layout_waivers', {})[key] = reason.strip()
+    animatic_state = state['pipeline'].get('animatic')
+    if animatic_state and 'layout' in animatic_state:
+        layout = animatic_state['layout']
+        layout['open_keys'] = [k for k in layout.get('open_keys', []) if k != key]
+        layout['open_errors'] = sum(1 for f in report['findings']
+            if f['severity'] == 'error' and f['key'] in layout['open_keys'])
+    state['approvals'].pop('animatic', None)
+    state['history'].append(dict(event='layout_waiver', at=episode.now(), key=key, reason=reason.strip()))
+    save(root, state)
+    return dict(waived=key, open_errors=state['pipeline'].get('animatic', {}).get('layout', {}).get('open_errors'))
+
+
 
 def animatic(root):
     """Build the review animatic from the current build: a browser player of the real
@@ -486,8 +616,14 @@ def animatic(root):
         times, step = animatic_timeline(content['duration'])
         samples = [animatic_sample(t, step, content['duration']) for t in times]
         wanted = sorted({p['at'] for p in points} | set(samples))
-        subprocess.run(['node', str(REPO/'engine/render/render.js'), str((root/'source/index.html').resolve()),
-            str(stills.resolve()), '--test', *[f"{t}" for t in wanted]], check=True, env=env)
+        layout_file = work/'layout.json'
+        command = ['node', str(REPO/'engine/render/render.js'), str((root/'source/index.html').resolve()),
+            str(stills.resolve()), '--test', *[f"{t}" for t in wanted], '--layout', str(layout_file)]
+        safe = layout_safe_margins(cfg['format'])
+        if safe:
+            command += ['--safe', ','.join(str(v) for v in safe)]
+        subprocess.run(command, check=True, env=env)
+        review = build_review(work, stills, read(layout_file), samples, points, cfg['format'], state)
         (site/'frames').mkdir()
         thumbs = []
         for i, point in enumerate(points, 1):
@@ -552,6 +688,10 @@ def animatic(root):
         if target.exists():
             shutil.rmtree(target)
         os.replace(site, target)
+        review_target = episode.safe_path(root, 'review')
+        if review_target.exists():
+            shutil.rmtree(review_target)
+        os.replace(work/'review', review_target)
         media_sheet = episode.safe_path(root, 'media/animatic-sheet.jpg')
         media_sheet.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(target/'sheet.jpg', media_sheet)
@@ -560,22 +700,31 @@ def animatic(root):
         current = episode.load(root)
         # A new animatic always needs a new human approval.
         current['approvals'].pop('animatic', None)
-        current['pipeline']['animatic'] = dict(input_hash=key, tree=checksum(tree_hash(target)))
+        current['pipeline']['animatic'] = dict(input_hash=key, tree=checksum(tree_hash(target)),
+            layout=review['summary'])
         current['history'].append(dict(event='pipeline_animatic', at=episode.now(), input_hash=key,
             stills=len(points)))
         save(root, current)
     finally:
         shutil.rmtree(work, ignore_errors=True)
+    summary = review['summary']
+    if summary['open_errors']:
+        follow = ('fix the layout errors listed in review/layout.md (marked frames in review/issues/), '
+                  'or waive an intentional one with pipeline.py waive, then rebuild the animatic')
+    else:
+        follow = ('run the frame review (review/README.md), fix and rebuild until it is clean; then send the '
+                  'animatic video and the contact sheet in chat, publish the site for the interactive '
+                  'player, and record approval with episode.py approve animatic')
     return dict(site=str(target), sheet=str(media_sheet), scenes=len(points),
-        video=str(media_clip), frame_step=step,
-        next='send the animatic video and the contact sheet in chat, publish the site for the '
-             'interactive player, then record approval with episode.py approve animatic')
+        video=str(media_clip), frame_step=step, review=str(review_target),
+        layout=dict(errors=summary['errors'], open_errors=summary['open_errors'],
+                    warnings=summary['warnings']), next=follow)
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
-    for name in ('init', 'build', 'voice', 'animatic', 'render', 'cover'):
+    for name in ('init', 'build', 'voice', 'animatic', 'render', 'cover', 'waive'):
         p = sub.add_parser(name)
         p.add_argument('--episode', required=True, type=Path)
         if name == 'init':
@@ -596,6 +745,10 @@ def main(argv=None):
             p.add_argument('--final60', action='store_true')
             p.add_argument('--chunk-frames', type=int, default=240)
             p.add_argument('--resume', action='store_true')
+        if name == 'waive':
+            p.add_argument('--issue', help='finding id or key from review/layout.json')
+            p.add_argument('--at', help='time span in seconds, e.g. 243-247, for a transition in motion')
+            p.add_argument('--reason', required=True)
         if name == 'cover':
             p.add_argument('--at', type=float, help='seconds into the video (default: first title scene)')
     args = vars(parser.parse_args(argv))
@@ -604,7 +757,7 @@ def main(argv=None):
     if command == 'init':
         args['episode_id'] = args.pop('id')
     try:
-        result = {'init': init, 'build': build, 'voice': import_voice, 'animatic': animatic, 'render': render, 'cover': cover}[command](root, **args)
+        result = {'init': init, 'build': build, 'voice': import_voice, 'animatic': animatic, 'render': render, 'cover': cover, 'waive': waive}[command](root, **args)
     except subprocess.CalledProcessError as error:
         parser.exit(error.returncode if error.returncode > 0 else 1, f'error: subprocess failed: {error}\n')
     except (ValueError, OSError, KeyError, TypeError, AttributeError) as error:

@@ -23,7 +23,12 @@
 6. Animatic before any render, for every video: pipeline.py animatic builds, in
    minutes, `media/animatic.mp4` (a frame every 2 s with the voice, for the chat),
    `media/animatic-sheet.jpg` (one frame per scene) and `animatic/` (an
-   interactive browser player of the real pages). Check the frames yourself, send
+   interactive browser player of the real pages). It also checks the layout of
+   every frame and writes a review pack to `review/` (sheets of four frames, single
+   frames, marked frames, `layout.md`). Run the frame review loop first: fix the
+   layout errors (or waive intended ones with pipeline.py waive), have helper
+   reviewers follow frame-review.md, fix P0/P1, rebuild; at most 4 rounds. The
+   approval refuses while layout errors are open. Then send
    the video and the sheet in chat, publish `animatic/` as a private Spot site
    (see runtime.md) and give its link, then wait for an explicit human approval
    of this animatic. Record it with

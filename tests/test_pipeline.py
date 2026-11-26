@@ -36,13 +36,26 @@ class PipelineTests(unittest.TestCase):
         self.approve_script()
         pipeline.build(self.root)  # real prepare_page + Node CSS, no browser
 
-    @staticmethod
-    def fake_animatic_run(command, **kwargs):
+    layout_issues = []  # geometry findings the fake browser reports on every frame
+
+    def fake_animatic_run(self, command, **kwargs):
         # Stand-ins for the browser and ffmpeg: NOT browser evidence.
         if command[0] == 'node':
             out = Path(command[3]); out.mkdir(parents=True, exist_ok=True)
-            for t in command[5:]:
+            args = command[5:]
+            layout = None
+            if '--layout' in args:
+                i = args.index('--layout'); layout = args[i+1]; args = args[:i] + args[i+2:]
+            if '--safe' in args:
+                i = args.index('--safe'); self.safe_seen = args[i+1]; args = args[:i] + args[i+2:]
+            frames = []
+            for t in args:
                 (out/f't_{float(t):.2f}.jpg').write_bytes(b'still')
+                if self.layout_issues:
+                    (out/f'issues_{float(t):.2f}.jpg').write_bytes(b'marked')
+                frames.append(dict(t=float(t), viewport=[1920, 1080], issues=list(self.layout_issues)))
+            if layout:
+                Path(layout).write_text(json.dumps(dict(version=1, frames=frames)))
         else:
             Path(command[-1]).write_bytes(b'image')
         return subprocess.CompletedProcess(command, 0)
@@ -286,6 +299,63 @@ class PipelineTests(unittest.TestCase):
         # A changed script drops every approval, the animatic one included.
         (self.root/'script.md').write_text('Changed script.\n', encoding='utf-8')
         self.assertEqual(episode.load(self.root)['approvals'], {})
+
+    def test_layout_errors_block_animatic_approval_until_fixed_or_waived(self):
+        self.ready()
+        self.layout_issues = [dict(type='text_off_frame', severity='error', text='Slides  in from the right',
+                                   boxes=[[1800, 40, 400, 60]]),
+                              dict(type='text_too_small', severity='warning', text='fine print', boxes=[[0, 0, 10, 10]])]
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_animatic_run):
+            result = pipeline.animatic(self.root)
+        self.assertGreaterEqual(result['layout']['open_errors'], 1)
+        self.assertEqual(episode.load(self.root)['pipeline']['animatic']['layout']['open_keys'],
+                         ['text_off_frame:Slides in from the right'])
+        self.assertIn('fix the layout errors', result['next'])
+        report = json.loads((self.root/'review/layout.json').read_text())
+        self.assertTrue(report['findings'][0]['id'].endswith('#1'))
+        self.assertTrue(report['sheets'])
+        self.assertTrue(any((self.root/'review/issues').iterdir()))
+        self.assertIn('text_off_frame', (self.root/'review/layout.md').read_text())
+        with self.assertRaisesRegex(ValueError, 'open layout errors'):
+            episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+        with self.assertRaisesRegex(ValueError, 'reason'):
+            pipeline.waive(self.root, 'ok', issue=report['findings'][0]['id'])
+        pipeline.waive(self.root, 'intended: the title slides in from off-frame', issue=report['findings'][0]['id'])
+        episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+        # The waiver survives a rebuild (same finding text), and warnings never block.
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_animatic_run):
+            result = pipeline.animatic(self.root)
+        self.assertEqual(result['layout']['open_errors'], 0)
+        self.assertNotIn('animatic', episode.load(self.root)['approvals'])
+        episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+
+    def test_layout_waiver_by_time_span_applies_on_rebuild(self):
+        self.ready()
+        self.layout_issues = [dict(type='text_covered', severity='error', text='121 / cards in flight', boxes=[[0, 0, 9, 9]])]
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_animatic_run):
+            self.assertGreater(pipeline.animatic(self.root)['layout']['open_errors'], 0)
+        with self.assertRaisesRegex(ValueError, 'at most 20'):
+            pipeline.waive(self.root, 'transition in motion', at='0-60')
+        with self.assertRaisesRegex(ValueError, 'either'):
+            pipeline.waive(self.root, 'transition in motion')
+        pipeline.waive(self.root, 'cards fly into the columns', at='0-1')
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_animatic_run):
+            self.assertEqual(pipeline.animatic(self.root)['layout']['open_errors'], 0)
+        episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+
+    def test_animatic_without_layout_check_must_be_rebuilt(self):
+        self.ready()
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_animatic_run):
+            pipeline.animatic(self.root)
+        state = episode.load(self.root)
+        del state['pipeline']['animatic']['layout']
+        episode.write_json(self.root/'episode.yaml', state)
+        with self.assertRaisesRegex(ValueError, 'no layout check'):
+            episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+
+    def test_vertical_animatic_checks_text_against_shorts_safe_zone(self):
+        self.assertEqual(pipeline.layout_safe_margins('vertical'), [240, 200, 380, 60])
+        self.assertIsNone(pipeline.layout_safe_margins('horizontal'))
 
     def custom_episode(self, page):
         self.create()

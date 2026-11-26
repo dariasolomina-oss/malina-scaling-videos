@@ -9,7 +9,9 @@ Resolve this installed skill's actual directory as SKILL_ROOT. Run
 `python3 "$SKILL_ROOT/verify.py"` before use. Read references/workflow.md, then
 references/research.md and references/format.md for the current episode. Use
 references/youtube.md after final delivery acceptance when the author asks for YouTube copy; references/runtime.md lists
-commands, requirements and limitations.
+commands, requirements and limitations. references/frame-review.md is the brief
+for the helper that reviews animatic frames (give a helper its path; do not
+review from memory).
 
 Production library: `SKILL_ROOT/runtime/`. Keep that tree read-only. Work on a copy
 outside the installed skill if dependencies must be installed, verify copied files,

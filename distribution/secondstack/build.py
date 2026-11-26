@@ -8,7 +8,7 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '1.0.0-candidate.10'
+VERSION = '1.0.0-candidate.11'
 PRODUCTS = {'lakesentry': 'LakeSentry', 'antares': 'Antares', 'secondstack': 'SecondStack', 'alchemist': 'Alchemist'}
 
 
@@ -90,10 +90,11 @@ logos with clear space; do not redraw, recolor or retype the lockup. Prefer ligh
 calm technical layouts. No neon, glow, gradient text or panic imagery. Review actual
 frames at phone size. Platform geometry comes from runtime/formats/shorts/.
 
-Universal templates are editorial cards and the shared scene template builds
-multi-scene storyboards; neither is verified product UI. Keep disclosures.
-Real walkthroughs need authorized dated capture and approved scripts. Do not infer
-product features, prices or savings from an illustration. No background music by
+Visual style is open within this brand: template scenes, custom full-screen
+animation, characters, and interfaces built to look like the product. What a frame
+shows the product doing must match the sources; names and numbers are invented
+sample data. On-screen disclosures are optional: use them when the brief or the
+user asks. Do not infer product features, prices or savings from an illustration. No background music by
 default; sound effects require a suitable approved plan and license checks. Voice
 is an explicit intake choice. Historical per-video style experiments are not current
 production requirements. Review actual speech, captions and final media.

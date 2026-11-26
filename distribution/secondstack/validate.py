@@ -82,7 +82,7 @@ import pipeline,episode
 with tempfile.TemporaryDirectory() as tmp:
  root=Path(tmp)/'episode'
  state=pipeline.init(root,'probe',Path.cwd()/'brands/antares','vertical',1,'none','TEST ONLY')
- assert 'branch' not in state and state['episode_metadata']['toolkit_version']=='1.0.0-candidate.10'
+ assert 'branch' not in state and state['episode_metadata']['toolkit_version']=='1.0.0-candidate.11'
  state['branch']={'language':'en'}
  episode.write_json(root/'episode.yaml',state)
  try:episode.load(root)

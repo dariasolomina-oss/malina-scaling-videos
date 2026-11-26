@@ -1,6 +1,6 @@
-# Video Producer — User Guide v4.8
+# Video Producer — User Guide v4.9
 
-Updated November 25, 2026. Replaces User Guide v4.7.
+Updated November 26, 2026. Replaces User Guide v4.8.
 
 ## What the agent uses
 
@@ -47,6 +47,8 @@ When you are happy with the script, say "yes" or similar. That approves the exac
 
 Before anything is rendered, every video gets an **animatic**, ready in minutes: a draft video in the chat with a picture every two seconds and the voice, so you can check the story, texts and timing, plus one picture per scene. A link to a private page lets you also see the motion of any moment. Comment on it as you like; the agent updates it and sends a new link. Nothing is rendered until you approve the animatic, for example "looks good, render".
 
+Before you see the animatic, the agent checks every frame itself: an automatic check finds text that runs off the frame, is cut off, overlaps or covers other elements, and a separate reviewer looks at all frames for layout, readability and brand. The agent fixes what they find and checks again, up to four rounds, so this step can take a few extra minutes. If something still looks wrong after that, the agent tells you what and where and asks how to continue.
+
 ## 3. Voice
 
 - **You already have a recording:** attach it (MP3, WAV, M4A or MP4; the agent converts it to MP3). The agent transcribes it, shows you the text and builds the scenes around your recording.
@@ -82,4 +84,4 @@ Ask for a short English handoff note (stage, open issues, next action) when you 
 
 ## Verification note
 
-This guide describes Agent profile version 20 with toolkit 1.0.0-candidate.10. Antares Video 1 was rebuilt through the custom animation route in a test run. The animatic was checked in test runs with and without a voice and for an 8-minute video, not yet in a live run of the Agent. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit and an approved sound library are not yet installed.
+This guide describes Agent profile version 21 with toolkit 1.0.0-candidate.11. Antares Video 1 was rebuilt through the custom animation route in a test run. The frame check and the reviewer were tested on a sample frame with overlapping labels and on Antares Video 1, not yet in a live run of the Agent. The animatic was checked in test runs with and without a voice and for an 8-minute video, not yet in a live run of the Agent. The multi-scene template, 1:1, video inside a screen scene and the Shorts safe zone were checked by test renders for all four brands, not yet in a live run of the Agent. Open tests: reading a private repository from an archive or through browser sign-in, browser screen recording in the Agent's runs, and availability of voice and music generation in the Agent's runs. Audio post-processing in the toolkit and an approved sound library are not yet installed.

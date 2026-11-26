@@ -1,10 +1,12 @@
 // Deterministic renderer: see README.md for resumability and dependency contract.
 const fs=require('fs');const path=require('path');
 const {openBrowser,serveHTML,ready}=require('./browser');
-const {hash,fingerprint,atomicJSON,encoder,runFFmpeg,validChunk}=require('./chunks');
+const {hash,fingerprint,atomicJSON,encoder,runFFmpeg,validChunk}=require('./chunks');const {probe,markIssues}=require('./layout_probe');
 function parse(argv){const [html,out,...a]=argv;if(!html||!out)throw new Error('Usage: render.js HTML OUTDIR [FPS | --test T...] [--video OUT.mp4 --fps 60 --chunk-frames 240 --resume]');
  const o={html:path.resolve(html),out:path.resolve(out),fps:60,chunkFrames:240,resume:false};
- if(a[0]==='--test'){o.times=a.slice(1).map(Number);if(!o.times.length||o.times.some(x=>!Number.isFinite(x)||x<0))throw new Error('Invalid still times');return o;}
+ if(a[0]==='--test'){let rest=a.slice(1);const li=rest.indexOf('--layout');if(li>=0){if(!rest[li+1])throw new Error('--layout requires a report path');o.layout=path.resolve(rest[li+1]);rest.splice(li,2);}
+  const si=rest.indexOf('--safe');if(si>=0){const v=(rest[si+1]||'').split(',').map(Number);if(v.length!==4||v.some(x=>!Number.isFinite(x)||x<0))throw new Error('--safe needs top,right,bottom,left');o.safe={top:v[0],right:v[1],bottom:v[2],left:v[3]};rest.splice(si,2);}
+  o.times=rest.map(Number);if(!o.times.length||o.times.some(x=>!Number.isFinite(x)||x<0))throw new Error('Invalid still times');return o;}
  for(let i=0;i<a.length;i++){if(a[i]==='--video'){if(!a[i+1])throw new Error('--video requires path');o.video=path.resolve(a[++i]);}else if(a[i]==='--fps')o.fps=Number(a[++i]);else if(a[i]==='--chunk-frames')o.chunkFrames=Number(a[++i]);else if(a[i]==='--resume')o.resume=true;else if(i===0&&!a[i].startsWith('--'))o.fps=Number(a[i]);else throw new Error('Unknown option '+a[i]);}
  if(!Number.isFinite(o.fps)||o.fps<=0||!Number.isSafeInteger(o.chunkFrames)||o.chunkFrames<1)throw new Error('Invalid fps/chunk size');return o;}
 async function main(argv){const o=parse(argv),w=Number(process.env.W||1920),h=Number(process.env.H||1080);
@@ -17,7 +19,12 @@ async function main(argv){const o=parse(argv),w=Number(process.env.W||1920),h=Nu
  await ready(p,server.url);const duration=await p.evaluate(()=>{if(typeof window.render!=='function')throw new Error('Missing window.render');return window.DURATION;});
  const draw=async t=>{await p.evaluate(async t=>{await window.render(t);},t);if(throwPageErrors.length)throw new Error(throwPageErrors.join('\n'));return p.screenshot(process.env.ALPHA?{type:'png',omitBackground:true,animations:'disabled'}:{type:'jpeg',quality:93,animations:'disabled'});};
  fs.mkdirSync(o.out,{recursive:true});
- if(o.times){for(const t of o.times){if(stopping)break;fs.writeFileSync(path.join(o.out,`t_${t.toFixed(2)}.${process.env.ALPHA?'png':'jpg'}`),await draw(t));}return;}
+ if(o.times){const report=[];for(const t of o.times){if(stopping)break;fs.writeFileSync(path.join(o.out,`t_${t.toFixed(2)}.${process.env.ALPHA?'png':'jpg'}`),await draw(t));
+  if(o.layout){const r=await p.evaluate(`(${probe.toString()})(${JSON.stringify({safe:o.safe||null})})`);report.push({t,...r});
+   if(r.issues.length){await p.evaluate(`(${markIssues.toString()})(${JSON.stringify(r.issues)})`);
+    fs.writeFileSync(path.join(o.out,`issues_${t.toFixed(2)}.jpg`),await p.screenshot({type:'jpeg',quality:85,animations:'disabled'}));
+    await p.evaluate(()=>{const x=document.getElementById('__layout_marks');if(x)x.remove();});}}}
+  if(o.layout)atomicJSON(o.layout,{version:1,frames:report});return;}
  if(!Number.isFinite(duration)||duration<=0)throw new Error('DURATION must be positive finite seconds');const total=Math.round(duration*o.fps);if(total<1)throw new Error('DURATION * fps must produce at least one frame');
  if(!o.video){for(let i=0;i<total&&!stopping;i++)fs.writeFileSync(path.join(o.out,`f_${String(i).padStart(5,'0')}.${process.env.ALPHA?'png':'jpg'}`),await draw(i/o.fps));return;}
  const settings={html:path.relative(root,o.html),fps:o.fps,chunkFrames:o.chunkFrames,w,h,duration,codec:'libx264-crf18-yuv420p',version:1,playwright:require('playwright/package.json').version,browser:session.browser.version(),cacheKey:process.env.RENDER_CACHE_KEY||''};
