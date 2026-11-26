@@ -26,8 +26,8 @@
    interactive browser player of the real pages). It also checks the layout of
    every frame and writes a review pack to `review/` (sheets of four frames, single
    frames, marked frames, `layout.md`). Run the frame review loop first: fix the
-   layout errors (or waive intended ones with pipeline.py waive), have helper
-   reviewers follow frame-review.md, fix P0/P1, rebuild; at most 4 rounds. The
+   layout errors (or waive intended ones with pipeline.py waive), run pipeline.py review
+   (vision models with frame-review.md), fix P0/P1, rebuild; at most 4 rounds. The
    approval refuses while layout errors are open. Then send
    the video and the sheet in chat, publish `animatic/` as a private Spot site
    (see runtime.md) and give its link, then wait for an explicit human approval

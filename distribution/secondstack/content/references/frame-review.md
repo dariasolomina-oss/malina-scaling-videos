@@ -10,28 +10,29 @@ questions and the craft checks. They were rewritten for still frames of a video,
 and the web-only checks (hover, keyboard, responsive, accessibility trees,
 performance) were removed. Nothing is downloaded or run from Impeccable.
 
-## Inputs (paths are given in your task)
+## Inputs
 
-- `review/sheets/NNN.jpg`: every animatic frame, four per sheet, in time order.
-  `review/layout.json` lists the times on each sheet (`sheets`) and the scenes.
-- `review/frames/TTTT.TT.jpg`: single frames by time in seconds, for a closer look.
-- `review/issues/TTTT.TT.jpg` and `review/layout.md`: the automatic geometry check.
-  Red solid box: error; amber: warning; dashed: the other element involved.
-- The approved script (`script.md`) and the brand's `style-guide.md`.
-- Format: 16:9, 9:16 (Shorts) or 1:1. For 9:16, all text must stay inside the
-  Shorts safe zone: 240 px top, 380 px bottom, 60 px left, 200 px right of a
-  1080×1920 frame.
+The request gives you, for your share of the video:
+- the format and brand, the brand's style guide, the scene list with times and,
+  when there is a voice, the narration;
+- sheets of four frames each in time order, two seconds apart; a label before each
+  sheet gives the time of every tile (left to right, top to bottom). Empty tiles at
+  the end of the last sheet are padding, not part of the video;
+- the automatic geometry findings for your share, and marked frames for some of
+  them. Red solid box: error; amber: warning; dashed: the other element involved.
+  Numbers in the boxes match the marks in the list.
+- For 9:16, all text must stay inside the Shorts safe zone: 240 px top, 380 px
+  bottom, 60 px left, 200 px right of a 1080×1920 frame.
 
-Look at every sheet assigned to you. Open single frames when something is small or
-unclear. Do not judge from file names or from layout.md alone.
+Look at every sheet you receive. Do not judge from the geometry list alone.
 
 ## Two passes
 
-1. **Look first.** Go through the sheets without reading layout.md. Note what a
+1. **Look first.** Go through the sheets before reading the geometry list. Note what a
    viewer would notice on a phone: anything colliding, cut off, cramped, unreadable,
    off-brand, empty or broken.
-2. **Then check the geometry report.** For every error in layout.md, open its marked
-   frame and decide: a real defect (report it), or intended (say why, for example a
+2. **Then check the geometry report.** For every error in the geometry list, look at
+   its frame (marked frame when given) and decide: a real defect (report it), or intended (say why, for example a
    word sliding in from off-frame, a pencil strike over a value, cards in flight).
    Warnings are leads: report only those you can see as a problem.
 
@@ -115,7 +116,7 @@ when cheap. P3 is optional.
   wrong, and the smallest fix (for example "move the badge inside the card, 24 px
   from the bottom-right corner" or "reduce the title to two lines").
 - Do not repeat a finding for every frame of the same scene; give the time range.
-- Do not report waived findings (marked as waived in layout.md) unless they
+- Do not report waived findings (marked as waived in the list) unless they
   actually look wrong.
 - Write in English. No praise, no summary of the video.
 

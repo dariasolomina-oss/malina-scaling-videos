@@ -13,6 +13,7 @@ import tempfile
 from uuid import uuid4
 
 import episode
+import frame_review
 import language_policy
 import prepare_page
 import timings
@@ -712,7 +713,7 @@ def animatic(root):
         follow = ('fix the layout errors listed in review/layout.md (marked frames in review/issues/), '
                   'or waive an intentional one with pipeline.py waive, then rebuild the animatic')
     else:
-        follow = ('run the frame review (review/README.md), fix and rebuild until it is clean; then send the '
+        follow = ('run pipeline.py review, fix and rebuild until it is clean; then send the '
                   'animatic video and the contact sheet in chat, publish the site for the interactive '
                   'player, and record approval with episode.py approve animatic')
     return dict(site=str(target), sheet=str(media_sheet), scenes=len(points),
@@ -721,10 +722,40 @@ def animatic(root):
                     warnings=summary['warnings']), next=follow)
 
 
+def review(root, detail_model=frame_review.DETAIL_MODEL, overall_model=frame_review.OVERALL_MODEL,
+           batch_sheets=frame_review.BATCH_SHEETS, parallel=frame_review.PARALLEL, no_overall=False):
+    """Frame review of the current animatic by vision models through the model gateway.
+
+    Each request gets only the review rules, the brand style guide and its share of the
+    frames, geometry findings, scenes and narration. Detail requests cover the sheets in
+    batches; one overall request covers the whole video for consistency.
+    """
+    root = Path(root)
+    state = episode.load(root)
+    current = state.get('pipeline', {}).get('animatic')
+    if not current or not (root/'review/layout.json').is_file():
+        raise ValueError('build the animatic first (pipeline.py animatic)')
+    result = frame_review.review(root, state, detail_model, overall_model, batch_sheets, parallel, not no_overall)
+    state = episode.load(root)
+    state['history'].append(dict(event='frame_review', at=episode.now(), animatic=current['input_hash'],
+        round=result['round'], verdict=result['verdict'], findings=result['findings'], failed=len(result['failed'])))
+    save(root, state)
+    if result['verdict'] == 'CLEAN':
+        result['next'] = ('fix cheap P2 findings if any; then show the animatic to the user')
+    elif result['verdict'] == 'FAILED':
+        result['next'] = ('the review requests failed; review the sheets yourself with the image viewer and '
+                          'references/frame-review.md, or retry later')
+    else:
+        result['next'] = ('read the report, fix every P0 and P1 finding (and cheap P2) in the page, rebuild the '
+                          'animatic and run the review again; at most 4 rounds. Sheets of failed requests must be '
+                          'reviewed another way')
+    return result
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
-    for name in ('init', 'build', 'voice', 'animatic', 'render', 'cover', 'waive'):
+    for name in ('init', 'build', 'voice', 'animatic', 'render', 'cover', 'waive', 'review'):
         p = sub.add_parser(name)
         p.add_argument('--episode', required=True, type=Path)
         if name == 'init':
@@ -749,6 +780,12 @@ def main(argv=None):
             p.add_argument('--issue', help='finding id or key from review/layout.json')
             p.add_argument('--at', help='time span in seconds, e.g. 243-247, for a transition in motion')
             p.add_argument('--reason', required=True)
+        if name == 'review':
+            p.add_argument('--detail-model', default=frame_review.DETAIL_MODEL)
+            p.add_argument('--overall-model', default=frame_review.OVERALL_MODEL)
+            p.add_argument('--batch-sheets', type=int, default=frame_review.BATCH_SHEETS)
+            p.add_argument('--parallel', type=int, default=frame_review.PARALLEL)
+            p.add_argument('--no-overall', action='store_true', help='skip the whole-video consistency request')
         if name == 'cover':
             p.add_argument('--at', type=float, help='seconds into the video (default: first title scene)')
     args = vars(parser.parse_args(argv))
@@ -757,7 +794,7 @@ def main(argv=None):
     if command == 'init':
         args['episode_id'] = args.pop('id')
     try:
-        result = {'init': init, 'build': build, 'voice': import_voice, 'animatic': animatic, 'render': render, 'cover': cover, 'waive': waive}[command](root, **args)
+        result = {'init': init, 'build': build, 'voice': import_voice, 'animatic': animatic, 'render': render, 'cover': cover, 'waive': waive, 'review': review}[command](root, **args)
     except subprocess.CalledProcessError as error:
         parser.exit(error.returncode if error.returncode > 0 else 1, f'error: subprocess failed: {error}\n')
     except (ValueError, OSError, KeyError, TypeError, AttributeError) as error:

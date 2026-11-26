@@ -67,7 +67,20 @@ It measures elements, not pixels inside images or canvas.
 Waive an intended error: `pipeline.py waive --episode E --issue <id or key>
 --reason "..."` (survives rebuilds while the text is the same) or `--at 243-247
 --reason "..."` for a transition in motion (at most 20 s). Waivers apply on the
-next animatic build. Then the reviewers follow `references/frame-review.md`.
+next animatic build.
+
+Frame review: `pipeline.py review --episode E` calls vision models directly through
+the model gateway (`OPENAI_BASE_URL`, `OPENAI_API_KEY`), billed to the conversation's
+budget. Each request receives only `references/frame-review.md`, the brand style
+guide and its share of the video: sheets, geometry findings with a few marked frames,
+scenes and narration. No agent instructions, skills or conversation. Detail requests:
+4 sheets (16 frames) each, 6 in parallel, `claude-sonnet-5-5`; one overall request
+over all sheets for consistency between scenes, `gpt-5.5`. Options:
+`--detail-model`, `--overall-model`, `--batch-sheets`, `--parallel`, `--no-overall`.
+A failed request is retried once; on HTTP 402 (budget) it stops. The report is
+`frame-review/round-N/report.md` in the episode, with `result.json` (verdict
+CLEAN, NEEDS FIXES, INCOMPLETE or FAILED; counts of P0–P3). Sheets of failed
+requests must be reviewed with the image viewer before the animatic is shown.
 
 The layout check adds about 0.7 s per frame (a 5-minute video: about 2 minutes).
 
