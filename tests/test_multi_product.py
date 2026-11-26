@@ -35,7 +35,7 @@ class MultiProductTests(unittest.TestCase):
                     self.assertEqual(state['branch']['name'], 'ep/' + slug + '/test')
                     self.assertEqual(state['approvals'], {})
                     with patch.object(pipeline.subprocess, 'run') as run:
-                        with self.assertRaisesRegex(ValueError, 'script approval'):
+                        with self.assertRaisesRegex(ValueError, 'script is not approved'):
                             pipeline.build(root)
                         run.assert_not_called()
                     # Test attestation only; never a human production approval.
@@ -55,7 +55,7 @@ class MultiProductTests(unittest.TestCase):
                         self.assertIn("document.getElementById('brand-name').remove()", html)
                         self.assertNotIn('window.PAGE_DATA.demo?', html)
                     (root/'script.md').write_text('Revised synthetic fixture.\n')
-                    with self.assertRaisesRegex(ValueError, 'script approval'):
+                    with self.assertRaisesRegex(ValueError, 'script is not approved'):
                         pipeline.build(root)
 
     def test_registry_and_asset_provenance(self):

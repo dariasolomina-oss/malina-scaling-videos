@@ -1,10 +1,16 @@
 # SecondStack distribution candidate
 
 Baseline: `951fc06e6ee429498de5a842c196eb2a820ecf2a`.
-Release: `1.0.0-candidate.12`. Status: installed in the Video Producer
-Agent on 2026-11-26 as profile 21 (Skill, Agent instructions, User Guide v4.9). Product Knowledge is maintained in
+Release: `1.0.0-candidate.13`. Status: installed in the Video Producer
+Agent on 2026-11-26 as profile 22 (Skill, Agent instructions, User Guide v5.0). Product Knowledge is maintained in
 the Agent's Collections, which are newer than `product-collections.zip`; do not
 re-upload that archive over them.
+
+candidate.13 softens the harness: Agent instructions override the Skill; only the
+listed rules are hard; the user may accept open layout issues
+(`episode.py approve animatic --accept-open-issues`) or insist on rendering without
+an animatic (`pipeline.py render --user-skipped-animatic --human`); command errors
+say what to do next; the frame review runs until clean (soft limit about 6 rounds).
 
 This additive build layer leaves the developer toolkit's source directories and
 existing instructions unchanged. Only generated runtime copies are adapted.

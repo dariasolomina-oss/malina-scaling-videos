@@ -10,7 +10,7 @@ and up to 3 blocks (title <=36, body <=100 characters), plus duration/demo.
 For a storyboard use `layout: scenes` and the shared `video-scenes.html` template.
 Scenes have ordered `start`/`end` times and one of `title`, `kpi`, `steps`, `screen`
 or `cta` kinds. A screen scene may use a local `assets/` image or video (MP4,
-WebM or MOV) as an authorized capture; it must be reviewed for private data and
+WebM or MOV) captured by you or supplied by the user; review it for private data and
 timing. A screen video plays from its start for the scene's duration; trim it to
 the scene first. The scene geometry follows the episode format (16:9, 9:16 with
 the shared Shorts safe zone, or 1:1); `content.json` `format` may be omitted.
@@ -76,10 +76,11 @@ Express `T` event times in global seconds, independent of frame rate and chunks.
 Avoid wall-clock animation, unseeded randomness and network resources. Review the
 entire timeline in the animatic before any render, then the final60, including
 motion, caption timing and audio sync.
-Raw renderer video is silent H.264; guarded pipeline handles selected audio.
+Raw renderer video is silent H.264; the pipeline adds the narration. Mix music and
+effects, and burn captions, with FFmpeg after the render.
 Caption/transcription/codec checks do not prove correct English speech.
 
 The [LakeSentry historical references](lakesentry-history.md) document past
 styling and fixed examples. Use the selected brand's current style guide for
-production. If the runtime lacks a trusted scene needed for the approved
-storyboard, report the gap and get approval for any change in scope.
+production. If the approved storyboard needs a scene the templates do not have,
+build it yourself as a custom animation (`layout: custom`, see runtime.md).

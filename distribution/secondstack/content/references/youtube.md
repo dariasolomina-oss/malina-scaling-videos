@@ -32,7 +32,7 @@ python3 engine/scripts/youtube_metadata.py check "$EP"
 ```
 
 The exporter checks structure and hashes. Review the facts and wording separately.
-If an older episode lacks verifiable acceptance, report the blocker and label any
+If an older episode lacks a recorded acceptance, ask the user to confirm and label any
 draft copy as unvalidated. Changed inputs require renewed acceptance and metadata
 validation as applicable. Reuse valid acceptance for the same exact bytes.
 

@@ -93,7 +93,7 @@ class PipelineTests(unittest.TestCase):
                               lambda: pipeline.render(self.root),
                               lambda: pipeline.render(self.root, final60=True),
                               lambda: pipeline.import_voice(self.root, mp3='missing', words='missing')):
-                with self.assertRaisesRegex(ValueError, 'script approval'):
+                with self.assertRaisesRegex(ValueError, 'script is not approved'):
                     operation()
             run.assert_not_called()
         self.assertEqual(before, sorted(str(p.relative_to(self.root)) for p in self.root.rglob('*')))
@@ -102,7 +102,7 @@ class PipelineTests(unittest.TestCase):
         self.ready()
         (self.root/'script.md').write_text('Changed script')
         with patch.object(pipeline.subprocess, 'run') as run:
-            with self.assertRaisesRegex(ValueError, 'script approval'):
+            with self.assertRaisesRegex(ValueError, 'script is not approved'):
                 pipeline.render(self.root)
             run.assert_not_called()
         self.assertEqual(episode.load(self.root)['approvals'], {})
@@ -122,7 +122,7 @@ class PipelineTests(unittest.TestCase):
     def test_cover_requires_build_and_uses_cover_sizes(self):
         self.create()
         with patch.object(pipeline.subprocess, 'run') as run:
-            with self.assertRaisesRegex(ValueError, 'script approval'):
+            with self.assertRaisesRegex(ValueError, 'script is not approved'):
                 pipeline.cover(self.root)
             run.assert_not_called()
         self.approve_script()
@@ -243,7 +243,7 @@ class PipelineTests(unittest.TestCase):
         self.ready()
         with patch.object(pipeline.subprocess, 'run') as run:
             for kwargs in ({}, {'final60': True}):
-                with self.assertRaisesRegex(ValueError, 'animatic approval'):
+                with self.assertRaisesRegex(ValueError, 'no approved animatic'):
                     pipeline.render(self.root, **kwargs)
             run.assert_not_called()
         with self.assertRaisesRegex(ValueError, 'build the animatic'):
@@ -261,7 +261,7 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(len(info['scenes']), result['scenes'])
         self.assertEqual(episode.load(self.root)['status'], 'render')
         with patch.object(pipeline.subprocess, 'run') as run:
-            with self.assertRaisesRegex(ValueError, 'animatic approval'):
+            with self.assertRaisesRegex(ValueError, 'no approved animatic'):
                 pipeline.render(self.root, final60=True)
             run.assert_not_called()
         episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
@@ -287,7 +287,7 @@ class PipelineTests(unittest.TestCase):
         episode.write_json(self.root/'content.json', data)
         pipeline.build(self.root)
         with patch.object(pipeline.subprocess, 'run') as run:
-            with self.assertRaisesRegex(ValueError, 'animatic approval'):
+            with self.assertRaisesRegex(ValueError, 'no approved animatic'):
                 pipeline.render(self.root, final60=True)
             run.assert_not_called()
         # The old animatic no longer matches the build and cannot be approved.
@@ -328,6 +328,31 @@ class PipelineTests(unittest.TestCase):
         self.assertEqual(result['layout']['open_errors'], 0)
         self.assertNotIn('animatic', episode.load(self.root)['approvals'])
         episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+
+    def test_user_can_accept_open_layout_errors_after_seeing_them(self):
+        self.ready()
+        self.layout_issues = [dict(type='text_covered', severity='error', text='badge over value', boxes=[[0, 0, 9, 9]])]
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_animatic_run):
+            self.assertGreater(pipeline.animatic(self.root)['layout']['open_errors'], 0)
+        with self.assertRaisesRegex(ValueError, 'accept-open-issues'):
+            episode.approve(self.root, 'animatic', 'TEST FIXTURE', True)
+        state = episode.approve(self.root, 'animatic', 'TEST FIXTURE', True,
+                                accept_open_issues='user saw the badge overlap in scene 5 and said render anyway')
+        self.assertEqual(state['approvals']['animatic']['accepted_open_issues']['count'] > 0, True)
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_node):
+            pipeline.render(self.root, final60=True)
+
+    def test_user_can_insist_on_render_without_animatic(self):
+        self.ready()
+        with patch.object(pipeline.subprocess, 'run', side_effect=self.fake_node) as run:
+            with self.assertRaisesRegex(ValueError, 'user-skipped-animatic'):
+                pipeline.render(self.root, final60=True)
+            with self.assertRaisesRegex(ValueError, '--human'):
+                pipeline.render(self.root, final60=True, user_skipped_animatic='user insisted')
+            run.assert_not_called()
+            pipeline.render(self.root, final60=True, user_skipped_animatic='user insisted twice', human='TEST FIXTURE')
+        events = [h['event'] for h in episode.load(self.root)['history']]
+        self.assertIn('animatic_skipped_by_user', events)
 
     def test_layout_waiver_by_time_span_applies_on_rebuild(self):
         self.ready()
@@ -513,7 +538,7 @@ class PipelineTests(unittest.TestCase):
         self.approve_script()
         response = self.base/'connector.json'
         episode.write_json(response, {})
-        with self.assertRaisesRegex(ValueError, 'authorization'):
+        with self.assertRaisesRegex(ValueError, 'authorized-connector-response'):
             pipeline.import_voice(self.root, response=response)
         self.assertFalse((self.root/'media/voice.audio').exists())
 

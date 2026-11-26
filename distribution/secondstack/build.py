@@ -8,7 +8,7 @@ import shutil
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[2]
-VERSION = '1.0.0-candidate.12'
+VERSION = '1.0.0-candidate.13'
 PRODUCTS = {'lakesentry': 'LakeSentry', 'antares': 'Antares', 'secondstack': 'SecondStack', 'alchemist': 'Alchemist'}
 
 

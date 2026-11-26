@@ -99,18 +99,22 @@ def require_production(root, action):
     if action not in ('voice', 'render', 'package'):
         raise ValueError('unknown production action')
     if not approved(state, 'script'):
-        raise ValueError('explicit current script approval required')
+        raise ValueError('the script is not approved yet (or changed since): show it to the user and record their approval with episode.py approve script')
     if action == 'package' and not approved(state, 'video'):
-        raise ValueError('explicit current video approval required')
+        raise ValueError('the final video is not accepted yet (or changed since): ask the user, then episode.py approve video')
     return state
 
 
-def approve(root, kind, human, confirm=False):
+def approve(root, kind, human, confirm=False, accept_open_issues=None):
+    """Record a person's decision. accept_open_issues: the reason the person gave for
+    rendering an animatic with layout errors still open (they saw the list and said yes)."""
     state = load(root)
     if kind not in ('script', 'animatic', 'video') or not confirm or not human.strip():
-        raise ValueError('explicit --confirm and named human required')
+        raise ValueError('record the approval with --confirm and the name of the person who approved')
     if state['status'] != {'script': 'script', 'animatic': 'render', 'video': 'review'}[kind]:
-        raise ValueError('approval not allowed in current status')
+        need = {'script': 'write the script first', 'animatic': 'approve the script, build and make the animatic first',
+                'video': 'render the video first'}[kind]
+        raise ValueError(f"nothing to approve yet at this step ({state['status']}): {need}")
     if not safe_path(root, state['script_path']).read_text(encoding='utf-8').strip():
         raise ValueError('empty script')
     a = dict(human=human.strip(), confirmed=True, at=now(), script_hash=state['script_hash'], revision=state['revision'])
@@ -126,8 +130,12 @@ def approve(root, kind, human, confirm=False):
         if layout is None:
             raise ValueError('animatic has no layout check; rebuild it')
         if layout['open_errors']:
-            raise ValueError(f"animatic has {layout['open_errors']} open layout errors; fix them, or waive "
-                             "intentional ones with pipeline.py waive, and rebuild")
+            if not (accept_open_issues or '').strip():
+                raise ValueError(f"the animatic still has {layout['open_errors']} open layout errors. Fix them and "
+                                 "rebuild (waive intended ones with pipeline.py waive). If you could not fix them, list "
+                                 "them to the user in plain words; if the user says to render anyway, approve with "
+                                 "--accept-open-issues \"<what the user accepted>\"")
+            a['accepted_open_issues'] = dict(count=layout['open_errors'], reason=accept_open_issues.strip())
         a['input_hash'] = made['input_hash']
         a['animatic_tree'] = made['tree']
     if kind == 'video':
@@ -250,6 +258,7 @@ def main():
             p.add_argument('--id', required=True); p.add_argument('--title', required=True); p.add_argument('--language', default='en', choices=('en',))
         if cmd == 'approve':
             p.add_argument('kind', choices=['script', 'animatic', 'video']); p.add_argument('--human', required=True); p.add_argument('--confirm', action='store_true')
+            p.add_argument('--accept-open-issues', metavar='REASON', help='animatic only: the user saw the remaining layout problems and chose to render anyway')
         if cmd == 'transition':
             p.add_argument('target', choices=STATUSES)
         if cmd in ('version', 'restore'):
@@ -260,7 +269,7 @@ def main():
     try:
         if a.command == 'create': result = create(a.episode, a.id, a.title, a.language)
         elif a.command == 'status': result = load(a.episode)
-        elif a.command == 'approve': result = approve(a.episode, a.kind, a.human, a.confirm)
+        elif a.command == 'approve': result = approve(a.episode, a.kind, a.human, a.confirm, getattr(a, 'accept_open_issues', None))
         elif a.command == 'transition': result = transition(a.episode, a.target)
         elif a.command == 'version': result = dict(version=LocalDirectoryStorage(a.storage).version(a.episode))
         else: result = LocalDirectoryStorage(a.storage).restore(a.version, a.episode)

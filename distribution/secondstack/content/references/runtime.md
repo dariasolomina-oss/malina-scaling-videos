@@ -7,9 +7,9 @@ library trees. Record toolkit version and preserve that release for continuing
 episodes. Activation may reinstall assets, not restore episode work.
 
 Core Python requires >=3.10 and standard library only. Video needs Node >=18,
-npm, FFmpeg/ffprobe and compatible Chromium or authorized CDP. Optional transcription,
-isolation, TTS and desktop tools require separate capabilities. Credentials remain
-in authorized connections; never transfer browser authentication between users.
+npm, FFmpeg/ffprobe and Chromium (the workspace browser or its CDP endpoint). Use
+model access for transcription and media generation for voice, music and effects.
+Never transfer one person's browser sign-in to another person.
 
 From the writable runtime copy:
 
@@ -25,32 +25,31 @@ python3 engine/scripts/episode.py status "$EP"
 ```
 
 The pinned Playwright 1.48.2 has browser-download certificate-authenticity advisory
-GHSA-7mvr-c777-76hp. Do not blindly download browsers. Use trusted pre-provisioned
-compatible Chromium/CDP or request separate dependency remediation. This candidate
-retains pinned dependencies; host smoke tests do not certify all environments.
+GHSA-7mvr-c777-76hp, so prefer the workspace's installed Chromium or the workspace
+browser over CDP to downloading a browser. If neither is available, install Chromium
+with the system package manager and continue.
 
-Research/draft first. Record episode.py approve only after a real human decision
-on the exact script. Its flags are local attestations, not identity verification.
-After that approval:
+Research and draft first. Record episode.py approve script after the user approves
+the script. Then build and make the animatic (see below):
 
 ```sh
 python3 engine/scripts/pipeline.py build --episode "$EP"
-python3 engine/scripts/pipeline.py render --episode "$EP" --fps 30
+python3 engine/scripts/pipeline.py animatic --episode "$EP"
 ```
 
 The runtime supports horizontal, vertical and square universal card layouts and the shared
 `templates/video-scenes.html` storyboard layout. Use `content.json` with
 `layout: scenes` for ordered title, KPI, steps, screen and CTA scenes. A screen
-scene may reference a local authorized capture under `assets/` (image or
+scene may reference a local capture under `assets/` (image or
 MP4/WebM/MOV video copied from the episode `inputs/` as `assets/episode/...`);
 the renderer seeks the video frame by frame, so review its frames and timing.
 The scene geometry follows the episode format, including the Shorts safe zone
 for vertical episodes. Use scene `disclosure` for real captures; the brand
 book disclosure is the default.
 
-The guarded runtime can generate a separate SRT with `make_srt.py`; it does not
-burn captions into the rendered MP4. Use an approved external caption-rendering
-route for burned-in captions, or deliver the checked SRT when that route is absent.
+`make_srt.py` generates the SRT. To burn captions into the video, render first,
+then burn the checked SRT with FFmpeg (`subtitles` filter with the brand font and
+the format's safe zone), and review the frames.
 
 ## Layout check and frame review
 
@@ -167,18 +166,29 @@ python3 engine/scripts/episode.py approve "$EP" animatic --human "<name>" --conf
 python3 engine/scripts/pipeline.py render --episode "$EP" --final60
 ```
 
-Every render, 30 or 60 fps, requires the animatic approval for the current build
-inputs. A rebuild with changed inputs or a changed script needs a new animatic and
-a new approval.
+A render uses the animatic approval for the current build inputs. A rebuild with
+changed inputs or a changed script needs a new animatic and a new approval.
 
-Final bytes require separate acceptance. Audio import uses pipeline.py voice after
-script approval with actual MP3/word timings or authorized connector response.
-voice_elevenlabs.py is an offline parser, not a live API. Review speech, codec,
-duration and timing. Use --help for actual supported options.
+Two options record the user's own decisions:
+
+```sh
+# the user saw the remaining layout problems and said to render anyway
+python3 engine/scripts/episode.py approve "$EP" animatic --human "<name>" --confirm \
+  --accept-open-issues "badge over the number in scene 5 accepted by the user"
+# the user insisted on rendering without an animatic
+python3 engine/scripts/pipeline.py render --episode "$EP" --final60 \
+  --user-skipped-animatic "user asked twice to render without an animatic" --human "<name>"
+```
+
+The final video is accepted separately (episode.py approve video). Audio import
+uses pipeline.py voice after script approval with an MP3 and word timings: a user
+recording edited to fit the picture, or a voice you generated with media
+generation. voice_elevenlabs.py only parses a saved ElevenLabs response with
+timings. Review speech, duration and timing. Use --help for all options.
 
 ## Resume an interrupted render
 
-Repeat the same guarded render command with `--resume`. Use the same episode,
+Repeat the same render command with `--resume`. Use the same episode,
 build, frame rate and `--chunk-frames` value (default 240), for example:
 
 ```sh
@@ -189,32 +199,25 @@ approved inputs available. The renderer skips verified chunks and recreates
 missing or corrupt ones. If inputs or settings change, follow the applicable
 review gate and start a fresh render.
 
-## Authorized product capture
+## Product capture
 
-Use dated capture from an authorized demo environment. Before launching the
-recorder, require approval for the current script and run the production guard
-through an authorized wrapper. `record_screen.js` is a raw helper. If guarded
-capture or a suitable session is unavailable, report the blocker or request an
-authorized recording from the user.
+Record or screenshot product screens yourself in the workspace browser, following
+the approved script, with a demo account and demo data.
 
-- If login is needed, open an isolated browser and let the authorized user sign
-  in there. Use a verified `LOGIN_URL` and `record_screen.js --login STATE_PATH`
-  with an explicit private temporary path. For capture, set `STATE` to that
-  same path and pass the approved shots JSON and output MP4 path to
-  `record_screen.js`. The helper saves login state for reuse. Delete it on
-  completion or failure. Keep it outside the episode, `HTML_ROOT` and all
-  delivery or backup paths.
-- Review the shot list and the actual frames for private data. Record the
-  capture date, environment, authorization and sample/anonymized status.
-  Treat a screencast as a real-time capture, with different timing and resume
-  behavior from the guarded offline renderer.
-- For remote Chromium, use an authorized `CDP_URL`. If it needs to load local
-  HTML, set `BROWSER_HTTP_HOST` to an address reachable from that browser over
-  a private network. Serve only the prepared asset directory as `HTML_ROOT`.
+- If login is needed, hand the browser to the user to sign in, then continue. With
+  `record_screen.js`, use `--login STATE_PATH` with a private temporary path, then
+  `STATE` set to that path, the shots JSON and the output MP4 path. Delete the saved
+  login state when done; keep it out of the episode and delivery folders.
+- Review the frames for private data and note the capture date in the episode.
+- A screencast is real-time, so its timing differs from the offline renderer; trim
+  it to the scene before use.
+- For the remote workspace browser, use its `CDP_URL`. To load local HTML there, set
+  `BROWSER_HTTP_HOST` to an address that browser can reach and serve only the
+  prepared asset directory as `HTML_ROOT`.
 
 ## Episode state and delivery
 
-Episode state is JSON in episode.yaml. Status inspection can invalidate stale
-approvals. LocalDirectoryStorage is local only; restore revokes current approvals.
-Snapshot directories and temporary files are not cloud backups. Attach actual files
-and hashes in Chat and report measured transfer/restoration limits honestly.
+Episode state is JSON in episode.yaml. Status inspection drops approvals whose
+inputs changed. LocalDirectoryStorage is local only; restore drops current
+approvals. Snapshots and temporary files are not cloud backups. Attach the actual
+files in chat; keep hashes and state in the episode, not in messages.

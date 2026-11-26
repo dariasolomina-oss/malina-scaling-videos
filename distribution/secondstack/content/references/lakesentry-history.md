@@ -20,4 +20,4 @@ Treat historical paths, numbers, platform settings and tool commands as context.
 Keep these fixed examples outside the runtime template catalog. Use them to study
 the original layout and copy structure; use the shared runtime scene template for
 new storyboards. Product claims require current evidence, and production media
-requires the current approval workflow or an authorized capture.
+follows the current workflow (approved script, animatic, demo-data capture).

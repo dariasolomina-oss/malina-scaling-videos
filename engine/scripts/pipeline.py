@@ -146,7 +146,7 @@ def import_voice(root, mp3=None, words=None, response=None, authorized=False):
             raise ValueError('elevenlabs mode requires supplied --response only')
         # Run the existing offline parser in an isolated copy, validating before install.
         if not authorized:
-            raise ValueError('explicit authorization for supplied connector response required')
+            raise ValueError('add --authorized-connector-response to confirm this voice file comes from the user or their own account')
         with tempfile.TemporaryDirectory(dir=episode.safe_path(root, 'work')) as tmp:
             staged = Path(tmp)
             episode.write_json(staged/'episode.yaml', state)
@@ -301,7 +301,7 @@ def checked_build(root, state):
     return checksum(built)
 
 
-def render(root, fps=30, chunk_frames=240, resume=False, final60=False):
+def render(root, fps=30, chunk_frames=240, resume=False, final60=False, user_skipped_animatic=None, human=None):
     state = episode.require_production(root, 'render')
     root = Path(root)
     if final60:
@@ -309,10 +309,15 @@ def render(root, fps=30, chunk_frames=240, resume=False, final60=False):
     if fps not in (30, 60) or chunk_frames < 1:
         raise ValueError('fps must be 30/60 and chunk-frames positive')
     key = checked_build(root, state)
-    # Any render needs the human-approved animatic of exactly these build inputs.
-    if not episode.approved(state, 'animatic') or state['approvals']['animatic'].get('input_hash') != key:
-        raise ValueError('render requires animatic approval for these exact build inputs; '
-                         'run pipeline.py animatic and record approval with episode.py approve animatic')
+    # A render needs the person's approval of the animatic of exactly these build inputs,
+    # unless the person insisted on rendering without an animatic (recorded with their reason).
+    skipped = (user_skipped_animatic or '').strip()
+    if skipped and not (human or '').strip():
+        raise ValueError('give --human with the name of the person who asked to skip the animatic')
+    if not skipped and (not episode.approved(state, 'animatic') or state['approvals']['animatic'].get('input_hash') != key):
+        raise ValueError('no approved animatic for the current build. Make the animatic (pipeline.py animatic), show it '
+                         'and record the approval (episode.py approve animatic). If the user insists on rendering '
+                         'without an animatic, rerun with --user-skipped-animatic "<reason>" --human "<name>"')
     # No subprocess, mkdir or output installation above this line (except episode.load invalidation).
     cache = episode.safe_path(root, f'work/render-{key}-{fps}-{chunk_frames}')
     cache.mkdir(parents=True, exist_ok=True)
@@ -348,6 +353,9 @@ def render(root, fps=30, chunk_frames=240, resume=False, final60=False):
         current['approvals'].pop('video', None)
         current['status'] = 'review'
         current['pipeline']['review_input_hash'] = key
+        if skipped:
+            current['history'].append(dict(event='animatic_skipped_by_user', at=episode.now(),
+                human=human.strip(), reason=skipped, input_hash=key))
         current['history'].append(dict(event='pipeline_render', at=episode.now(), fps=fps,
             input_hash=key, video_hash=episode.digest(root/'media/video.mp4')))
         save(root, current)
@@ -743,12 +751,13 @@ def review(root, detail_model=frame_review.DETAIL_MODEL, overall_model=frame_rev
     if result['verdict'] == 'CLEAN':
         result['next'] = ('fix cheap P2 findings if any; then show the animatic to the user')
     elif result['verdict'] == 'FAILED':
-        result['next'] = ('the review requests failed; review the sheets yourself with the image viewer and '
-                          'references/frame-review.md, or retry later')
+        result['next'] = ('the review requests failed (for example the budget or a model was unavailable); review '
+                          'the sheets yourself with the image viewer and references/frame-review.md, then continue')
     else:
-        result['next'] = ('read the report, fix every P0 and P1 finding (and cheap P2) in the page, rebuild the '
-                          'animatic and run the review again; at most 4 rounds. Sheets of failed requests must be '
-                          'reviewed another way')
+        result['next'] = ('read the report, fix every P0 and P1 finding and every P2 a viewer would notice, rebuild '
+                          'the animatic and run the review again until it is CLEAN. Review sheets of failed requests '
+                          'yourself. Only if a problem survives several real attempts (about 6 rounds), show the '
+                          'animatic with a plain list of what is still wrong and ask: fix further or render as is')
     return result
 
 
@@ -776,6 +785,9 @@ def main(argv=None):
             p.add_argument('--final60', action='store_true')
             p.add_argument('--chunk-frames', type=int, default=240)
             p.add_argument('--resume', action='store_true')
+            p.add_argument('--user-skipped-animatic', metavar='REASON',
+                           help='the user insisted on rendering without an animatic')
+            p.add_argument('--human', help='name of the person who asked to skip the animatic')
         if name == 'waive':
             p.add_argument('--issue', help='finding id or key from review/layout.json')
             p.add_argument('--at', help='time span in seconds, e.g. 243-247, for a transition in motion')
